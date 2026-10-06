@@ -1,0 +1,10 @@
+{
+  "name": "Modern Messenger",
+  "description": "A clean, modern chat application with real-time messaging, voice notes, media sharing, and presence indicators.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

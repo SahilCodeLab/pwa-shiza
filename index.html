@@ -1,0 +1,1790 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
+    <title>Modern Messenger</title>
+    <meta name="description"
+        content="A clean, modern chat application with real-time messaging, voice notes, media sharing, and presence indicators.">
+    <meta property="og:title" content="Modern Messenger">
+    <meta property="og:description"
+        content="A clean, modern chat application with real-time messaging, voice notes, media sharing, and presence indicators.">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Messenger">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        html, body {
+            margin: 0; padding: 0;
+            height: 100%; height: 100dvh;
+            overflow: hidden;
+            background: #f3f5f8;
+            color: #111827;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .dark-mode body, .dark-mode .app-wrapper { background: #111827; color: #f3f4f6; }
+        .dark-mode .container, .dark-mode .login-card { background: #1f2937; color: #f3f4f6; border-color: #374151; }
+        .dark-mode .login-card h1 { color: #f3f4f6; }
+        .dark-mode .login-card p.subtitle { color: #9ca3af; }
+        .dark-mode .input-group label { color: #d1d5db; }
+        .dark-mode .quick-btn { background: #374151; color: #e5e7eb; border-color: #4b5563; }
+        .dark-mode .quick-btn:hover { background: #4b5563; color: #60a5fa; border-color: #3b82f6; }
+        .dark-mode input, .dark-mode textarea { background: #374151; color: #f3f4f6; border-color: #4b5563; }
+        .dark-mode .chat-header { background: #1f2937; border-bottom-color: #374151; }
+        .dark-mode #user-tag { color: #f3f4f6; }
+        .dark-mode .back-btn, .dark-mode .icon-action-btn, .dark-mode .clip-btn, .dark-mode .mic-or-send-btn { color: #d1d5db; }
+        .dark-mode .back-btn:hover, .dark-mode .icon-action-btn:hover, .dark-mode .clip-btn:hover, .dark-mode .mic-or-send-btn:hover { background: #374151; }
+        .dark-mode .messages-area { background-color: #111827; background-blend-mode: multiply; }
+        .dark-mode .date-divider span { background: rgba(31, 41, 55, 0.85); color: #d1d5db; }
+        .dark-mode .load-more-btn { background: #374151; border-color: #4b5563; color: #60a5fa; }
+        .dark-mode .load-more-btn:hover { background: #4b5563; }
+        .dark-mode .msg.other { background: #374151; color: #f3f4f6; }
+        .dark-mode .msg.other .replied-text { color: #d1d5db; }
+        .dark-mode .msg.other .msg-footer { color: #9ca3af; }
+        .dark-mode .reaction-container, .dark-mode .action-menu, .dark-mode .profile-dropdown, .dark-mode .modal-content, .dark-mode .modal-header, .dark-mode .modal-footer {
+            background: #1f2937; border-color: #374151; color: #f3f4f6;
+        }
+        .dark-mode .action-menu button.menu-btn, .dark-mode .profile-dropdown button { color: #d1d5db; }
+        .dark-mode .action-menu button.menu-btn:hover, .dark-mode .profile-dropdown button:hover { background: #374151; color: #60a5fa; }
+        .dark-mode .modal-header h3 { color: #f3f4f6; }
+        .dark-mode .close-modal-btn, .dark-mode .close-top-bar { color: #9ca3af; }
+        .dark-mode .close-modal-btn:hover, .dark-mode .close-top-bar:hover { color: #f3f4f6; }
+        .dark-mode .input-area-wrapper { background: #1f2937; border-top-color: #374151; }
+        .dark-mode .input-bar { background: #1f2937; }
+        .dark-mode .input-pill { background: #374151; }
+        .dark-mode .input-pill textarea { color: #f3f4f6; }
+        .dark-mode .top-active-bar { background: #1f2937; border-top-color: #374151; border-left-color: #3b82f6; }
+        .dark-mode .top-active-text { color: #d1d5db; }
+        .dark-mode .media-thumb { border: 1px solid #374151; }
+        .dark-mode .wp-typing-pill { background: #374151; border-color: #4b5563; }
+        .dark-mode .wp-typing-user { color: #f3f4f6; }
+        .dark-mode .scope-pill-group, .dark-mode .bubble-live-preview, .dark-mode .upload-action-box, .dark-mode .custom-color-picker-wrap {
+            background: #111827; border-color: #374151;
+        }
+        .dark-mode .scope-pill.active { background: #374151; color: #60a5fa; }
+
+        .app-wrapper {
+            width: 100%; height: 100%; height: 100dvh;
+            display: flex; justify-content: center; align-items: center; background: #eef2f6;
+        }
+        .container {
+            width: 100%; height: 100%; height: 100dvh;
+            display: flex; flex-direction: column; background: #ffffff; position: relative; overflow: hidden;
+        }
+        @media (min-width: 480px) {
+            .container {
+                max-width: 440px; height: 94vh; max-height: 880px; border-radius: 28px;
+                box-shadow: 0 20px 50px rgba(15, 23, 42, 0.12), 0 2px 8px rgba(15, 23, 42, 0.04);
+                border: 1px solid rgba(226, 232, 240, 0.8);
+            }
+        }
+        .hidden { display: none !important; }
+
+        .login-screen {
+            display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; background: #f8fafc;
+        }
+        .login-card {
+            width: 100%; max-width: 360px; background: #ffffff; border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07); padding: 32px 26px; text-align: center; border: 1px solid #e2e8f0;
+        }
+        .login-app-icon {
+            width: 58px; height: 58px; border-radius: 18px; background: linear-gradient(135deg, #4ba2e8, #2563eb);
+            color: #ffffff; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;
+            box-shadow: 0 8px 18px rgba(37, 99, 235, 0.25);
+        }
+        .login-card h1 { margin: 0 0 6px; font-size: 1.6rem; color: #111827; font-weight: 700; }
+        .login-card p.subtitle { margin: 0 0 20px; font-size: 0.88rem; color: #6b7280; }
+        .quick-login-wrap { margin-bottom: 20px; text-align: left; }
+        .quick-label { font-size: 0.76rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; display: block; }
+        .quick-btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .quick-btn {
+            background: #ffffff; border: 1.5px solid #cbd5e1; padding: 10px 12px; border-radius: 12px;
+            font-size: 0.88rem; font-weight: 600; color: #1e293b; cursor: pointer; display: flex; align-items: center;
+            justify-content: center; gap: 8px; transition: all 0.15s; user-select: none;
+        }
+        .quick-btn:hover { border-color: #3b82f6; color: #2563eb; background: #eff6ff; transform: translateY(-1px); }
+        .login-divider { display: flex; align-items: center; text-align: center; margin: 18px 0; color: #94a3b8; font-size: 0.78rem; font-weight: 600; }
+        .login-divider::before, .login-divider::after { content: ''; flex: 1; border-bottom: 1px solid #e2e8f0; }
+        .login-divider span { padding: 0 10px; }
+        .input-group { margin-bottom: 14px; text-align: left; }
+        .input-group label { display: block; font-size: 0.82rem; font-weight: 600; color: #374151; margin-bottom: 6px; }
+        .input-group input {
+            width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid #d1d5db; background: #f9fafb;
+            color: #111827; font-size: 0.95rem; font-family: inherit; outline: none; transition: all 0.15s;
+        }
+        .input-group input:focus { border-color: #4ba2e8; background: #ffffff; box-shadow: 0 0 0 3px rgba(75, 162, 232, 0.15); }
+        .primary-login-btn {
+            width: 100%; padding: 13px; border-radius: 14px; background: linear-gradient(135deg, #4ba2e8, #2563eb);
+            border: none; color: #ffffff; font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.15s;
+            margin-top: 8px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+        }
+        .primary-login-btn:hover { background: linear-gradient(135deg, #3b82f6, #1d4ed8); transform: translateY(-1px); }
+        #error-log { color: #ef4444; font-size: 0.82rem; margin-top: 12px; min-height: 18px; font-weight: 600; }
+
+        .chat-header {
+            padding: 12px 16px; background: #ffffff; display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid #f1f3f6; z-index: 20; flex-shrink: 0;
+        }
+        .header-left { display: flex; align-items: center; gap: 8px; cursor: pointer; min-width: 0; flex: 1; }
+        .back-btn { background: transparent; border: none; padding: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #111827; border-radius: 50%; }
+        .back-btn:hover { background: #f3f4f6; }
+        .avatar-wrap { position: relative; width: 42px; height: 42px; min-width: 42px; flex-shrink: 0; cursor: pointer; border-radius: 50%; }
+        .avatar-circle {
+            width: 42px; height: 42px; border-radius: 50% !important; overflow: hidden !important; clip-path: circle(50% at 50% 50%) !important;
+            background: #e2e8f0; border: 1.5px solid #ffffff; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12); display: flex; align-items: center; justify-content: center;
+        }
+        .avatar-img { width: 100% !important; height: 100% !important; border-radius: 50% !important; object-fit: cover !important; display: block; }
+        .avatar-fallback { width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(135deg, #4ba2e8, #2563eb); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.05rem; }
+        .online-status-dot { width: 10px; height: 10px; background-color: #10b981; border-radius: 50%; position: absolute; bottom: 1px; right: 1px; border: 2px solid #ffffff; display: none; }
+        .online-status-dot.active { display: block !important; }
+        .header-meta { display: flex; flex-direction: column; min-width: 0; flex: 1; overflow: hidden; justify-content: center; }
+        #user-tag { font-size: 0.96rem; font-weight: 600; color: #111827; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        #typing-status { font-size: 0.73rem; color: #6b7280; font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        #typing-status.online-active { color: #10b981; font-weight: 500; }
+        #typing-status.typing-active { color: #3b82f6; font-weight: 500; }
+        .header-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+        .header-logout-btn {
+            background: #fef2f2; border: 1px solid #fee2e2; color: #ef4444; font-size: 0.76rem; font-weight: 600;
+            padding: 5px 10px; border-radius: 9999px; cursor: pointer; display: flex; align-items: center; gap: 4px; font-family: inherit;
+        }
+        .header-logout-btn:hover { background: #fee2e2; color: #dc2626; border-color: #fca5a5; }
+        .icon-action-btn { background: transparent; border: none; padding: 7px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #1f2937; cursor: pointer; }
+        .icon-action-btn:hover { background: #f3f4f6; }
+
+        .messages-area {
+            flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
+            background-color: #ffffff; background-size: cover; background-position: center; overscroll-behavior: contain; scroll-behavior: smooth;
+        }
+        .date-divider { text-align: center; margin: 4px 0 10px 0; user-select: none; }
+        .date-divider span { font-size: 0.78rem; font-weight: 600; color: #6b7280; background: rgba(243, 244, 246, 0.85); padding: 3px 10px; border-radius: 12px; }
+        .load-more-container { text-align: center; padding: 6px 0 10px 0; flex-shrink: 0; }
+        .load-more-btn { background: #f3f4f6; border: 1px solid #e5e7eb; color: #4ba2e8; font-size: 0.78rem; padding: 6px 14px; border-radius: 16px; cursor: pointer; font-weight: 600; }
+        .load-more-btn:hover { background: #e5e7eb; }
+
+        .msg-wrapper { position: relative; display: flex; flex-direction: column; width: 100%; transition: transform 0.15s ease-out; touch-action: pan-y; }
+        .msg-wrapper.me { align-items: flex-end; }
+        .msg-wrapper.other { align-items: flex-start; }
+        .msg {
+            max-width: 82%; padding: 10px 16px; font-size: 0.95rem; line-height: 1.45; word-wrap: break-word; position: relative;
+            cursor: pointer; user-select: text; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06); transition: background-color 0.2s;
+        }
+        .msg.other { background: #f2f4f7; color: #111827; border-radius: 18px 18px 18px 6px; }
+        .msg.me { background: var(--bubble-me-bg, linear-gradient(135deg, #4ba2e8, #2563eb)); color: var(--bubble-me-color, #ffffff); border-radius: 18px 18px 6px 18px; }
+        .replied-preview-box { padding: 6px 10px; margin-bottom: 8px; border-radius: 8px; font-size: 0.82rem; cursor: pointer; line-height: 1.35; }
+        .msg.other .replied-preview-box { background: rgba(0, 0, 0, 0.05); border-left: 3px solid #4ba2e8; }
+        .msg.me .replied-preview-box { background: rgba(0, 0, 0, 0.14); border-left: 3px solid #ffffff; }
+        .replied-author { font-weight: 600; font-size: 0.78rem; margin-bottom: 2px; display: block; }
+        .msg.other .replied-author { color: #2563eb; }
+        .msg.me .replied-author { color: #ffffff; }
+        .replied-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 230px; }
+        .msg-footer { display: flex; justify-content: flex-end; align-items: center; gap: 4px; margin-top: 4px; font-size: 0.68rem; user-select: none; }
+        .msg.other .msg-footer { color: #9ca3af; }
+        .msg.me .msg-footer { color: rgba(255, 255, 255, 0.78); }
+        .edited-tag { font-size: 0.65rem; font-style: italic; margin-right: 2px; }
+        .ticks { font-size: 0.72rem; font-weight: 700; letter-spacing: -1.5px; margin-left: 3px; color: rgba(255, 255, 255, 0.65); }
+        .ticks.seen { color: #ffffff !important; font-weight: 800; }
+
+        .typing-bubble { display: inline-flex; align-items: center; gap: 5px; background: #f2f4f7; padding: 9px 15px; border-radius: 18px 18px 18px 6px; width: fit-content; margin-bottom: 6px; }
+        .typing-dot { width: 6px; height: 6px; background: #9ca3af; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; } 40% { transform: scale(1); opacity: 1; } }
+
+        .bottom-typing-bar { padding: 4px 14px 6px 14px; display: flex; align-items: center; pointer-events: none; }
+        .wp-typing-pill { display: inline-flex; align-items: center; gap: 6px; background: #f3f4f6; padding: 4px 12px; border-radius: 14px; border: 1px solid #e5e7eb; }
+        .wp-typing-user { font-size: 0.76rem; font-weight: 600; color: #1f2937; }
+        .wp-typing-text { font-size: 0.73rem; font-weight: 500; color: #3b82f6; }
+        .wp-typing-dots { display: inline-flex; align-items: center; gap: 3px; }
+        .wp-dot { width: 4px; height: 4px; background: #3b82f6; border-radius: 50%; animation: wpBounceDot 1.3s infinite ease-in-out both; }
+        .wp-dot:nth-child(1) { animation-delay: -0.32s; }
+        .wp-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes wpBounceDot { 0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; } 40% { transform: scale(1.1); opacity: 1; } }
+
+        .reaction-container { position: absolute; bottom: -10px; right: 12px; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 2px 7px; font-size: 0.8rem; display: flex; gap: 2px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); z-index: 5; cursor: pointer; }
+        .msg.me .reaction-container { left: 12px; right: auto; }
+        .action-menu { position: absolute; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 8px 10px; display: flex; flex-direction: column; gap: 6px; bottom: 105%; z-index: 40; box-shadow: 0 10px 25px rgba(0,0,0,0.12); width: 220px; }
+        .msg.me .action-menu { right: 0; }
+        .msg.other .action-menu { left: 0; }
+        .emoji-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; border-bottom: 1px solid #f1f3f6; padding-bottom: 6px; justify-items: center; }
+        .emoji-grid span { cursor: pointer; font-size: 1.25rem; padding: 4px; }
+        .emoji-grid span:hover { transform: scale(1.3); }
+        .action-menu button.menu-btn { background: transparent; border: none; color: #374151; font-size: 0.88rem; text-align: left; cursor: pointer; padding: 6px 8px; border-radius: 6px; display: flex; align-items: center; gap: 8px; width: 100%; font-family: inherit; }
+        .action-menu button.menu-btn:hover { background: #f3f4f6; color: #4ba2e8; }
+
+        .top-active-bar { background: #f8fafc; padding: 8px 14px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #4ba2e8; border-top: 1px solid #e5e7eb; }
+        .top-active-content { display: flex; flex-direction: column; font-size: 0.82rem; overflow: hidden; }
+        .top-active-title { color: #4ba2e8; font-weight: 600; font-size: 0.76rem; }
+        .top-active-text { color: #6b7280; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .close-top-bar { background: transparent; border: none; color: #9ca3af; font-size: 1.15rem; cursor: pointer; padding: 2px 6px; }
+
+        .input-area-wrapper { display: flex; flex-direction: column; background: #ffffff; flex-shrink: 0; border-top: 1px solid #f1f3f6; z-index: 20; }
+        .uploading-banner { background: #4ba2e8; color: #ffffff; text-align: center; font-size: 0.78rem; font-weight: 600; padding: 6px; }
+        .uploading-banner.recording { background: #ef4444; }
+        .input-bar { display: flex; align-items: center; padding: 10px 14px; gap: 10px; background: #ffffff; padding-bottom: calc(10px + env(safe-area-inset-bottom)); }
+        .clip-btn { background: transparent; border: none; padding: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #1f2937; border-radius: 50%; flex-shrink: 0; }
+        .input-pill { flex: 1; background: #f3f4f6; border-radius: 24px; padding: 8px 16px; display: flex; align-items: center; min-height: 42px; }
+        .input-pill textarea { width: 100%; border: none; background: transparent; color: #111827; font-size: 0.95rem; font-family: inherit; resize: none; outline: none; max-height: 100px; min-height: 22px; line-height: 1.4; padding: 0; margin: 0; }
+        .mic-or-send-btn { background: transparent; border: none; padding: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #1f2937; border-radius: 50%; flex-shrink: 0; }
+        .mic-or-send-btn.send-active { background: #4ba2e8; color: #ffffff; width: 38px; height: 38px; }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 110; display: flex; justify-content: center; align-items: center; padding: 16px; }
+        .modal-content { background: #ffffff; width: 100%; max-width: 420px; max-height: 85vh; border-radius: 24px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2); }
+        .modal-header { padding: 16px 20px; background: #ffffff; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f3f6; }
+        .modal-header h3 { margin: 0; font-size: 1.05rem; color: #111827; font-weight: 700; }
+        .modal-body { padding: 18px 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
+
+        .profile-dropdown { position: absolute; top: 56px; right: 16px; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.12); width: 220px; z-index: 50; overflow: hidden; display: flex; flex-direction: column; }
+        .profile-dropdown button { padding: 12px 16px; text-align: left; border: none; background: transparent; font-size: 0.88rem; font-weight: 500; color: #374151; cursor: pointer; display: flex; align-items: center; gap: 12px; font-family: inherit; }
+        .profile-dropdown button:hover { background: #f8fafc; color: #2563eb; }
+        .profile-dropdown button.danger { color: #ef4444; border-top: 1px solid #f1f3f6; }
+
+        .scope-pill-group { display: grid; grid-template-columns: 1fr 1fr; background: #f1f5f9; padding: 4px; border-radius: 12px; gap: 4px; }
+        .scope-pill { padding: 8px 6px; border-radius: 9px; font-size: 0.8rem; font-weight: 600; text-align: center; border: none; cursor: pointer; background: transparent; color: #64748b; font-family: inherit; }
+        .scope-pill.active { background: #ffffff; color: #1e293b; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1); }
+
+        .theme-swatch-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 4px; }
+        .theme-swatch { height: 48px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #ffffff; font-size: 0.72rem; font-weight: 600; border: 2px solid transparent; user-select: none; }
+        .theme-swatch.active { border-color: #0f172a; box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #2563eb; }
+        .custom-color-picker-wrap { display: flex; align-items: center; justify-content: space-between; background: #f8fafc; padding: 10px 14px; border-radius: 12px; border: 1px solid #e2e8f0; margin-top: 4px; }
+        .custom-color-picker-wrap input[type="color"] { border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; background: transparent; }
+
+        .bubble-live-preview { padding: 12px; border-radius: 14px; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 8px; }
+        .bubble-sample { align-self: flex-end; padding: 8px 14px; border-radius: 16px 16px 4px 16px; font-size: 0.85rem; max-width: 85%; color: #ffffff; }
+
+        .wallpaper-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; max-height: 220px; overflow-y: auto; padding: 2px; }
+        .wallpaper-tile { aspect-ratio: 9/13; border-radius: 10px; border: 2px solid transparent; cursor: pointer; background-size: cover; background-position: center; position: relative; overflow: hidden; }
+        .wallpaper-tile.active { border-color: #2563eb; }
+        .wallpaper-tile span { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.65); color: #fff; font-size: 0.62rem; text-align: center; padding: 2px; font-weight: 600; }
+        .upload-action-box { border: 2px dashed #cbd5e1; border-radius: 14px; padding: 14px; text-align: center; cursor: pointer; background: #f8fafc; }
+        .upload-action-box:hover { border-color: #4ba2e8; background: #eff6ff; }
+
+        .media-grid { padding: 16px; overflow-y: auto; display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .media-thumb-container { position: relative; aspect-ratio: 1; border-radius: 14px; overflow: hidden; background: #f8fafc; display: flex; flex-direction: column; justify-content: center; align-items: center; border: 1px solid #e2e8f0; }
+        .media-thumb { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
+        .gallery-audio-container { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; padding: 8px; gap: 6px; color: #2563eb; }
+        .media-time { position: absolute; bottom: 6px; right: 8px; font-size: 0.65rem; background: rgba(0,0,0,0.65); color: #fff; padding: 2px 6px; border-radius: 6px; font-weight: 500; }
+        .no-media-text { grid-column: 1 / -1; text-align: center; color: #9ca3af; padding: 40px 0; font-size: 0.95rem; }
+
+        .avatar-preview-circle { width: 90px; height: 90px; border-radius: 50% !important; clip-path: circle(50% at 50% 50%) !important; margin: 0 auto 12px auto; object-fit: cover !important; border: 3px solid #4ba2e8; background: #e2e8f0; display: block; }
+        .header-profile-clickable { display: flex; align-items: center; gap: 10px; cursor: pointer; min-width: 0; flex: 1; padding: 3px 8px 3px 4px; border-radius: 24px; }
+        .enlarged-modal-card { background: #ffffff; border-radius: 24px; max-width: 360px; width: 92%; overflow: hidden; box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.5); }
+        .enlarged-img-wrap { background: #0f172a; padding: 20px 16px; display: flex; justify-content: center; align-items: center; }
+        .enlarged-profile-img { width: 260px; height: 260px; max-width: 80vw; max-height: 80vw; border-radius: 20px; object-fit: cover; border: 2px solid rgba(255, 255, 255, 0.15); display: block; }
+
+        /* Media Lightbox */
+        .lightbox-card { background: #0f172a; border-radius: 24px; max-width: 94vw; max-height: 92vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.65); border: 1px solid rgba(255,255,255,0.12); width: 440px; }
+        .lightbox-header { padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); color: #fff; background: rgba(15,23,42,0.95); }
+        .lightbox-img-wrap { display: flex; justify-content: center; align-items: center; padding: 14px; background: #020617; max-height: 70vh; overflow: hidden; }
+        .lightbox-img-wrap img { max-width: 100%; max-height: 68vh; border-radius: 12px; object-fit: contain; box-shadow: 0 8px 30px rgba(0,0,0,0.5); }
+        .lightbox-actions { padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.1); background: rgba(15,23,42,0.95); }
+    </style>
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function () {
+            if (window.emailjs) { emailjs.init({ publicKey: "9FD1EZJSd1gRPYywv" }); }
+        })();
+    </script>
+</head>
+
+<body>
+    <div class="app-wrapper">
+        <!-- 1. LOGIN SCREEN -->
+        <div id="login-screen" class="container login-screen">
+            <div class="login-card">
+                <div style="display: flex; justify-content: flex-end; margin-bottom: 8px;">
+                    <button id="login-dark-mode-toggle" class="icon-action-btn" title="Toggle Dark Mode">🌙</button>
+                </div>
+                <div class="login-app-icon">
+                    <svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12c0 1.82.49 3.53 1.34 5L2 22l5.17-1.31C8.61 21.49 10.26 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z" />
+                    </svg>
+                </div>
+                <h1>Welcome Back</h1>
+                <p class="subtitle">Sign in to start messaging with real-time sync</p>
+
+                <!-- Fast Switchers -->
+                <div class="quick-login-wrap">
+                    <span class="quick-label">Fast Login</span>
+                    <div class="quick-btn-grid">
+                        <button type="button" id="quick-login-sahil" class="quick-btn">
+                            <span>👤</span> Sahil
+                        </button>
+                        <button type="button" id="quick-login-shazu" class="quick-btn">
+                            <span>👩</span> Shazu
+                        </button>
+                    </div>
+                </div>
+
+                <div class="login-divider"><span>or use credentials</span></div>
+
+                <form id="login-form">
+                    <div class="input-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" placeholder="sahil or shazu" autocomplete="username" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" required>
+                    </div>
+                    <button type="submit" class="primary-login-btn">Sign In to Chat</button>
+                </form>
+                <div id="error-log"></div>
+            </div>
+        </div>
+
+        <!-- 2. ACTIVE CHAT SCREEN (SPA - NO REDIRECT) -->
+        <div id="chat-screen" class="container hidden">
+            <!-- Chat Header -->
+            <div class="chat-header" id="chat-header">
+                <div class="header-left">
+                    <button class="back-btn" id="header-back-btn" title="Back / Sign out">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                    </button>
+                    <div class="header-profile-clickable" id="header-profile-btn" title="Click to view enlarged profile picture">
+                        <div class="avatar-wrap" id="avatar-container">
+                            <div class="avatar-circle">
+                                <img id="user-avatar-img" class="avatar-img" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80" alt="Avatar">
+                                <div id="avatar-fallback" class="avatar-fallback hidden">H</div>
+                            </div>
+                            <div id="online-dot" class="online-status-dot"></div>
+                        </div>
+                        <div class="header-meta">
+                            <span id="user-tag">Shazu</span>
+                            <span id="typing-status">Offline</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="header-actions">
+                    <button class="header-logout-btn" id="header-logout-btn" title="Log out">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                        <span>Logout</span>
+                    </button>
+                    <button class="icon-action-btn" id="menu-dots-btn" title="More options">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="1.2"></circle>
+                            <circle cx="12" cy="5" r="1.2"></circle>
+                            <circle cx="12" cy="19" r="1.2"></circle>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Profile Dropdown Menu -->
+            <div id="profile-dropdown" class="profile-dropdown hidden">
+                <button id="open-wallpaper-modal-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                    <span>Chat Wallpaper</span>
+                </button>
+                <button id="open-theme-modal-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle>
+                        <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle>
+                        <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle>
+                        <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle>
+                        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path>
+                    </svg>
+                    <span>Chat Colors & Theme</span>
+                </button>
+                <button id="dark-mode-toggle-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <span>Dark Mode</span>
+                </button>
+                <button id="open-avatar-modal-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    <span>Profile Photo (DP)</span>
+                </button>
+                <button id="view-gallery-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    <span>Shared Media</span>
+                </button>
+                <button id="pwa-install-menu-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    <span>Install App on Phone</span>
+                </button>
+                <button id="logout-menu-btn" class="danger">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    <span>Log Out</span>
+                </button>
+            </div>
+
+            <!-- Messages Feed -->
+            <div id="chat-messages" class="messages-area">
+                <div id="load-more-container" class="load-more-container hidden">
+                    <button id="load-more-btn" class="load-more-btn">Load Older Messages</button>
+                </div>
+                <div class="date-divider"><span>Messages</span></div>
+                <div id="live-typing-bubble" class="msg-wrapper other hidden">
+                    <div class="typing-bubble">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Input & Attachment Bar -->
+            <div class="input-area-wrapper">
+                <div id="bottom-typing-bar" class="bottom-typing-bar hidden">
+                    <div class="wp-typing-pill">
+                        <span class="wp-typing-user" id="wp-typing-user">Shazu</span>
+                        <span class="wp-typing-text">typing</span>
+                        <span class="wp-typing-dots"><span class="wp-dot"></span><span class="wp-dot"></span><span class="wp-dot"></span></span>
+                    </div>
+                </div>
+
+                <div id="reply-bar" class="top-active-bar hidden">
+                    <div class="top-active-content">
+                        <span id="reply-bar-title" class="top-active-title">Replying to message</span>
+                        <span id="reply-bar-text" class="top-active-text"></span>
+                    </div>
+                    <button id="close-reply-btn" class="close-top-bar">&times;</button>
+                </div>
+
+                <div id="edit-bar" class="top-active-bar hidden" style="border-left-color: #2563eb;">
+                    <div class="top-active-content">
+                        <span class="top-active-title" style="color: #2563eb;">Editing Message</span>
+                        <span id="edit-bar-text" class="top-active-text"></span>
+                    </div>
+                    <button id="close-edit-btn" class="close-top-bar">&times;</button>
+                </div>
+
+                <div id="uploading-banner" class="uploading-banner hidden">Processing...</div>
+
+                <div id="chat-form" class="input-bar">
+                    <button type="button" class="clip-btn" id="attach-btn" title="Share Media">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                        </svg>
+                    </button>
+                    <div class="input-pill">
+                        <textarea id="message-input" placeholder="Type a message..." rows="1"></textarea>
+                    </div>
+                    <button type="button" class="mic-or-send-btn" id="mic-or-send-btn" title="Record Voice Note">
+                        <svg id="mic-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                            <line x1="12" y1="19" x2="12" y2="23"></line>
+                            <line x1="8" y1="23" x2="16" y2="23"></line>
+                        </svg>
+                        <svg id="send-icon" class="hidden" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modals -->
+            <div id="wallpaper-modal" class="modal-overlay hidden">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Chat Wallpaper</h3>
+                        <button id="close-wallpaper-btn" class="close-top-bar">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div>
+                            <span style="font-size: 0.78rem; font-weight: 600; color: #475569; display: block; margin-bottom: 6px;">Apply wallpaper for:</span>
+                            <div class="scope-pill-group">
+                                <button type="button" id="wp-scope-both" class="scope-pill active"><span>Both of us</span></button>
+                                <button type="button" id="wp-scope-me" class="scope-pill"><span>Only for me</span></button>
+                            </div>
+                        </div>
+                        <div class="upload-action-box" id="upload-custom-wallpaper-btn">
+                            <span style="font-size: 0.88rem; font-weight: 600; display: block;">Upload from Device</span>
+                        </div>
+                        <div>
+                            <span style="font-size: 0.8rem; font-weight: 600; color: #475569; display: block; margin-bottom: 8px;">Presets:</span>
+                            <div class="wallpaper-grid" id="wallpaper-presets-container"></div>
+                        </div>
+                        <button type="button" id="reset-wallpaper-btn" style="padding: 10px; border-radius: 12px; background: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; font-weight: 600; font-size: 0.85rem; cursor: pointer;">
+                            🔄 Reset to Default Background
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="avatar-modal" class="modal-overlay hidden">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Profile Photo (DP)</h3>
+                        <button id="close-avatar-btn" class="close-top-bar">&times;</button>
+                    </div>
+                    <div class="modal-body" style="text-align: center;">
+                        <img id="avatar-modal-preview" class="avatar-preview-circle" src="" alt="Avatar Preview">
+                        <h4 id="avatar-modal-user-title" style="margin: 0 0 4px 0; font-size: 1rem; font-weight: 700;">My Profile Photo</h4>
+                        <p id="avatar-modal-info" style="margin: 0 0 16px 0; font-size: 0.82rem; color: #64748b;">Syncs instantly to partner</p>
+                        <div class="upload-action-box" id="upload-avatar-btn">
+                            <span style="font-size: 0.88rem; font-weight: 600; display: block;">Choose New Photo</span>
+                        </div>
+                        <div id="avatar-feedback-msg" style="font-size: 0.82rem; font-weight: 600; min-height: 20px; margin: 8px 0; color: #10b981;"></div>
+                        <button type="button" id="remove-avatar-btn" style="width: 100%; padding: 10px; border-radius: 12px; background: #fef2f2; border: 1px solid #fee2e2; color: #dc2626; font-weight: 600; font-size: 0.85rem; cursor: pointer; margin-top: 4px;">
+                            🗑️ Reset to Default Photo
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="enlarged-profile-modal" class="modal-overlay hidden" style="backdrop-filter: blur(8px); background: rgba(0, 0, 0, 0.8); z-index: 9999;">
+                <div class="enlarged-modal-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; border-bottom: 1px solid #e2e8f0;">
+                        <div>
+                            <h3 id="enlarged-profile-name" style="margin: 0; font-size: 1.1rem; font-weight: 700;">Shazu</h3>
+                            <span id="enlarged-profile-status" style="font-size: 0.78rem; color: #64748b; font-weight: 500;">Active</span>
+                        </div>
+                        <button id="close-enlarged-profile-btn" style="background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer;">&times;</button>
+                    </div>
+                    <div class="enlarged-img-wrap">
+                        <img id="enlarged-profile-img" class="enlarged-profile-img" src="" alt="Profile Photo">
+                    </div>
+                    <div style="padding: 14px 20px; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 0.82rem; color: #64748b;">Profile Picture</span>
+                        <button id="enlarged-profile-change-btn" type="button" style="padding: 7px 14px; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; border-radius: 10px; font-size: 0.82rem; font-weight: 600; cursor: pointer;">Change My DP</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="theme-modal" class="modal-overlay hidden">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Chat Color & Theme</h3>
+                        <button id="close-theme-btn" class="close-top-bar">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div>
+                            <span style="font-size: 0.78rem; font-weight: 600; color: #475569; display: block; margin-bottom: 6px;">Apply color for:</span>
+                            <div class="scope-pill-group">
+                                <button type="button" id="theme-scope-both" class="scope-pill active"><span>Both of us</span></button>
+                                <button type="button" id="theme-scope-me" class="scope-pill"><span>Only for me</span></button>
+                            </div>
+                        </div>
+                        <div>
+                            <span style="font-size: 0.78rem; font-weight: 600; color: #475569; display: block; margin-bottom: 6px;">Live Preview:</span>
+                            <div class="bubble-live-preview">
+                                <div class="bubble-sample" id="theme-preview-bubble">Hey! Customized chat bubble color ✨</div>
+                            </div>
+                        </div>
+                        <div>
+                            <span style="font-size: 0.8rem; font-weight: 600; color: #475569; display: block; margin-bottom: 6px;">Color Palettes:</span>
+                            <div class="theme-swatch-grid" id="theme-swatches-container"></div>
+                        </div>
+                        <div>
+                            <div class="custom-color-picker-wrap">
+                                <span style="font-size: 0.84rem; font-weight: 600;">Custom Picker</span>
+                                <input type="color" id="custom-theme-color-input" value="#4ba2e8">
+                            </div>
+                        </div>
+                        <button type="button" id="reset-theme-btn" style="padding: 10px; border-radius: 12px; background: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; font-weight: 600; font-size: 0.85rem; cursor: pointer; margin-top: 4px;">
+                            🔄 Reset to Default Sky Blue
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="media-gallery-modal" class="modal-overlay hidden">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 id="gallery-title">Shared Media</h3>
+                        <button id="close-gallery-btn" class="close-top-bar">&times;</button>
+                    </div>
+                    <div id="media-grid-container" class="media-grid"></div>
+                </div>
+            </div>
+
+            <!-- Media Lightbox Preview Modal -->
+            <div id="media-lightbox-modal" class="modal-overlay hidden" style="backdrop-filter: blur(8px); background: rgba(0, 0, 0, 0.85); z-index: 99999;">
+                <div class="lightbox-card">
+                    <div class="lightbox-header">
+                        <span id="lightbox-title" style="font-weight: 600; font-size: 0.92rem; color: #fff;">Photo Preview</span>
+                        <button id="close-media-lightbox-btn" class="close-top-bar" style="color: #fff; font-size: 1.5rem; line-height: 1; border: none; background: transparent; cursor: pointer;">&times;</button>
+                    </div>
+                    <div class="lightbox-img-wrap">
+                        <img id="lightbox-img" src="" alt="Enlarged Photo">
+                    </div>
+                    <div class="lightbox-actions">
+                        <span style="font-size: 0.78rem; color: #94a3b8;">High Resolution View</span>
+                        <a id="lightbox-download-link" href="#" target="_blank" download style="display: inline-flex; align-items: center; gap: 6px; background: #2563eb; color: #ffffff; text-decoration: none; padding: 7px 14px; border-radius: 10px; font-size: 0.82rem; font-weight: 600;">
+                            ⬇️ Full View
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import {
+            getDatabase, ref, push, set, update, query, limitToLast,
+            orderByKey, endAt, startAfter, get, onChildAdded, onChildChanged,
+            serverTimestamp, onValue, onDisconnect
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAii2t4g5DuJ7-BLm8v9-syyrtOmyWK8_8",
+            authDomain: "sr-login-cef1c.firebaseapp.com",
+            databaseURL: "https://sr-login-cef1c-default-rtdb.firebaseio.com",
+            projectId: "sr-login-cef1c",
+            storageBucket: "sr-login-cef1c.firebasestorage.app",
+            messagingSenderId: "998421619255",
+            appId: "1:998421619255:web:5f12b5c71ed93ac5c115b2"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        const SUPABASE_URL = "https://mogirffjqlbciwgyiqkx.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_fcn77s414JmfsLxQ95PBbw_O5tnt3Wy";
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const DOM = {
+            loginScreen: document.getElementById('login-screen'),
+            loginForm: document.getElementById('login-form'),
+            usernameInput: document.getElementById('username'),
+            passwordInput: document.getElementById('password'),
+            errorLog: document.getElementById('error-log'),
+            quickLoginSahil: document.getElementById('quick-login-sahil'),
+            quickLoginShazu: document.getElementById('quick-login-shazu'),
+            loginDarkModeToggle: document.getElementById('login-dark-mode-toggle'),
+
+            chatScreen: document.getElementById('chat-screen'),
+            chatHeader: document.getElementById('chat-header'),
+            messagesArea: document.getElementById('chat-messages'),
+            loadMoreContainer: document.getElementById('load-more-container'),
+            loadMoreBtn: document.getElementById('load-more-btn'),
+            userTag: document.getElementById('user-tag'),
+            userAvatarImg: document.getElementById('user-avatar-img'),
+            avatarFallback: document.getElementById('avatar-fallback'),
+            onlineDot: document.getElementById('online-dot'),
+            typingStatusText: document.getElementById('typing-status'),
+            messageInput: document.getElementById('message-input'),
+            uploadingBanner: document.getElementById('uploading-banner'),
+            micOrSendBtn: document.getElementById('mic-or-send-btn'),
+            micIcon: document.getElementById('mic-icon'),
+            sendIcon: document.getElementById('send-icon'),
+            attachBtn: document.getElementById('attach-btn'),
+            liveTypingBubble: document.getElementById('live-typing-bubble'),
+            bottomTypingBar: document.getElementById('bottom-typing-bar'),
+            wpTypingUser: document.getElementById('wp-typing-user'),
+
+            mediaGalleryModal: document.getElementById('media-gallery-modal'),
+            mediaGridContainer: document.getElementById('media-grid-container'),
+            galleryTitle: document.getElementById('gallery-title'),
+            closeGalleryBtn: document.getElementById('close-gallery-btn'),
+
+            replyBar: document.getElementById('reply-bar'),
+            replyBarTitle: document.getElementById('reply-bar-title'),
+            replyBarText: document.getElementById('reply-bar-text'),
+            closeReplyBtn: document.getElementById('close-reply-btn'),
+
+            editBar: document.getElementById('edit-bar'),
+            editBarText: document.getElementById('edit-bar-text'),
+            closeEditBtn: document.getElementById('close-edit-btn'),
+
+            menuDotsBtn: document.getElementById('menu-dots-btn'),
+            profileDropdown: document.getElementById('profile-dropdown'),
+            viewGalleryBtn: document.getElementById('view-gallery-btn'),
+            logoutMenuBtn: document.getElementById('logout-menu-btn'),
+            headerLogoutBtn: document.getElementById('header-logout-btn'),
+            headerBackBtn: document.getElementById('header-back-btn'),
+            darkModeToggleBtn: document.getElementById('dark-mode-toggle-btn'),
+
+            wallpaperModal: document.getElementById('wallpaper-modal'),
+            closeWallpaperBtn: document.getElementById('close-wallpaper-btn'),
+            openWallpaperModalBtn: document.getElementById('open-wallpaper-modal-btn'),
+            wpScopeBoth: document.getElementById('wp-scope-both'),
+            wpScopeMe: document.getElementById('wp-scope-me'),
+            uploadCustomWallpaperBtn: document.getElementById('upload-custom-wallpaper-btn'),
+            wallpaperPresetsContainer: document.getElementById('wallpaper-presets-container'),
+            resetWallpaperBtn: document.getElementById('reset-wallpaper-btn'),
+
+            avatarModal: document.getElementById('avatar-modal'),
+            closeAvatarBtn: document.getElementById('close-avatar-btn'),
+            openAvatarModalBtn: document.getElementById('open-avatar-modal-btn'),
+            avatarModalPreview: document.getElementById('avatar-modal-preview'),
+            avatarModalUserTitle: document.getElementById('avatar-modal-user-title'),
+            avatarModalInfo: document.getElementById('avatar-modal-info'),
+            uploadAvatarBtn: document.getElementById('upload-avatar-btn'),
+            avatarFeedbackMsg: document.getElementById('avatar-feedback-msg'),
+            removeAvatarBtn: document.getElementById('remove-avatar-btn'),
+
+            headerProfileBtn: document.getElementById('header-profile-btn'),
+            enlargedProfileModal: document.getElementById('enlarged-profile-modal'),
+            enlargedProfileName: document.getElementById('enlarged-profile-name'),
+            enlargedProfileStatus: document.getElementById('enlarged-profile-status'),
+            enlargedProfileImg: document.getElementById('enlarged-profile-img'),
+            closeEnlargedProfileBtn: document.getElementById('close-enlarged-profile-btn'),
+            enlargedProfileChangeBtn: document.getElementById('enlarged-profile-change-btn'),
+
+            themeModal: document.getElementById('theme-modal'),
+            closeThemeBtn: document.getElementById('close-theme-btn'),
+            openThemeModalBtn: document.getElementById('open-theme-modal-btn'),
+            themeScopeBoth: document.getElementById('theme-scope-both'),
+            themeScopeMe: document.getElementById('theme-scope-me'),
+            themePreviewBubble: document.getElementById('theme-preview-bubble'),
+            themeSwatchesContainer: document.getElementById('theme-swatches-container'),
+            customThemeColorInput: document.getElementById('custom-theme-color-input'),
+            resetThemeBtn: document.getElementById('reset-theme-btn'),
+
+            mediaLightboxModal: document.getElementById('media-lightbox-modal'),
+            closeMediaLightboxBtn: document.getElementById('close-media-lightbox-btn'),
+            lightboxImg: document.getElementById('lightbox-img'),
+            lightboxTitle: document.getElementById('lightbox-title'),
+            lightboxDownloadLink: document.getElementById('lightbox-download-link')
+        };
+
+        let currentUser = "";
+        let otherUser = "";
+        let otherDisplayName = "Shazu";
+        let typingTimeout = null;
+        let replyingTo = null;
+        let editingMsgKey = null;
+        let allMessagesCache = new Map();
+        let allMediaCache = new Map();
+        let renderedMessageKeys = new Set();
+        let oldestLoadedKey = null;
+        let newestLoadedKey = null;
+        let isLoadingOlder = false;
+        let hasMoreMessages = true;
+        let isInitialLoad = true;
+        let activeIntervalId = null;
+
+        let otherData = { isOnline: false, lastSeen: null };
+        let otherTyping = false;
+        let currentStatusText = "";
+        let isDotActive = false;
+
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let isRecording = false;
+
+        let wallpaperScope = 'both';
+        let themeScope = 'both';
+        let currentActiveBubbleColor = 'linear-gradient(135deg, #4ba2e8, #2563eb)';
+
+        const ROMANTIC_WALLPAPERS = [
+            { name: "Sunset Beach", url: "https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=900&auto=format&fit=crop&q=80" },
+            { name: "Starry Night", url: "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=900&auto=format&fit=crop&q=80" },
+            { name: "Cherry Blossom", url: "https://images.unsplash.com/photo-1522383225653-ed111181a951?w=900&auto=format&fit=crop&q=80" },
+            { name: "Red Rose", url: "https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=900&auto=format&fit=crop&q=80" },
+            { name: "Warm Bokeh", url: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=900&auto=format&fit=crop&q=80" },
+            { name: "Dreamy Moon", url: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=900&auto=format&fit=crop&q=80" }
+        ];
+
+        const THEME_PALETTES = [
+            { name: 'Sky Blue', gradient: 'linear-gradient(135deg, #4ba2e8, #2563eb)' },
+            { name: 'Emerald', gradient: 'linear-gradient(135deg, #10b981, #059669)' },
+            { name: 'Rose Pink', gradient: 'linear-gradient(135deg, #f43f5e, #db2777)' },
+            { name: 'Lavender', gradient: 'linear-gradient(135deg, #8b5cf6, #6d28d9)' },
+            { name: 'Sunset', gradient: 'linear-gradient(135deg, #f97316, #ea580c)' },
+            { name: 'Midnight', gradient: 'linear-gradient(135deg, #334155, #0f172a)' }
+        ];
+
+        function compressImageFile(file, maxDimension = 800, quality = 0.85) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        let w = img.width, h = img.height;
+                        if (w > maxDimension || h > maxDimension) {
+                            if (w > h) { h = Math.round((h * maxDimension) / w); w = maxDimension; }
+                            else { w = Math.round((w * maxDimension) / h); h = maxDimension; }
+                        }
+                        const canvas = document.createElement('canvas');
+                        canvas.width = w; canvas.height = h;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, w, h);
+                        canvas.toBlob((blob) => resolve({ blob: blob || file, dataUrl: canvas.toDataURL('image/jpeg', quality) }), 'image/jpeg', quality);
+                    };
+                    img.onerror = () => resolve({ blob: file, dataUrl: null });
+                    img.src = e.target.result;
+                };
+                reader.onerror = () => resolve({ blob: file, dataUrl: null });
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function initTheme() {
+            const stored = localStorage.getItem('theme');
+            if (stored === 'dark') {
+                document.body.classList.add('dark-mode');
+                if (DOM.loginDarkModeToggle) DOM.loginDarkModeToggle.textContent = '☀️';
+            }
+        }
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            if (DOM.loginDarkModeToggle) DOM.loginDarkModeToggle.textContent = isDark ? '☀️' : '🌙';
+        }
+        if (DOM.loginDarkModeToggle) DOM.loginDarkModeToggle.addEventListener('click', toggleDarkMode);
+        if (DOM.darkModeToggleBtn) DOM.darkModeToggleBtn.addEventListener('click', toggleDarkMode);
+
+        async function sendEmailNotification(senderName, messageText) {
+            try {
+                if (window.emailjs) {
+                    await window.emailjs.send('service_duqxm87', 'template_jr2139k', { to_name: otherUser, from_name: senderName, message: messageText });
+                }
+            } catch (err) { console.warn("Email notify:", err); }
+        }
+
+        const wallpaperFileInput = document.createElement('input');
+        wallpaperFileInput.type = 'file'; wallpaperFileInput.accept = 'image/*'; wallpaperFileInput.style.display = 'none';
+        document.body.appendChild(wallpaperFileInput);
+
+        const avatarFileInput = document.createElement('input');
+        avatarFileInput.type = 'file'; avatarFileInput.accept = 'image/*'; avatarFileInput.style.display = 'none';
+        document.body.appendChild(avatarFileInput);
+
+        const mediaFileInput = document.createElement('input');
+        mediaFileInput.type = 'file'; mediaFileInput.accept = 'image/*,video/*,audio/*'; mediaFileInput.style.display = 'none';
+        document.body.appendChild(mediaFileInput);
+
+        function startSession(username) {
+            currentUser = username;
+            otherUser = currentUser === 'sahil' ? 'shazu' : 'sahil';
+            otherDisplayName = otherUser === 'shazu' ? 'Shazu' : 'Sahil';
+
+            localStorage.setItem('active_chat_user', currentUser);
+            DOM.loginScreen.classList.add('hidden');
+            DOM.chatScreen.classList.remove('hidden');
+
+            DOM.userTag.innerText = otherDisplayName;
+            DOM.avatarFallback.innerText = otherDisplayName.charAt(0).toUpperCase();
+
+            allMessagesCache.clear();
+            renderedMessageKeys.clear();
+            DOM.messagesArea.querySelectorAll('.msg-wrapper:not(#live-typing-bubble)').forEach(b => b.remove());
+            isInitialLoad = true; hasMoreMessages = true; oldestLoadedKey = null; newestLoadedKey = null; isLoadingOlder = false;
+
+            setupPresenceEngine();
+            setupAvatarEngine();
+            setupWallpaperEngine();
+            setupThemeEngine();
+            loadChatsStrictOrder();
+        }
+
+        async function logout() {
+            await setTyping(false);
+            if (currentUser) {
+                try { await set(ref(db, `chats/presence/${currentUser}`), { isOnline: false, lastSeen: serverTimestamp() }); } catch (e) { }
+            }
+            if (activeIntervalId) { clearInterval(activeIntervalId); activeIntervalId = null; }
+            localStorage.removeItem('active_chat_user');
+            currentUser = "";
+            [DOM.avatarModal, DOM.themeModal, DOM.wallpaperModal, DOM.mediaGalleryModal, DOM.enlargedProfileModal, DOM.profileDropdown].forEach(m => m && m.classList.add('hidden'));
+            DOM.chatScreen.classList.add('hidden');
+            DOM.loginScreen.classList.remove('hidden');
+            if (DOM.errorLog) DOM.errorLog.innerText = "";
+        }
+
+        DOM.loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            let raw = DOM.usernameInput.value.trim().toLowerCase();
+            const pass = DOM.passwordInput.value.trim();
+            if (raw.includes('@')) raw = raw.split('@')[0];
+            const u = raw.replace(/\s+/g, '');
+            if ((u === 'sahil' && pass === 'sahil1234') || (u === 'shazu' && pass === 'shazu1234')) {
+                startSession(u);
+            } else {
+                DOM.errorLog.innerText = "Invalid credentials! Use sahil/sahil1234 or shazu/shazu1234";
+            }
+        });
+
+        if (DOM.quickLoginSahil) {
+            DOM.quickLoginSahil.addEventListener('click', () => {
+                DOM.usernameInput.value = 'sahil'; DOM.passwordInput.value = 'sahil1234'; startSession('sahil');
+            });
+        }
+        if (DOM.quickLoginShazu) {
+            DOM.quickLoginShazu.addEventListener('click', () => {
+                DOM.usernameInput.value = 'shazu'; DOM.passwordInput.value = 'shazu1234'; startSession('shazu');
+            });
+        }
+
+        DOM.headerLogoutBtn.addEventListener('click', logout);
+        DOM.logoutMenuBtn.addEventListener('click', logout);
+        DOM.menuDotsBtn.addEventListener('click', (e) => { e.stopPropagation(); DOM.profileDropdown.classList.toggle('hidden'); });
+        document.addEventListener('click', () => DOM.profileDropdown.classList.add('hidden'));
+
+        DOM.headerBackBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const openModals = [DOM.avatarModal, DOM.themeModal, DOM.wallpaperModal, DOM.mediaGalleryModal, DOM.enlargedProfileModal];
+            for (const m of openModals) {
+                if (m && !m.classList.contains('hidden')) { m.classList.add('hidden'); return; }
+            }
+            logout();
+        });
+
+        function openMediaLightbox(url, title = "Photo Preview") {
+            if (!DOM.mediaLightboxModal || !DOM.lightboxImg) return;
+            DOM.lightboxImg.src = url;
+            if (DOM.lightboxTitle) DOM.lightboxTitle.textContent = title;
+            if (DOM.lightboxDownloadLink) DOM.lightboxDownloadLink.href = url;
+            DOM.mediaLightboxModal.classList.remove('hidden');
+        }
+        window.openMediaLightbox = openMediaLightbox;
+
+        if (DOM.closeMediaLightboxBtn) {
+            DOM.closeMediaLightboxBtn.addEventListener('click', () => DOM.mediaLightboxModal.classList.add('hidden'));
+        }
+        if (DOM.mediaLightboxModal) {
+            DOM.mediaLightboxModal.addEventListener('click', (e) => {
+                if (e.target === DOM.mediaLightboxModal) DOM.mediaLightboxModal.classList.add('hidden');
+            });
+        }
+
+        DOM.viewGalleryBtn.addEventListener('click', () => { renderMediaGallery(); DOM.mediaGalleryModal.classList.remove('hidden'); });
+        DOM.closeGalleryBtn.addEventListener('click', () => DOM.mediaGalleryModal.classList.add('hidden'));
+        DOM.mediaGalleryModal.addEventListener('click', (e) => { if (e.target === DOM.mediaGalleryModal) DOM.mediaGalleryModal.classList.add('hidden'); });
+
+        async function renderMediaGallery() {
+            DOM.mediaGridContainer.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:24px; color:#64748b; font-size:0.85rem;">Loading shared media...</div>`;
+            
+            // Fetch recent 350 messages to gather media from today and past chats if cache is low
+            if (allMediaCache.size < 4) {
+                try {
+                    const snap = await get(query(ref(db, 'chats/main_session'), orderByKey(), limitToLast(350)));
+                    const val = snap.val();
+                    if (val) {
+                        Object.keys(val).forEach(k => {
+                            if (k !== 'secret_key' && val[k]) {
+                                const media = getMediaInfo(val[k]);
+                                if (media) {
+                                    allMediaCache.set(k, { ...val[k], mediaType: media.type, mediaUrl: media.url, key: k });
+                                }
+                            }
+                        });
+                    }
+                } catch (e) { }
+            }
+
+            DOM.mediaGridContainer.innerHTML = "";
+            let items = Array.from(allMediaCache.values()).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+            DOM.galleryTitle.textContent = `Shared Media (${items.length})`;
+            if (items.length === 0) {
+                DOM.mediaGridContainer.innerHTML = `<p class="no-media-text">No shared photos, videos or voice notes found yet.</p>`;
+                return;
+            }
+            items.forEach(item => {
+                const thumb = document.createElement('div');
+                thumb.className = 'media-thumb-container';
+                let timeStr = item.timestamp ? new Date(item.timestamp).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : "";
+                let senderLabel = item.sender === otherUser ? otherDisplayName : 'You';
+                if (item.mediaType === 'video') {
+                    const vid = document.createElement('video'); vid.src = item.mediaUrl; vid.className = 'media-thumb'; vid.controls = true; thumb.appendChild(vid);
+                } else if (item.mediaType === 'audio') {
+                    const audioBox = document.createElement('div'); audioBox.className = 'gallery-audio-container';
+                    audioBox.innerHTML = `<span style="font-size:0.75rem; font-weight:600;">🎙️ Voice (${senderLabel})</span><audio src="${item.mediaUrl}" controls style="width:100%;height:32px;"></audio>`;
+                    thumb.appendChild(audioBox);
+                } else {
+                    const img = document.createElement('img'); img.src = item.mediaUrl; img.className = 'media-thumb';
+                    img.onclick = () => openMediaLightbox(item.mediaUrl, `${senderLabel}'s Photo`);
+                    thumb.appendChild(img);
+                }
+                const badge = document.createElement('span'); badge.className = 'media-time'; badge.textContent = `${senderLabel} • ${timeStr}`; thumb.appendChild(badge);
+                DOM.mediaGridContainer.appendChild(thumb);
+            });
+        }
+
+        DOM.headerProfileBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            DOM.enlargedProfileName.innerText = otherDisplayName;
+            DOM.enlargedProfileStatus.innerText = currentStatusText || (otherData && otherData.isOnline ? "Online" : "Offline");
+            DOM.enlargedProfileImg.src = DOM.userAvatarImg.src;
+            DOM.enlargedProfileModal.classList.remove('hidden');
+        });
+        DOM.closeEnlargedProfileBtn.addEventListener('click', () => DOM.enlargedProfileModal.classList.add('hidden'));
+        DOM.enlargedProfileModal.addEventListener('click', (e) => { if (e.target === DOM.enlargedProfileModal) DOM.enlargedProfileModal.classList.add('hidden'); });
+        DOM.enlargedProfileChangeBtn.addEventListener('click', () => { DOM.enlargedProfileModal.classList.add('hidden'); openAvatarModal(); });
+
+        DOM.openAvatarModalBtn.addEventListener('click', openAvatarModal);
+        DOM.closeAvatarBtn.addEventListener('click', () => DOM.avatarModal.classList.add('hidden'));
+        DOM.avatarModal.addEventListener('click', (e) => { if (e.target === DOM.avatarModal) DOM.avatarModal.classList.add('hidden'); });
+
+        function openAvatarModal() {
+            DOM.avatarModal.classList.remove('hidden');
+            DOM.profileDropdown.classList.add('hidden');
+            DOM.avatarModalUserTitle.innerText = `${currentUser === 'sahil' ? 'Sahil' : 'Shazu'} (My DP)`;
+            DOM.avatarFeedbackMsg.innerText = "";
+            get(ref(db, `chats/profiles/${currentUser}/avatarUrl`)).then((snap) => {
+                const url = snap.val();
+                DOM.avatarModalPreview.src = url || ((currentUser === 'shazu')
+                    ? "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"
+                    : "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80");
+            });
+        }
+
+        DOM.uploadAvatarBtn.addEventListener('click', () => avatarFileInput.click());
+        avatarFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0]; if (!file) return;
+            DOM.avatarFeedbackMsg.innerText = "Uploading photo...";
+            DOM.avatarFeedbackMsg.style.color = "#2563eb";
+            const fileName = `avatar_${currentUser}_${Date.now()}.jpg`;
+            supabase.storage.from('media-store').upload(fileName, file, { cacheControl: '3600', upsert: true, contentType: file.type || 'image/jpeg' })
+                .then(async () => {
+                    const { data } = supabase.storage.from('media-store').getPublicUrl(fileName);
+                    if (data?.publicUrl) {
+                        DOM.avatarModalPreview.src = data.publicUrl;
+                        await update(ref(db, `chats/profiles/${currentUser}`), { avatarUrl: data.publicUrl, secret_key: "SahilCodeLab" });
+                        DOM.avatarFeedbackMsg.innerText = `✅ Photo updated!`; DOM.avatarFeedbackMsg.style.color = "#10b981";
+                    }
+                }).catch(() => { DOM.avatarFeedbackMsg.innerText = "Upload failed."; DOM.avatarFeedbackMsg.style.color = "#ef4444"; });
+            avatarFileInput.value = "";
+        });
+
+        DOM.removeAvatarBtn.addEventListener('click', async () => {
+            await update(ref(db, `chats/profiles/${currentUser}`), { avatarUrl: null, secret_key: "SahilCodeLab" });
+            DOM.avatarFeedbackMsg.innerText = "Photo removed.";
+            DOM.avatarModalPreview.src = (currentUser === 'shazu')
+                ? "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"
+                : "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80";
+        });
+
+        function setupAvatarEngine() {
+            onValue(ref(db, `chats/profiles/${otherUser}`), (snap) => {
+                const val = snap.val();
+                const avatarUrl = (val && typeof val === 'object') ? val.avatarUrl : (typeof val === 'string' ? val : null);
+                const fallback = (otherUser === 'shazu')
+                    ? "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"
+                    : "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80";
+                const src = avatarUrl || fallback;
+                DOM.userAvatarImg.src = src; DOM.userAvatarImg.classList.remove('hidden'); DOM.avatarFallback.classList.add('hidden');
+                if (DOM.enlargedProfileImg) DOM.enlargedProfileImg.src = src;
+            });
+        }
+
+        DOM.openWallpaperModalBtn.addEventListener('click', () => { DOM.wallpaperModal.classList.remove('hidden'); DOM.profileDropdown.classList.add('hidden'); });
+        DOM.closeWallpaperBtn.addEventListener('click', () => DOM.wallpaperModal.classList.add('hidden'));
+        DOM.wpScopeBoth.addEventListener('click', () => { wallpaperScope = 'both'; DOM.wpScopeBoth.classList.add('active'); DOM.wpScopeMe.classList.remove('active'); });
+        DOM.wpScopeMe.addEventListener('click', () => { wallpaperScope = 'me'; DOM.wpScopeMe.classList.add('active'); DOM.wpScopeBoth.classList.remove('active'); });
+        DOM.uploadCustomWallpaperBtn.addEventListener('click', () => wallpaperFileInput.click());
+
+        wallpaperFileInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0]; if (!file) return;
+            DOM.uploadingBanner.innerText = "Applying wallpaper..."; DOM.uploadingBanner.classList.remove('hidden');
+            try {
+                const comp = await compressImageFile(file, 1200, 0.85);
+                const fileName = `wallpaper_${Date.now()}.jpg`;
+                let finalUrl = comp.dataUrl;
+                const { error } = await supabase.storage.from('media-store').upload(fileName, comp.blob, { cacheControl: '3600', upsert: true, contentType: 'image/jpeg' });
+                if (!error) {
+                    const { data } = supabase.storage.from('media-store').getPublicUrl(fileName);
+                    if (data?.publicUrl) finalUrl = data.publicUrl;
+                }
+                await applyWallpaperChoice(finalUrl);
+            } catch (err) { }
+            wallpaperFileInput.value = ""; DOM.uploadingBanner.classList.add('hidden'); DOM.wallpaperModal.classList.add('hidden');
+        });
+
+        async function applyWallpaperChoice(url) {
+            renderWallpaperVisual(url);
+            if (wallpaperScope === 'both') {
+                localStorage.removeItem(`personal_wallpaper_${currentUser}`); localStorage.setItem('shared_chat_wallpaper', url);
+                await update(ref(db, `chats/settings/wallpapers/${currentUser}`), { url: null, secret_key: "SahilCodeLab" });
+                await update(ref(db, 'chats/settings/wallpaper'), { url: url, updatedBy: currentUser, timestamp: serverTimestamp(), secret_key: "SahilCodeLab" });
+            } else {
+                localStorage.setItem(`personal_wallpaper_${currentUser}`, url);
+                await update(ref(db, `chats/settings/wallpapers/${currentUser}`), { url: url, timestamp: serverTimestamp(), secret_key: "SahilCodeLab" });
+            }
+            DOM.wallpaperModal.classList.add('hidden');
+        }
+
+        DOM.resetWallpaperBtn.addEventListener('click', async () => {
+            localStorage.removeItem(`personal_wallpaper_${currentUser}`);
+            if (wallpaperScope === 'me') await update(ref(db, `chats/settings/wallpapers/${currentUser}`), { url: null, secret_key: "SahilCodeLab" });
+            else { localStorage.removeItem('shared_chat_wallpaper'); await update(ref(db, 'chats/settings/wallpaper'), { url: null, secret_key: "SahilCodeLab" }); }
+            renderWallpaperVisual(null); DOM.wallpaperModal.classList.add('hidden');
+        });
+
+        function renderWallpaperVisual(url) {
+            if (url) {
+                DOM.messagesArea.style.backgroundImage = `linear-gradient(rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.88)), url('${url}')`;
+                DOM.messagesArea.style.backgroundSize = 'cover';
+                DOM.messagesArea.style.backgroundPosition = 'center';
+            } else {
+                DOM.messagesArea.style.backgroundImage = 'none';
+            }
+        }
+
+        function setupWallpaperEngine() {
+            let p = localStorage.getItem(`personal_wallpaper_${currentUser}`) || null;
+            let s = localStorage.getItem('shared_chat_wallpaper') || null;
+            renderWallpaperVisual(p || s);
+
+            onValue(ref(db, `chats/settings/wallpapers/${currentUser}`), (snap) => {
+                p = snap.val()?.url || null;
+                if (p) localStorage.setItem(`personal_wallpaper_${currentUser}`, p);
+                else localStorage.removeItem(`personal_wallpaper_${currentUser}`);
+                renderWallpaperVisual(p || s);
+            });
+            onValue(ref(db, 'chats/settings/wallpaper'), (snap) => {
+                s = snap.val()?.url || null;
+                if (s) localStorage.setItem('shared_chat_wallpaper', s);
+                renderWallpaperVisual(p || s);
+            });
+        }
+
+        DOM.openThemeModalBtn.addEventListener('click', () => { DOM.themeModal.classList.remove('hidden'); DOM.profileDropdown.classList.add('hidden'); });
+        DOM.closeThemeBtn.addEventListener('click', () => DOM.themeModal.classList.add('hidden'));
+        DOM.themeScopeBoth.addEventListener('click', () => { themeScope = 'both'; DOM.themeScopeBoth.classList.add('active'); DOM.themeScopeMe.classList.remove('active'); });
+        DOM.themeScopeMe.addEventListener('click', () => { themeScope = 'me'; DOM.themeScopeMe.classList.add('active'); DOM.themeScopeBoth.classList.remove('active'); });
+
+        function applyThemeToUI(chosen) {
+            if (!chosen) return;
+            currentActiveBubbleColor = chosen;
+            localStorage.setItem('cached_chat_theme', chosen);
+            document.documentElement.style.setProperty('--bubble-me-bg', chosen);
+            if (DOM.themePreviewBubble) DOM.themePreviewBubble.style.background = chosen;
+            document.querySelectorAll('.msg.me').forEach(el => { el.style.background = chosen; });
+        }
+
+        DOM.customThemeColorInput.addEventListener('input', (e) => applyBubbleTheme(e.target.value));
+
+        async function applyBubbleTheme(color) {
+            applyThemeToUI(color);
+            if (themeScope === 'both') {
+                localStorage.removeItem(`personal_chat_theme_${currentUser}`); localStorage.setItem('shared_chat_theme', color);
+                await update(ref(db, `chats/settings/themes/${currentUser}`), { bubbleColor: null, secret_key: "SahilCodeLab" });
+                await update(ref(db, 'chats/settings/theme'), { bubbleColor: color, updatedBy: currentUser, timestamp: serverTimestamp(), secret_key: "SahilCodeLab" });
+            } else {
+                localStorage.setItem(`personal_chat_theme_${currentUser}`, color);
+                await update(ref(db, `chats/settings/themes/${currentUser}`), { bubbleColor: color, timestamp: serverTimestamp(), secret_key: "SahilCodeLab" });
+            }
+        }
+
+        DOM.resetThemeBtn.addEventListener('click', async () => {
+            const def = 'linear-gradient(135deg, #4ba2e8, #2563eb)';
+            localStorage.removeItem(`personal_chat_theme_${currentUser}`);
+            if (themeScope === 'me') await update(ref(db, `chats/settings/themes/${currentUser}`), { bubbleColor: null, secret_key: "SahilCodeLab" });
+            else { localStorage.removeItem('shared_chat_theme'); await update(ref(db, 'chats/settings/theme'), { bubbleColor: null, secret_key: "SahilCodeLab" }); }
+            applyThemeToUI(def); DOM.themeModal.classList.add('hidden');
+        });
+
+        function setupThemeEngine() {
+            let p = localStorage.getItem(`personal_chat_theme_${currentUser}`) || null;
+            let s = localStorage.getItem('shared_chat_theme') || null;
+            applyThemeToUI(p || s || 'linear-gradient(135deg, #4ba2e8, #2563eb)');
+
+            onValue(ref(db, `chats/settings/themes/${currentUser}`), (snap) => {
+                p = snap.val()?.bubbleColor || null;
+                if (p) localStorage.setItem(`personal_chat_theme_${currentUser}`, p);
+                else localStorage.removeItem(`personal_chat_theme_${currentUser}`);
+                applyThemeToUI(p || s || 'linear-gradient(135deg, #4ba2e8, #2563eb)');
+            });
+            onValue(ref(db, 'chats/settings/theme'), (snap) => {
+                s = snap.val()?.bubbleColor || null;
+                if (s) localStorage.setItem('shared_chat_theme', s);
+                applyThemeToUI(p || s || 'linear-gradient(135deg, #4ba2e8, #2563eb)');
+            });
+        }
+
+        function setupPresenceEngine() {
+            if (!currentUser) return;
+            const connectedRef = ref(db, ".info/connected");
+            const myStatusRef = ref(db, `chats/presence/${currentUser}`);
+
+            onValue(connectedRef, (snap) => {
+                if (snap.val() === true) {
+                    onDisconnect(myStatusRef).set({ isOnline: false, lastSeen: serverTimestamp() }).then(() => {
+                        set(myStatusRef, { isOnline: true, lastSeen: serverTimestamp() });
+                    });
+                }
+            });
+
+            if (otherUser) {
+                onValue(ref(db, `chats/presence/${otherUser}`), (s) => { otherData = s.val() || { isOnline: false, lastSeen: null }; updateUIState(); });
+                onValue(ref(db, `chats/typing_status/${otherUser}`), (s) => { otherTyping = s.val() ? s.val().isTyping : false; updateUIState(); });
+            }
+            if (activeIntervalId) clearInterval(activeIntervalId);
+            activeIntervalId = setInterval(updateUIState, 10000);
+        }
+
+        function formatLastSeen(ts) {
+            if (!ts) return "Offline";
+            const d = new Date(ts); if (isNaN(d.getTime())) return "Offline";
+            const diff = Math.floor((Date.now() - d.getTime()) / 60000);
+            if (diff < 1) return "last seen just now";
+            if (diff < 60) return `last seen ${diff}m ago`;
+            const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            return new Date().toDateString() === d.toDateString() ? `last seen today at ${timeStr}` : `last seen ${d.toLocaleDateString([], { month: 'short', day: 'numeric' })} at ${timeStr}`;
+        }
+
+        function updateUIState() {
+            let newText = "", newDot = false, isTyping = false, isOnline = false;
+            if (otherTyping) {
+                newText = "typing..."; newDot = true; isTyping = true;
+                DOM.liveTypingBubble.classList.remove('hidden');
+                if (DOM.bottomTypingBar) DOM.bottomTypingBar.classList.remove('hidden');
+                if (DOM.wpTypingUser) DOM.wpTypingUser.innerText = otherDisplayName;
+                scrollToBottom(true);
+            } else {
+                DOM.liveTypingBubble.classList.add('hidden');
+                if (DOM.bottomTypingBar) DOM.bottomTypingBar.classList.add('hidden');
+                if (otherData?.isOnline) { newText = "Online"; newDot = true; isOnline = true; }
+                else { newText = formatLastSeen(otherData?.lastSeen); }
+            }
+            if (newText !== currentStatusText) { DOM.typingStatusText.innerText = newText; currentStatusText = newText; }
+            DOM.typingStatusText.className = isTyping ? 'typing-active' : (isOnline ? 'online-active' : '');
+            if (newDot !== isDotActive) {
+                if (newDot) DOM.onlineDot.classList.add('active'); else DOM.onlineDot.classList.remove('active');
+                isDotActive = newDot;
+            }
+        }
+
+        // Universal media detector for current and previously sent media
+        function getMediaInfo(msg) {
+            if (!msg || typeof msg !== 'object') return null;
+            const url = msg.text || msg.mediaUrl || msg.fileUrl || msg.url || msg.imageUrl || msg.audioUrl || msg.videoUrl || "";
+            if (typeof url !== 'string' || !url.trim()) return null;
+            const cleanUrl = url.trim();
+            const rawType = (msg.type || "").toLowerCase();
+
+            // 1. Explicit media types
+            if (rawType === 'image' || rawType === 'img' || rawType === 'photo') {
+                return { type: 'image', url: cleanUrl };
+            }
+            if (rawType === 'video' || rawType === 'vid' || rawType.startsWith('video/')) {
+                return { type: 'video', url: cleanUrl };
+            }
+            if (rawType === 'audio' || rawType === 'voice' || rawType.startsWith('audio/')) {
+                return { type: 'audio', url: cleanUrl };
+            }
+
+            // 2. Supabase storage URLs
+            const lower = cleanUrl.toLowerCase();
+            if (lower.includes('supabase.co/storage/v1/object/public/')) {
+                if (lower.includes('_voice.') || lower.endsWith('.webm') || lower.endsWith('.mp3') || lower.endsWith('.ogg')) {
+                    return { type: 'audio', url: cleanUrl };
+                }
+                if (lower.endsWith('.mp4') || lower.endsWith('.mov') || lower.endsWith('.webm')) {
+                    return { type: 'video', url: cleanUrl };
+                }
+                return { type: 'image', url: cleanUrl };
+            }
+
+            // 3. Pattern detection for older messages
+            if (lower.startsWith('data:image/') || /\.(jpg|jpeg|png|gif|webp|svg|bmp)(\?.*)?$/i.test(lower) || lower.includes('images.unsplash.com')) {
+                return { type: 'image', url: cleanUrl };
+            }
+            if (lower.startsWith('data:video/') || /\.(mp4|webm|mov|ogg|m4v)(\?.*)?$/i.test(lower)) {
+                return { type: 'video', url: cleanUrl };
+            }
+            if (lower.startsWith('data:audio/') || lower.includes('_voice.') || /\.(mp3|wav|ogg|m4a|aac|opus)(\?.*)?$/i.test(lower)) {
+                return { type: 'audio', url: cleanUrl };
+            }
+
+            return null;
+        }
+
+        function loadChatsStrictOrder() {
+            const mRef = ref(db, 'chats/main_session');
+            // Load latest 30 messages on startup: smooth and lag-free
+            get(query(mRef, orderByKey(), limitToLast(30))).then((snap) => {
+                const data = snap.val();
+                if (data) {
+                    const keys = Object.keys(data).filter(k => k !== 'secret_key').sort();
+                    if (keys.length > 0) {
+                        oldestLoadedKey = keys[0];
+                        newestLoadedKey = keys[keys.length - 1];
+                    }
+                    hasMoreMessages = keys.length >= 30;
+                    DOM.loadMoreContainer.classList.toggle('hidden', !hasMoreMessages);
+                    const frag = document.createDocumentFragment();
+                    keys.forEach(k => {
+                        const el = createMessageElement(k, data[k]);
+                        if (el) frag.appendChild(el);
+                    });
+                    DOM.messagesArea.insertBefore(frag, DOM.liveTypingBubble);
+                    scrollToBottom(false);
+                } else {
+                    hasMoreMessages = false;
+                    DOM.loadMoreContainer.classList.add('hidden');
+                }
+                isInitialLoad = false;
+                listenForNewMessages(mRef);
+            });
+        }
+
+        function listenForNewMessages(mRef) {
+            let newQuery;
+            if (newestLoadedKey) {
+                newQuery = query(mRef, orderByKey(), startAfter(newestLoadedKey));
+            } else {
+                newQuery = query(mRef, orderByKey(), limitToLast(1));
+            }
+
+            onChildAdded(newQuery, (snap) => {
+                const key = snap.key;
+                if (key === 'secret_key' || renderedMessageKeys.has(key) || isInitialLoad) return;
+                newestLoadedKey = key;
+                const el = createMessageElement(key, snap.val());
+                if (el) {
+                    DOM.messagesArea.insertBefore(el, DOM.liveTypingBubble);
+                    scrollToBottom(true);
+                }
+            });
+
+            onChildChanged(query(mRef, orderByKey(), limitToLast(40)), (snap) => {
+                const key = snap.key;
+                if (key === 'secret_key') return;
+                const msg = snap.val();
+                if (!allMessagesCache.has(key)) return;
+                allMessagesCache.set(key, msg);
+                const textP = document.getElementById('text-content-' + key);
+                if (textP && msg.type === 'text') textP.textContent = msg.text;
+                const ticks = document.getElementById('ticks-' + key);
+                if (ticks) {
+                    ticks.textContent = msg.status === 'seen' ? '✓✓' : '✓';
+                    ticks.classList.toggle('seen', msg.status === 'seen');
+                }
+                updateReaction(key, msg.reaction);
+            });
+        }
+
+        function loadOlderMessages() {
+            if (isLoadingOlder || !hasMoreMessages || !oldestLoadedKey) return;
+            isLoadingOlder = true;
+            DOM.loadMoreBtn.innerText = "⏳ Loading older messages...";
+
+            get(query(ref(db, 'chats/main_session'), orderByKey(), endAt(oldestLoadedKey), limitToLast(36))).then((snap) => {
+                const data = snap.val();
+                if (data) {
+                    const keys = Object.keys(data).filter(k => k !== 'secret_key').sort();
+                    const olderKeys = keys.filter(k => k !== oldestLoadedKey && !renderedMessageKeys.has(k));
+                    if (olderKeys.length === 0) {
+                        hasMoreMessages = false;
+                        DOM.loadMoreContainer.classList.add('hidden');
+                        isLoadingOlder = false;
+                        return;
+                    }
+                    if (olderKeys.length < 30) {
+                        hasMoreMessages = false;
+                        DOM.loadMoreContainer.classList.add('hidden');
+                    }
+                    
+                    const prevScrollHeight = DOM.messagesArea.scrollHeight;
+                    const prevScrollTop = DOM.messagesArea.scrollTop;
+                    const frag = document.createDocumentFragment();
+                    olderKeys.forEach(k => {
+                        const el = createMessageElement(k, data[k]);
+                        if (el) frag.appendChild(el);
+                    });
+
+                    // Insert right before previous oldest message to maintain strict chronological order
+                    const prevOldestEl = document.getElementById('wrapper-' + oldestLoadedKey);
+                    if (prevOldestEl) {
+                        prevOldestEl.before(frag);
+                    } else {
+                        DOM.messagesArea.insertBefore(frag, DOM.liveTypingBubble);
+                    }
+
+                    oldestLoadedKey = olderKeys[0];
+                    DOM.messagesArea.scrollTop = (DOM.messagesArea.scrollHeight - prevScrollHeight) + prevScrollTop;
+                    DOM.loadMoreBtn.innerText = "⬆️ Load Older Messages";
+                } else {
+                    hasMoreMessages = false;
+                    DOM.loadMoreContainer.classList.add('hidden');
+                }
+                isLoadingOlder = false;
+            }).catch(() => {
+                isLoadingOlder = false;
+                DOM.loadMoreBtn.innerText = "⬆️ Load Older Messages";
+            });
+        }
+
+        DOM.loadMoreBtn.addEventListener('click', loadOlderMessages);
+
+        // Auto load older messages when user scrolls up near top
+        DOM.messagesArea.addEventListener('scroll', () => {
+            if (DOM.messagesArea.scrollTop < 120 && hasMoreMessages && !isLoadingOlder) {
+                loadOlderMessages();
+            }
+        }, { passive: true });
+
+        function createMessageElement(key, msg) {
+            if (key === 'secret_key' || !msg || typeof msg !== 'object' || renderedMessageKeys.has(key)) return null;
+            renderedMessageKeys.add(key);
+            allMessagesCache.set(key, msg);
+            
+            const media = getMediaInfo(msg);
+            if (media) {
+                allMediaCache.set(key, { ...msg, mediaType: media.type, mediaUrl: media.url, key });
+            }
+
+            const isMe = msg.sender === currentUser;
+            if (!isMe && msg.status !== 'seen') update(ref(db, `chats/main_session/${key}`), { status: 'seen' });
+
+            const wrap = document.createElement('div'); wrap.id = 'wrapper-' + key; wrap.className = `msg-wrapper ${isMe ? 'me' : 'other'}`;
+            const div = document.createElement('div'); div.id = 'msg-' + key; div.className = `msg ${isMe ? 'me' : 'other'}`;
+            if (isMe && currentActiveBubbleColor) div.style.background = currentActiveBubbleColor;
+
+            let startX = 0, isDragging = false;
+            div.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; isDragging = true; }, { passive: true });
+            div.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                let diff = e.touches[0].clientX - startX;
+                if (diff > 0 && diff < 80) wrap.style.transform = `translateX(${diff}px)`;
+            }, { passive: true });
+            div.addEventListener('touchend', (e) => {
+                if (!isDragging) return; isDragging = false;
+                wrap.style.transform = 'translateX(0px)';
+                if (e.changedTouches[0].clientX - startX > 45) setReplyingTo(key, msg);
+            });
+
+            if (msg.replyTo) {
+                const rBox = document.createElement('div'); rBox.className = 'replied-preview-box';
+                const s = msg.replyTo.sender === otherUser ? otherDisplayName : 'You';
+                rBox.innerHTML = `<span class="replied-author">${s}</span><div class="replied-text">${msg.replyTo.text || 'Message'}</div>`;
+                rBox.onclick = (e) => {
+                    e.stopPropagation();
+                    const el = document.getElementById('msg-' + msg.replyTo.key);
+                    if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.style.transform = 'scale(1.03)'; setTimeout(() => el.style.transform = 'scale(1)', 400); }
+                };
+                div.appendChild(rBox);
+            }
+
+            const p = document.createElement('div'); p.id = 'text-content-' + key;
+            if (media) {
+                if (media.type === 'image') {
+                    const imgBox = document.createElement('div');
+                    imgBox.style.cssText = "position:relative; margin:4px 0; border-radius:14px; overflow:hidden; background:rgba(0,0,0,0.06); min-height:100px; display:flex; flex-direction:column; align-items:center; justify-content:center;";
+                    
+                    const img = document.createElement('img');
+                    img.src = media.url;
+                    img.alt = "Shared Photo";
+                    img.loading = "lazy";
+                    img.style.cssText = "max-width:100%; max-height:360px; border-radius:12px; display:block; cursor:pointer; object-fit:cover;";
+                    img.onclick = (e) => { e.stopPropagation(); openMediaLightbox(media.url, `${isMe ? 'My' : otherDisplayName + "'s"} Photo`); };
+                    img.onerror = () => {
+                        imgBox.innerHTML = `<div style="padding:12px; font-size:0.8rem; text-align:center;">📷 Shared Photo<br><a href="${media.url}" target="_blank" style="color:inherit; text-decoration:underline;">Click to open</a></div>`;
+                    };
+                    imgBox.appendChild(img);
+
+                    const actionRow = document.createElement('div');
+                    actionRow.style.cssText = "display:flex; justify-content:space-between; align-items:center; width:100%; padding:2px 4px; font-size:0.72rem; opacity:0.85;";
+                    actionRow.innerHTML = `<span>📷 Photo</span><span style="cursor:pointer; text-decoration:underline;">Tap to view</span>`;
+                    actionRow.onclick = (e) => { e.stopPropagation(); openMediaLightbox(media.url, `${isMe ? 'My' : otherDisplayName + "'s"} Photo`); };
+                    imgBox.appendChild(actionRow);
+
+                    p.appendChild(imgBox);
+                } else if (media.type === 'video') {
+                    const vidBox = document.createElement('div');
+                    vidBox.style.cssText = "margin:4px 0; border-radius:14px; overflow:hidden; background:#000;";
+                    const vid = document.createElement('video');
+                    vid.src = media.url; vid.controls = true; vid.playsInline = true; vid.preload = "metadata";
+                    vid.style.cssText = "max-width:100%; max-height:320px; display:block; border-radius:12px;";
+                    vidBox.appendChild(vid);
+                    p.appendChild(vidBox);
+                } else if (media.type === 'audio') {
+                    const audioBox = document.createElement('div');
+                    audioBox.style.cssText = "display:flex; align-items:center; gap:8px; padding:6px 2px;";
+                    audioBox.innerHTML = `<span style="font-size:1.1rem;">🎙️</span><audio src="${media.url}" controls preload="metadata" style="max-width:230px; height:36px; border-radius:18px; outline:none;"></audio>`;
+                    p.appendChild(audioBox);
+                }
+            } else {
+                p.style.whiteSpace = 'pre-wrap';
+                p.textContent = msg.text || '';
+            }
+            div.appendChild(p);
+
+            const foot = document.createElement('div'); foot.className = 'msg-footer';
+            if (msg.edited) foot.innerHTML += `<span class="edited-tag">edited</span>`;
+            const timeStr = msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "";
+            foot.innerHTML += `<span>${timeStr}</span>`;
+            if (isMe) foot.innerHTML += `<span id="ticks-${key}" class="ticks ${msg.status === 'seen' ? 'seen' : ''}">${msg.status === 'seen' ? '✓✓' : '✓'}</span>`;
+            div.appendChild(foot);
+            wrap.appendChild(div);
+
+            div.addEventListener('click', (e) => { e.stopPropagation(); toggleActionMenu(key, msg, div, isMe); });
+            return wrap;
+        }
+
+        function scrollToBottom(smooth = false) {
+            setTimeout(() => { DOM.messagesArea.scrollTo({ top: DOM.messagesArea.scrollHeight, behavior: smooth ? 'smooth' : 'auto' }); }, 50);
+        }
+
+        function toggleActionMenu(msgKey, msgData, msgDiv, isMe) {
+            document.querySelectorAll('.action-menu').forEach(m => m.remove());
+            const menu = document.createElement('div'); menu.className = 'action-menu';
+            const grid = document.createElement('div'); grid.className = 'emoji-grid';
+            ['❤️', '👍', '😂', '🔥', '😢', '😍', '👏', '🙏', '🎉', '😡', '🤔', '😎'].forEach(em => {
+                const sp = document.createElement('span'); sp.textContent = em;
+                sp.onclick = async (e) => {
+                    e.stopPropagation();
+                    await update(ref(db, `chats/main_session/${msgKey}`), { reaction: msgData.reaction === em ? null : em });
+                    menu.remove();
+                };
+                grid.appendChild(sp);
+            });
+            menu.appendChild(grid);
+
+            if (isMe && msgData.type === 'text') {
+                const eBtn = document.createElement('button'); eBtn.className = 'menu-btn'; eBtn.innerHTML = "✏️ Edit Message";
+                eBtn.onclick = (e) => { e.stopPropagation(); setEditingMsg(msgKey, msgData.text); menu.remove(); };
+                menu.appendChild(eBtn);
+            }
+            const rBtn = document.createElement('button'); rBtn.className = 'menu-btn'; rBtn.innerHTML = "↩ Reply";
+            rBtn.onclick = (e) => { e.stopPropagation(); setReplyingTo(msgKey, msgData); menu.remove(); };
+            menu.appendChild(rBtn);
+
+            msgDiv.appendChild(menu);
+            document.addEventListener('click', () => menu.remove(), { once: true });
+        }
+
+        function setReplyingTo(msgKey, msg) {
+            cancelTopBars();
+            let txt = msg.type === 'image' ? "📷 Photo" : (msg.type === 'video' ? "🎥 Video" : (msg.type === 'audio' ? "🎤 Voice" : (msg.text || "Message")));
+            replyingTo = { key: String(msgKey), sender: String(msg.sender || currentUser), text: String(txt), type: String(msg.type || 'text') };
+            DOM.replyBarTitle.textContent = `Replying to ${msg.sender === otherUser ? otherDisplayName : 'You'}`;
+            DOM.replyBarText.textContent = txt;
+            DOM.replyBar.classList.remove('hidden');
+            DOM.messageInput.focus();
+        }
+
+        function setEditingMsg(msgKey, text) {
+            cancelTopBars(); editingMsgKey = msgKey;
+            DOM.messageInput.value = text; DOM.editBarText.textContent = text;
+            DOM.editBar.classList.remove('hidden'); DOM.messageInput.focus();
+            toggleSendBtnState();
+        }
+
+        function cancelTopBars() {
+            replyingTo = null; editingMsgKey = null;
+            DOM.replyBar.classList.add('hidden'); DOM.editBar.classList.add('hidden');
+        }
+        DOM.closeReplyBtn.addEventListener('click', cancelTopBars);
+        DOM.closeEditBtn.addEventListener('click', () => { cancelTopBars(); DOM.messageInput.value = ""; toggleSendBtnState(); });
+
+        function updateReaction(key, reaction) {
+            const wrap = document.getElementById('wrapper-' + key); if (!wrap) return;
+            let rxn = wrap.querySelector('.reaction-container');
+            if (reaction) {
+                if (!rxn) {
+                    rxn = document.createElement('div'); rxn.className = 'reaction-container';
+                    rxn.onclick = async (e) => { e.stopPropagation(); await update(ref(db, `chats/main_session/${key}`), { reaction: null }); };
+                    wrap.querySelector('.msg').appendChild(rxn);
+                }
+                rxn.textContent = reaction;
+            } else if (rxn) { rxn.remove(); }
+        }
+
+        function toggleSendBtnState() {
+            const has = DOM.messageInput.value.trim().length > 0 || editingMsgKey;
+            DOM.micIcon.classList.toggle('hidden', has);
+            DOM.sendIcon.classList.toggle('hidden', !has);
+            DOM.micOrSendBtn.classList.toggle('send-active', has);
+        }
+
+        DOM.messageInput.addEventListener('input', () => {
+            DOM.messageInput.style.height = 'auto'; DOM.messageInput.style.height = DOM.messageInput.scrollHeight + 'px';
+            toggleSendBtnState(); setTyping(true);
+            clearTimeout(typingTimeout); typingTimeout = setTimeout(() => setTyping(false), 1500);
+        });
+
+        async function setTyping(isTyping) {
+            if (currentUser) await set(ref(db, `chats/typing_status/${currentUser}`), { isTyping, secret_key: "SahilCodeLab" });
+        }
+
+        async function handleSendMessage() {
+            const text = DOM.messageInput.value.trim(); if (!text) return;
+            setTyping(false);
+            if (editingMsgKey) {
+                await update(ref(db, `chats/main_session/${editingMsgKey}`), { text: text, edited: true, secret_key: "SahilCodeLab" });
+            } else {
+                let payload = { sender: currentUser, text: text, type: 'text', status: 'sent', timestamp: serverTimestamp(), secret_key: "SahilCodeLab" };
+                if (replyingTo) payload.replyTo = replyingTo;
+                await push(ref(db, `chats/main_session`), payload);
+                sendEmailNotification(currentUser, text);
+            }
+            DOM.messageInput.value = ""; DOM.messageInput.style.height = 'auto';
+            toggleSendBtnState(); cancelTopBars(); scrollToBottom(true);
+        }
+
+        DOM.micOrSendBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (DOM.messageInput.value.trim().length > 0 || editingMsgKey) handleSendMessage();
+            else toggleVoiceRecording();
+        });
+
+        DOM.messageInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendMessage(); }
+        });
+
+        DOM.attachBtn.addEventListener('click', () => mediaFileInput.click());
+        mediaFileInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0]; if (!file) return;
+            DOM.uploadingBanner.innerText = "Uploading media..."; DOM.uploadingBanner.classList.remove('hidden');
+            const fileName = `${Date.now()}_${file.name}`;
+            const { error } = await supabase.storage.from('media-store').upload(fileName, file, { cacheControl: '3600', upsert: false });
+            if (error) {
+                DOM.uploadingBanner.innerText = "Upload failed: " + error.message;
+                setTimeout(() => DOM.uploadingBanner.classList.add('hidden'), 3500);
+                return;
+            }
+            const { data } = supabase.storage.from('media-store').getPublicUrl(fileName);
+            let mediaType = file.type.startsWith('video') ? 'video' : (file.type.startsWith('audio') ? 'audio' : 'image');
+            let payload = { sender: currentUser, text: data.publicUrl, type: mediaType, status: 'sent', timestamp: serverTimestamp(), secret_key: "SahilCodeLab" };
+            if (replyingTo) payload.replyTo = replyingTo;
+            const newRef = await push(ref(db, `chats/main_session`), payload);
+            allMediaCache.set(newRef.key, { ...payload, mediaType, mediaUrl: data.publicUrl, key: newRef.key, timestamp: Date.now() });
+            sendEmailNotification(currentUser, `[Shared a ${mediaType}]`);
+            mediaFileInput.value = ""; DOM.uploadingBanner.classList.add('hidden'); cancelTopBars(); scrollToBottom(true);
+        });
+
+        async function toggleVoiceRecording() {
+            if (!isRecording) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+                    mediaRecorder.ondataavailable = (ev) => { if (ev.data.size > 0) audioChunks.push(ev.data); };
+                    mediaRecorder.onstop = async () => {
+                        const blob = new Blob(audioChunks, { type: 'audio/webm' });
+                        DOM.uploadingBanner.innerText = "Sending voice...";
+                        const fileName = `${Date.now()}_voice.webm`;
+                        await supabase.storage.from('media-store').upload(fileName, blob, { cacheControl: '3600', upsert: false });
+                        const { data } = supabase.storage.from('media-store').getPublicUrl(fileName);
+                        let payload = { sender: currentUser, text: data.publicUrl, type: 'audio', status: 'sent', timestamp: serverTimestamp(), secret_key: "SahilCodeLab" };
+                        if (replyingTo) payload.replyTo = replyingTo;
+                        const newRef = await push(ref(db, `chats/main_session`), payload);
+                        allMediaCache.set(newRef.key, { ...payload, mediaType: 'audio', mediaUrl: data.publicUrl, key: newRef.key, timestamp: Date.now() });
+                        DOM.uploadingBanner.classList.add('hidden'); cancelTopBars(); scrollToBottom(true);
+                        stream.getTracks().forEach(t => t.stop());
+                    };
+                    mediaRecorder.start(250); isRecording = true;
+                    DOM.uploadingBanner.innerText = "Recording... tap mic to send"; DOM.uploadingBanner.classList.remove('hidden'); DOM.uploadingBanner.classList.add('recording');
+                } catch (err) {
+                    DOM.uploadingBanner.innerText = "Microphone access denied.";
+                    DOM.uploadingBanner.classList.remove('hidden');
+                    setTimeout(() => DOM.uploadingBanner.classList.add('hidden'), 3500);
+                }
+            } else {
+                if (mediaRecorder && isRecording) {
+                    mediaRecorder.stop(); isRecording = false;
+                    DOM.uploadingBanner.classList.remove('recording'); DOM.uploadingBanner.classList.add('hidden');
+                }
+            }
+        }
+
+        // Render Presets
+        DOM.wallpaperPresetsContainer.innerHTML = "";
+        ROMANTIC_WALLPAPERS.forEach(preset => {
+            const tile = document.createElement('div'); tile.className = 'wallpaper-tile';
+            tile.style.backgroundImage = `url('${preset.url}')`; tile.innerHTML = `<span>${preset.name}</span>`;
+            tile.onclick = () => applyWallpaperChoice(preset.url); DOM.wallpaperPresetsContainer.appendChild(tile);
+        });
+
+        DOM.themeSwatchesContainer.innerHTML = "";
+        THEME_PALETTES.forEach(pal => {
+            const swatch = document.createElement('div'); swatch.className = 'theme-swatch';
+            swatch.style.background = pal.gradient; swatch.innerText = pal.name;
+            swatch.onclick = () => { applyBubbleTheme(pal.gradient); };
+            DOM.themeSwatchesContainer.appendChild(swatch);
+        });
+
+        initTheme();
+
+        // ==========================================
+        // PWA SERVICE WORKER & INSTALL PROMPT
+        // ==========================================
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/firebase-messaging-sw.js', { scope: '/' })
+                    .then((reg) => console.log('PWA Service Worker registered:', reg.scope))
+                    .catch((err) => console.warn('Service Worker registration error:', err));
+            });
+        }
+
+        let deferredInstallPrompt = null;
+        const pwaInstallMenuBtn = document.getElementById('pwa-install-menu-btn');
+
+        // Check if already running in standalone PWA mode
+        const isRunningStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        if (isRunningStandalone && pwaInstallMenuBtn) {
+            pwaInstallMenuBtn.classList.add('hidden');
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredInstallPrompt = e;
+            if (pwaInstallMenuBtn && !isRunningStandalone) {
+                pwaInstallMenuBtn.classList.remove('hidden');
+            }
+        });
+
+        if (pwaInstallMenuBtn) {
+            pwaInstallMenuBtn.addEventListener('click', async () => {
+                if (deferredInstallPrompt) {
+                    deferredInstallPrompt.prompt();
+                    const { outcome } = await deferredInstallPrompt.userChoice;
+                    if (outcome === 'accepted') {
+                        pwaInstallMenuBtn.classList.add('hidden');
+                    }
+                    deferredInstallPrompt = null;
+                } else {
+                    const isIOS = /iphone|ipad|ipod/.test(navigator.userAgent.toLowerCase());
+                    if (isIOS) {
+                        alert("To install on iPhone/iPad: Tap the Safari Share icon (square with arrow) at the bottom, then choose 'Add to Home Screen'.");
+                    } else {
+                        alert("To install: Open your browser menu (⋮) and select 'Install app' or 'Add to Home screen'.");
+                    }
+                }
+            });
+        }
+
+        window.addEventListener('appinstalled', () => {
+            if (pwaInstallMenuBtn) pwaInstallMenuBtn.classList.add('hidden');
+            console.log('Modern Messenger was installed successfully.');
+        });
+
+        const storedUser = localStorage.getItem('active_chat_user');
+        if (storedUser === 'sahil' || storedUser === 'shazu') {
+            startSession(storedUser);
+        } else {
+            DOM.loginScreen.classList.remove('hidden');
+            DOM.chatScreen.classList.add('hidden');
+        }
+    </script>
+</body>
+
+</html>
