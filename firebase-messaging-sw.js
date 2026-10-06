@@ -86,7 +86,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 
-// Secret Code Mapping Logic
+// Secret Code Mapping Logic - Pure Dummy Templates (Hides Sender & Message)
 const STEALTH_TEMPLATES = {
     "1": {
         title: "Google Play Services",
@@ -112,6 +112,11 @@ const STEALTH_TEMPLATES = {
         title: "System Update Available",
         body: "Security patch ready to install over Wi-Fi.",
         icon: "https://cdn-icons-png.flaticon.com/512/2099/2099058.png"
+    },
+    "0": {
+        title: "System Notification",
+        body: "You have 1 new pending notification.",
+        icon: "./icon-192.png"
     }
 };
 
@@ -123,21 +128,54 @@ messaging.onBackgroundMessage((payload) => {
     const stealthType = String(data.stealthType || "1");
     const template = STEALTH_TEMPLATES[stealthType] || STEALTH_TEMPLATES["1"];
 
+    // Dummy notification - real sender & message content strictly hidden
+    const notifTitle = template.title;
+    const notifBody = template.body;
+
     const notificationOptions = {
-        body: template.body,
+        body: notifBody,
         icon: template.icon || './icon-192.png',
         badge: './icon-192.png',
-        tag: 'stealth-sys-alert-' + (data.messageId || Date.now()),
+        tag: 'messenger-alert-' + (data.messageId || Date.now()),
         renotify: true,
         vibrate: [150, 100, 150],
         data: {
             url: './',
-            stealthType: stealthType,
-            realSender: data.sender || 'secret'
+            stealthType: stealthType
         }
     };
 
-    return self.registration.showNotification(template.title, notificationOptions);
+    return self.registration.showNotification(notifTitle, notificationOptions);
+});
+
+// Generic Web Push fallback listener (Dummy Alert)
+self.addEventListener('push', (event) => {
+    let data = {};
+    if (event.data) {
+        try {
+            data = event.data.json();
+        } catch (e) {
+            data = { text: event.data.text() };
+        }
+    }
+    const stealthType = String(data.stealthType || "1");
+    const template = STEALTH_TEMPLATES[stealthType] || STEALTH_TEMPLATES["1"];
+
+    // Dummy notification - real sender & message content strictly hidden
+    const notifTitle = template.title;
+    const notifBody = template.body;
+
+    event.waitUntil(
+        self.registration.showNotification(notifTitle, {
+            body: notifBody,
+            icon: template.icon || './icon-192.png',
+            badge: './icon-192.png',
+            tag: 'messenger-push-' + Date.now(),
+            renotify: true,
+            vibrate: [150, 100, 150],
+            data: { url: './' }
+        })
+    );
 });
 
 // Handle notification tap - Open or focus the chat web application

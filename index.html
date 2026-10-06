@@ -396,6 +396,28 @@
                 </div>
             </div>
 
+            <!-- Permission Banner -->
+            <div id="notif-permission-banner" class="hidden" style="background: linear-gradient(135deg, #eff6ff, #dbeafe); border-bottom: 1px solid #bfdbfe; padding: 9px 14px; display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 0.82rem; z-index: 15; flex-shrink: 0;">
+                <div style="display: flex; align-items: center; gap: 8px; color: #1e40af; font-weight: 500; min-width: 0;">
+                    <span style="font-size: 1.1rem; flex-shrink: 0;">🔔</span>
+                    <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Turn on notifications to get instant alerts</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+                    <button id="banner-enable-notif-btn" type="button" style="background: #2563eb; color: #ffffff; border: none; padding: 5px 12px; border-radius: 8px; font-size: 0.78rem; font-weight: 600; cursor: pointer;">Enable</button>
+                    <button id="banner-dismiss-notif-btn" type="button" style="background: transparent; border: none; color: #64748b; font-size: 1.1rem; cursor: pointer; padding: 0 4px; line-height: 1;">&times;</button>
+                </div>
+            </div>
+
+            <!-- In-App Floating Toast Notification -->
+            <div id="in-app-toast" class="hidden" style="position: absolute; top: 62px; left: 14px; right: 14px; background: rgba(15, 23, 42, 0.95); color: #ffffff; backdrop-filter: blur(8px); padding: 10px 14px; border-radius: 14px; display: flex; align-items: center; gap: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.25); z-index: 100; cursor: pointer; border: 1px solid rgba(255,255,255,0.12); transition: all 0.25s ease;">
+                <div style="width: 34px; height: 34px; border-radius: 50%; background: #2563eb; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; flex-shrink: 0;" id="in-app-toast-avatar">💬</div>
+                <div style="flex: 1; overflow: hidden; min-width: 0;">
+                    <div id="in-app-toast-sender" style="font-weight: 600; font-size: 0.82rem; color: #60a5fa;">Shazu</div>
+                    <div id="in-app-toast-text" style="font-size: 0.78rem; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">New message</div>
+                </div>
+                <button id="in-app-toast-close" style="background: transparent; border: none; color: #94a3b8; font-size: 1.1rem; cursor: pointer; padding: 2px;">&times;</button>
+            </div>
+
             <!-- Profile Dropdown Menu -->
             <div id="profile-dropdown" class="profile-dropdown hidden">
                 <button id="open-wallpaper-modal-btn">
@@ -440,7 +462,7 @@
                         <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
                         <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
                     </svg>
-                    <span>Stealth Notifications 🔔</span>
+                    <span>Notifications & Alerts 🔔</span>
                 </button>
                 <button id="pwa-install-menu-btn">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -642,44 +664,46 @@
                 </div>
             </div>
 
-            <!-- Stealth Notification Settings Modal -->
+            <!-- Notification Settings Modal -->
             <div id="notification-modal" class="modal-overlay hidden">
                 <div class="modal-content" style="max-width: 440px;">
                     <div class="modal-header">
-                        <h3>Stealth Disguised Alerts 🔔</h3>
+                        <h3>Notification Settings 🔔</h3>
                         <button id="close-notification-modal-btn" class="close-top-bar">&times;</button>
                     </div>
-                    <div style="display: flex; flex-direction: column; gap: 14px; padding-top: 6px;">
+                    <div style="display: flex; flex-direction: column; gap: 14px; padding: 18px 20px;">
                         <p style="font-size: 0.84rem; color: #64748b; margin: 0; line-height: 1.45;">
-                            When you receive a message, your phone will show a secret disguised system alert (like Google Play or Storage) so no one suspects anything!
+                            When you receive a message, the sender name and real message content are 100% hidden. A disguised dummy message is displayed instead!
                         </p>
                         
                         <div style="background: rgba(37, 99, 235, 0.06); border: 1px solid rgba(37, 99, 235, 0.2); border-radius: 12px; padding: 12px; display: flex; justify-content: space-between; align-items: center;">
                             <div>
-                                <div style="font-weight: 600; font-size: 0.88rem;">Push Permission</div>
+                                <div style="font-weight: 600; font-size: 0.88rem;">Push / Browser Permission</div>
                                 <div id="notif-permission-status" style="font-size: 0.78rem; color: #64748b;">Checking...</div>
                             </div>
                             <button id="request-notif-btn" type="button" style="padding: 7px 15px; border-radius: 9px; background: #2563eb; color: #fff; font-size: 0.82rem; font-weight: 600; border: none; cursor: pointer;">Enable</button>
                         </div>
 
                         <div>
-                            <label style="font-size: 0.82rem; font-weight: 600; color: #475569; display: block; margin-bottom: 6px;">Choose Disguise Template:</label>
+                            <label style="font-size: 0.82rem; font-weight: 600; color: #475569; display: block; margin-bottom: 6px;">Choose Dummy Message Template:</label>
                             <select id="stealth-template-select" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 0.86rem; background: #fff; color: #1e293b; outline: none;">
-                                <option value="1">Google Play: 3 apps have pending updates</option>
-                                <option value="2">Storage Alert: Device storage almost full</option>
-                                <option value="3">Weather Alert: Partly cloudy with evening showers</option>
-                                <option value="4">Calendar: Upcoming reminder check schedule</option>
-                                <option value="5">System Update: Security patch ready to install</option>
+                                <option value="1">🕵️ Google Play: 3 apps have pending updates</option>
+                                <option value="2">🕵️ Storage Alert: Device storage almost full</option>
+                                <option value="3">🕵️ Weather Alert: Partly cloudy with evening showers</option>
+                                <option value="4">🕵️ Calendar: Upcoming reminder check schedule</option>
+                                <option value="5">🕵️ System Update: Security patch ready to install</option>
+                                <option value="0">🔒 System Notification: You have 1 new pending notification</option>
                             </select>
                         </div>
 
                         <button id="test-stealth-notif-btn" type="button" style="width: 100%; padding: 11px; border-radius: 10px; background: #10b981; color: #fff; border: none; font-weight: 600; font-size: 0.86rem; cursor: pointer;">
-                            🧪 Test Stealth Alert On This Phone
+                            🧪 Test Notification & Sound Now
                         </button>
+                        <div id="test-notif-feedback" style="font-size: 0.78rem; color: #10b981; font-weight: 600; min-height: 16px; text-align: center;"></div>
 
                         <div style="background: rgba(100, 116, 139, 0.08); padding: 10px; border-radius: 10px;">
-                            <div style="font-size: 0.76rem; font-weight: 600; color: #475569; margin-bottom: 3px;">FCM Device Push Token:</div>
-                            <div id="fcm-token-display" style="font-size: 0.72rem; color: #64748b; word-break: break-all; max-height: 48px; overflow-y: auto; font-family: monospace;">Loading token...</div>
+                            <div style="font-size: 0.76rem; font-weight: 600; color: #475569; margin-bottom: 3px;">Push & Device Status:</div>
+                            <div id="fcm-token-display" style="font-size: 0.72rem; color: #64748b; word-break: break-all; max-height: 48px; overflow-y: auto; font-family: monospace;">Local & ServiceWorker alerts ready</div>
                         </div>
                     </div>
                 </div>
@@ -716,7 +740,7 @@
         import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyAii2t4g5DuJ7-BLm8v9-syyrtOmyWK8_8",
+            apiKey: (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_FIREBASE_API_KEY) || "AIzaSyAii2t4g5DuJ7-BLm8v9-syyrtOmyWK8_8",
             authDomain: "sr-login-cef1c.firebaseapp.com",
             databaseURL: "https://sr-login-cef1c-default-rtdb.firebaseio.com",
             projectId: "sr-login-cef1c",
@@ -727,8 +751,8 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        const SUPABASE_URL = "https://mogirffjqlbciwgyiqkx.supabase.co";
-        const SUPABASE_ANON_KEY = "sb_publishable_fcn77s414JmfsLxQ95PBbw_O5tnt3Wy";
+        const SUPABASE_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_SUPABASE_URL) || "https://mogirffjqlbciwgyiqkx.supabase.co";
+        const SUPABASE_ANON_KEY = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_SUPABASE_ANON_KEY) || "sb_publishable_fcn77s414JmfsLxQ95PBbw_O5tnt3Wy";
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         const DOM = {
@@ -833,7 +857,17 @@
             requestNotifBtn: document.getElementById('request-notif-btn'),
             stealthTemplateSelect: document.getElementById('stealth-template-select'),
             testStealthNotifBtn: document.getElementById('test-stealth-notif-btn'),
-            fcmTokenDisplay: document.getElementById('fcm-token-display')
+            testNotifFeedback: document.getElementById('test-notif-feedback'),
+            fcmTokenDisplay: document.getElementById('fcm-token-display'),
+
+            notifPermissionBanner: document.getElementById('notif-permission-banner'),
+            bannerEnableNotifBtn: document.getElementById('banner-enable-notif-btn'),
+            bannerDismissNotifBtn: document.getElementById('banner-dismiss-notif-btn'),
+            inAppToast: document.getElementById('in-app-toast'),
+            inAppToastAvatar: document.getElementById('in-app-toast-avatar'),
+            inAppToastSender: document.getElementById('in-app-toast-sender'),
+            inAppToastText: document.getElementById('in-app-toast-text'),
+            inAppToastClose: document.getElementById('in-app-toast-close')
         };
 
         let currentUser = "";
@@ -933,8 +967,80 @@
         }
 
         // ==========================================
-        // STEALTH NOTIFICATION ENGINE (FCM + LOCAL)
+        // NOTIFICATION & AUDIO ALERT ENGINE
         // ==========================================
+        function playMessageNotificationSound() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                if (ctx.state === 'suspended') {
+                    ctx.resume();
+                }
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+
+                // Two-tone friendly chime: 659Hz (E5) -> 880Hz (A5)
+                osc.frequency.setValueAtTime(659.25, ctx.currentTime);
+                osc.frequency.setValueAtTime(880.00, ctx.currentTime + 0.1);
+
+                gain.gain.setValueAtTime(0, ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.28, ctx.currentTime + 0.02);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.42);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(ctx.currentTime);
+                osc.stop(ctx.currentTime + 0.42);
+            } catch (e) {
+                // Audio autoplay might be delayed before interaction
+            }
+        }
+
+        let originalDocTitle = "Modern Messenger";
+        let titleFlashTimer = null;
+        function flashDocumentTitle() {
+            if (!document.hidden && document.hasFocus()) return;
+            if (titleFlashTimer) clearInterval(titleFlashTimer);
+            let toggle = false;
+            titleFlashTimer = setInterval(() => {
+                if (!document.hidden && document.hasFocus()) {
+                    clearInterval(titleFlashTimer);
+                    titleFlashTimer = null;
+                    document.title = originalDocTitle;
+                    return;
+                }
+                document.title = toggle ? originalDocTitle : `🔔 (1) New Notification`;
+                toggle = !toggle;
+            }, 1000);
+        }
+        window.addEventListener('focus', () => {
+            if (titleFlashTimer) {
+                clearInterval(titleFlashTimer);
+                titleFlashTimer = null;
+                document.title = originalDocTitle;
+            }
+        });
+
+        let inAppToastTimer = null;
+        function showInAppToastNotification() {
+            if (!DOM.inAppToast) return;
+            const stealthType = localStorage.getItem('stealth_type_preference') || "1";
+            const template = STEALTH_TEMPLATES[stealthType] || STEALTH_TEMPLATES["1"];
+
+            // Pure dummy notification - real sender identity and chat content 100% hidden
+            if (DOM.inAppToastSender) DOM.inAppToastSender.textContent = template.title;
+            if (DOM.inAppToastText) DOM.inAppToastText.textContent = template.body;
+            if (DOM.inAppToastAvatar) DOM.inAppToastAvatar.textContent = "🔔";
+
+            DOM.inAppToast.classList.remove('hidden');
+            if (inAppToastTimer) clearTimeout(inAppToastTimer);
+            inAppToastTimer = setTimeout(() => {
+                if (DOM.inAppToast) DOM.inAppToast.classList.add('hidden');
+            }, 4500);
+        }
+
         const STEALTH_TEMPLATES = {
             "1": {
                 title: "Google Play Services",
@@ -960,40 +1066,60 @@
                 title: "System Update Available",
                 body: "Security patch ready to install over Wi-Fi.",
                 icon: "https://cdn-icons-png.flaticon.com/512/2099/2099058.png"
+            },
+            "0": {
+                title: "System Notification",
+                body: "You have 1 new pending notification.",
+                icon: "./icon-192.png"
             }
         };
 
         let myFCMToken = null;
 
         function updateNotifUI() {
-            if (!DOM.notifPermissionStatus) return;
             if (!('Notification' in window)) {
-                DOM.notifPermissionStatus.textContent = "Not supported in this browser";
-                DOM.notifPermissionStatus.style.color = "#ef4444";
+                if (DOM.notifPermissionStatus) {
+                    DOM.notifPermissionStatus.textContent = "Not supported in this browser";
+                    DOM.notifPermissionStatus.style.color = "#ef4444";
+                }
                 if (DOM.requestNotifBtn) DOM.requestNotifBtn.style.display = "none";
+                if (DOM.notifPermissionBanner) DOM.notifPermissionBanner.classList.add('hidden');
                 return;
             }
             const perm = Notification.permission;
             if (perm === 'granted') {
-                DOM.notifPermissionStatus.textContent = "✅ Active & Allowed";
-                DOM.notifPermissionStatus.style.color = "#10b981";
+                if (DOM.notifPermissionStatus) {
+                    DOM.notifPermissionStatus.textContent = "✅ Active & Allowed";
+                    DOM.notifPermissionStatus.style.color = "#10b981";
+                }
                 if (DOM.requestNotifBtn) {
                     DOM.requestNotifBtn.textContent = "Granted";
                     DOM.requestNotifBtn.style.background = "#10b981";
                     DOM.requestNotifBtn.disabled = true;
                 }
+                if (DOM.notifPermissionBanner) DOM.notifPermissionBanner.classList.add('hidden');
             } else if (perm === 'denied') {
-                DOM.notifPermissionStatus.textContent = "❌ Blocked in phone settings";
-                DOM.notifPermissionStatus.style.color = "#ef4444";
-                if (DOM.requestNotifBtn) DOM.requestNotifBtn.textContent = "Blocked";
+                if (DOM.notifPermissionStatus) {
+                    DOM.notifPermissionStatus.textContent = "❌ Blocked in phone settings";
+                    DOM.notifPermissionStatus.style.color = "#ef4444";
+                }
+                if (DOM.requestNotifBtn) {
+                    DOM.requestNotifBtn.textContent = "Blocked";
+                    DOM.requestNotifBtn.style.background = "#6b7280";
+                    DOM.requestNotifBtn.disabled = true;
+                }
+                if (DOM.notifPermissionBanner) DOM.notifPermissionBanner.classList.add('hidden');
             } else {
-                DOM.notifPermissionStatus.textContent = "⚠️ Not enabled yet";
-                DOM.notifPermissionStatus.style.color = "#f59e0b";
+                if (DOM.notifPermissionStatus) {
+                    DOM.notifPermissionStatus.textContent = "⚠️ Not enabled yet";
+                    DOM.notifPermissionStatus.style.color = "#f59e0b";
+                }
                 if (DOM.requestNotifBtn) {
                     DOM.requestNotifBtn.textContent = "Enable";
                     DOM.requestNotifBtn.style.background = "#2563eb";
                     DOM.requestNotifBtn.disabled = false;
                 }
+                if (DOM.notifPermissionBanner) DOM.notifPermissionBanner.classList.remove('hidden');
             }
         }
 
@@ -1002,6 +1128,8 @@
             if (!('Notification' in window)) return;
             if (Notification.permission === 'granted') {
                 await registerFCMToken();
+            } else if (Notification.permission === 'default') {
+                if (DOM.notifPermissionBanner) DOM.notifPermissionBanner.classList.remove('hidden');
             }
         }
 
@@ -1011,9 +1139,16 @@
                 return;
             }
             try {
-                const res = await Notification.requestPermission();
+                let res;
+                if (Notification.requestPermission.length === 0) {
+                    res = await Notification.requestPermission();
+                } else {
+                    res = await new Promise((resolve) => Notification.requestPermission(resolve));
+                }
                 updateNotifUI();
                 if (res === 'granted') {
+                    if (DOM.notifPermissionBanner) DOM.notifPermissionBanner.classList.add('hidden');
+                    playMessageNotificationSound();
                     await registerFCMToken();
                 }
             } catch (err) {
@@ -1024,7 +1159,13 @@
         async function registerFCMToken() {
             if (!('serviceWorker' in navigator)) return;
             try {
-                const reg = await navigator.serviceWorker.ready;
+                const reg = await Promise.race([
+                    navigator.serviceWorker.ready,
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 1000))
+                ]).catch(async () => await navigator.serviceWorker.getRegistration());
+
+                if (!reg) return;
+
                 const { getMessaging, getToken } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js");
                 const messaging = getMessaging(app);
                 const token = await getToken(messaging, {
@@ -1046,46 +1187,81 @@
                         });
                         await set(ref(db, `chats/users/${currentUser}/fcmToken`), token);
                     }
+                } else {
+                    if (DOM.fcmTokenDisplay) DOM.fcmTokenDisplay.textContent = "Local & ServiceWorker alerts active";
                 }
             } catch (err) {
                 console.log("Push token error:", err);
+                if (DOM.fcmTokenDisplay) DOM.fcmTokenDisplay.textContent = "Local & ServiceWorker alerts active";
             }
         }
 
         async function triggerStealthNotification(msg) {
+            // 1. Play chime sound & trigger vibration
+            playMessageNotificationSound();
+            if ('vibrate' in navigator) {
+                try { navigator.vibrate([150, 80, 150]); } catch (e) {}
+            }
+
+            // 2. Flash page title with dummy notification
+            flashDocumentTitle();
+
+            // 3. If window is currently open and focused, show in-app banner toast with dummy text
+            const isWindowFocused = !document.hidden && document.hasFocus();
+            if (isWindowFocused) {
+                showInAppToastNotification();
+                return;
+            }
+
+            // 4. If window is not focused or in background, trigger system notification with 100% dummy message
             if (!('Notification' in window) || Notification.permission !== 'granted') return;
-            // Only trigger if window/tab is hidden or not actively focused
-            if (!document.hidden && document.hasFocus()) return;
 
             const stealthType = localStorage.getItem('stealth_type_preference') || "1";
             const template = STEALTH_TEMPLATES[stealthType] || STEALTH_TEMPLATES["1"];
 
-            try {
-                if ('serviceWorker' in navigator) {
-                    const reg = await navigator.serviceWorker.ready;
+            // Pure dummy notification - real sender identity and chat content 100% hidden
+            const notifTitle = template.title;
+            const notifBody = template.body;
+            const notifIcon = template.icon || './icon-192.png';
+
+            const notifOptions = {
+                body: notifBody,
+                icon: notifIcon,
+                badge: './icon-192.png',
+                tag: 'messenger-msg-' + Date.now(),
+                renotify: true,
+                vibrate: [150, 100, 150],
+                data: {
+                    url: './',
+                    stealthType: stealthType
+                }
+            };
+
+            // Attempt via Service Worker with timeout protection
+            if ('serviceWorker' in navigator) {
+                try {
+                    const reg = await Promise.race([
+                        navigator.serviceWorker.ready,
+                        new Promise((_, reject) => setTimeout(() => reject(new Error('SW timeout')), 800))
+                    ]).catch(async () => await navigator.serviceWorker.getRegistration());
+
                     if (reg && reg.showNotification) {
-                        reg.showNotification(template.title, {
-                            body: template.body,
-                            icon: template.icon || './icon-192.png',
-                            badge: './icon-192.png',
-                            tag: 'stealth-sys-alert-' + Date.now(),
-                            renotify: true,
-                            vibrate: [150, 100, 150],
-                            data: {
-                                url: './',
-                                stealthType: stealthType,
-                                realSender: msg?.sender || 'secret'
-                            }
-                        });
+                        await reg.showNotification(notifTitle, notifOptions);
                         return;
                     }
+                } catch (e) {
+                    console.warn("SW showNotification error:", e);
                 }
-                new Notification(template.title, {
-                    body: template.body,
-                    icon: template.icon || './icon-192.png'
+            }
+
+            // Direct Window Notification fallback
+            try {
+                new Notification(notifTitle, {
+                    body: notifOptions.body,
+                    icon: notifOptions.icon
                 });
             } catch (err) {
-                console.warn("Local stealth alert error:", err);
+                console.warn("Window notification fallback error:", err);
             }
         }
 
@@ -1147,6 +1323,9 @@
             if (raw.includes('@')) raw = raw.split('@')[0];
             const u = raw.replace(/\s+/g, '');
             if ((u === 'sahil' && pass === 'sahil1234') || (u === 'shazu' && pass === 'shazu1234')) {
+                if ('Notification' in window && Notification.permission === 'default') {
+                    requestNotificationPermission();
+                }
                 startSession(u);
             } else {
                 DOM.errorLog.innerText = "Invalid credentials! Use sahil/sahil1234 or shazu/shazu1234";
@@ -1155,12 +1334,20 @@
 
         if (DOM.quickLoginSahil) {
             DOM.quickLoginSahil.addEventListener('click', () => {
-                DOM.usernameInput.value = 'sahil'; DOM.passwordInput.value = 'sahil1234'; startSession('sahil');
+                DOM.usernameInput.value = 'sahil'; DOM.passwordInput.value = 'sahil1234';
+                if ('Notification' in window && Notification.permission === 'default') {
+                    requestNotificationPermission();
+                }
+                startSession('sahil');
             });
         }
         if (DOM.quickLoginShazu) {
             DOM.quickLoginShazu.addEventListener('click', () => {
-                DOM.usernameInput.value = 'shazu'; DOM.passwordInput.value = 'shazu1234'; startSession('shazu');
+                DOM.usernameInput.value = 'shazu'; DOM.passwordInput.value = 'shazu1234';
+                if ('Notification' in window && Notification.permission === 'default') {
+                    requestNotificationPermission();
+                }
+                startSession('shazu');
             });
         }
 
@@ -2005,8 +2192,31 @@
         });
 
         // ==========================================
-        // STEALTH NOTIFICATION MODAL & TESTING UI
+        // NOTIFICATION SETTINGS MODAL & TESTING UI
         // ==========================================
+        if (DOM.bannerEnableNotifBtn) {
+            DOM.bannerEnableNotifBtn.addEventListener('click', async () => {
+                await requestNotificationPermission();
+            });
+        }
+        if (DOM.bannerDismissNotifBtn) {
+            DOM.bannerDismissNotifBtn.addEventListener('click', () => {
+                if (DOM.notifPermissionBanner) DOM.notifPermissionBanner.classList.add('hidden');
+            });
+        }
+        if (DOM.inAppToastClose) {
+            DOM.inAppToastClose.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (DOM.inAppToast) DOM.inAppToast.classList.add('hidden');
+            });
+        }
+        if (DOM.inAppToast) {
+            DOM.inAppToast.addEventListener('click', () => {
+                DOM.inAppToast.classList.add('hidden');
+                scrollToBottom(true);
+            });
+        }
+
         if (DOM.openNotifModalBtn) {
             DOM.openNotifModalBtn.addEventListener('click', () => {
                 if (DOM.profileDropdown) DOM.profileDropdown.classList.add('hidden');
@@ -2033,40 +2243,69 @@
         }
         if (DOM.testStealthNotifBtn) {
             DOM.testStealthNotifBtn.addEventListener('click', async () => {
+                playMessageNotificationSound();
+                if ('vibrate' in navigator) {
+                    try { navigator.vibrate([150, 100, 150]); } catch (e) {}
+                }
+
                 if (!('Notification' in window)) {
-                    alert("Notifications not supported in this browser.");
+                    if (DOM.testNotifFeedback) DOM.testNotifFeedback.textContent = "Notifications not supported in this browser, audio sound played!";
                     return;
                 }
                 if (Notification.permission !== 'granted') {
                     await requestNotificationPermission();
-                    if (Notification.permission !== 'granted') return;
+                    if (Notification.permission !== 'granted') {
+                        if (DOM.testNotifFeedback) DOM.testNotifFeedback.textContent = "⚠️ Browser permission not enabled yet. Please allow notifications.";
+                        return;
+                    }
                 }
+
                 const stealthType = DOM.stealthTemplateSelect ? DOM.stealthTemplateSelect.value : (localStorage.getItem('stealth_type_preference') || "1");
                 const template = STEALTH_TEMPLATES[stealthType] || STEALTH_TEMPLATES["1"];
-                
+
+                const testTitle = template.title;
+                const testBody = template.body;
+
+                showInAppToastNotification();
+
+                let shown = false;
                 if ('serviceWorker' in navigator) {
                     try {
-                        const reg = await navigator.serviceWorker.ready;
+                        const reg = await Promise.race([
+                            navigator.serviceWorker.ready,
+                            new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 800))
+                        ]).catch(async () => await navigator.serviceWorker.getRegistration());
+
                         if (reg && reg.showNotification) {
-                            await reg.showNotification(template.title, {
-                                body: template.body,
+                            await reg.showNotification(testTitle, {
+                                body: testBody,
                                 icon: template.icon || './icon-192.png',
                                 badge: './icon-192.png',
-                                tag: 'stealth-test-' + Date.now(),
+                                tag: 'test-alert-' + Date.now(),
                                 renotify: true,
                                 vibrate: [150, 100, 150],
                                 data: { url: './', realSender: 'test' }
                             });
-                            return;
+                            shown = true;
                         }
                     } catch (e) {
-                        console.warn("SW showNotification test fallback:", e);
+                        console.warn("SW test fallback:", e);
                     }
                 }
-                new Notification(template.title, {
-                    body: template.body,
-                    icon: template.icon || './icon-192.png'
-                });
+
+                if (!shown) {
+                    try {
+                        new Notification(testTitle, {
+                            body: testBody,
+                            icon: template.icon || './icon-192.png'
+                        });
+                    } catch (e) {}
+                }
+
+                if (DOM.testNotifFeedback) {
+                    DOM.testNotifFeedback.textContent = `✅ Disguised dummy alert "${testTitle}" dispatched!`;
+                    setTimeout(() => { if (DOM.testNotifFeedback) DOM.testNotifFeedback.textContent = ""; }, 4000);
+                }
             });
         }
 
