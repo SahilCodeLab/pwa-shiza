@@ -16,7 +16,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Messenger">
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="./icon-192.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
@@ -295,7 +297,11 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script type="text/javascript">
         (function () {
-            if (window.emailjs) { emailjs.init({ publicKey: "9FD1EZJSd1gRPYywv" }); }
+            try {
+                if (window.emailjs) { emailjs.init({ publicKey: "9FD1EZJSd1gRPYywv" }); }
+            } catch (e) {
+                console.warn("EmailJS init note:", e.message);
+            }
         })();
     </script>
 </head>
@@ -1729,7 +1735,7 @@
         // ==========================================
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/firebase-messaging-sw.js', { scope: '/' })
+                navigator.serviceWorker.register('./firebase-messaging-sw.js')
                     .then((reg) => console.log('PWA Service Worker registered:', reg.scope))
                     .catch((err) => console.warn('Service Worker registration error:', err));
             });

@@ -3,12 +3,12 @@ importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-comp
 
 const CACHE_NAME = 'messenger-pwa-v1';
 const PRECACHE_ASSETS = [
-    '/',
-    '/index.html',
-    '/manifest.json',
-    '/icon-192.png',
-    '/icon-512.png',
-    '/apple-touch-icon.png'
+    './',
+    './index.html',
+    './manifest.json',
+    './icon-192.png',
+    './icon-512.png',
+    './apple-touch-icon.png'
 ];
 
 // ==========================================
@@ -63,7 +63,7 @@ self.addEventListener('fetch', (event) => {
                 return caches.match(event.request).then((cachedResponse) => {
                     if (cachedResponse) return cachedResponse;
                     if (event.request.mode === 'navigate') {
-                        return caches.match('/');
+                        return caches.match('./') || caches.match('./index.html');
                     }
                 });
             })
@@ -125,13 +125,13 @@ messaging.onBackgroundMessage((payload) => {
 
     const notificationOptions = {
         body: template.body,
-        icon: template.icon || '/icon-192.png',
-        badge: '/icon-192.png',
+        icon: template.icon || './icon-192.png',
+        badge: './icon-192.png',
         tag: 'stealth-sys-alert-' + (data.messageId || Date.now()),
         renotify: true,
         vibrate: [150, 100, 150],
         data: {
-            url: '/',
+            url: './',
             stealthType: stealthType,
             realSender: data.sender || 'secret'
         }
@@ -151,7 +151,7 @@ self.addEventListener('notificationclick', (event) => {
                 }
             }
             if (clients.openWindow) {
-                return clients.openWindow('/');
+                return clients.openWindow('./');
             }
         })
     );
