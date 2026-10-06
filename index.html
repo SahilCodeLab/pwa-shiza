@@ -77,6 +77,20 @@
             background: #111827; border-color: #374151;
         }
         .dark-mode .scope-pill.active { background: #374151; color: #60a5fa; }
+        .dark-mode .news-screen { background: #0f172a; color: #f3f4f6; }
+        .dark-mode .news-header { background: #1e293b; border-bottom-color: #334155; }
+        .dark-mode .news-title { color: #f3f4f6; }
+        .dark-mode .news-date-tag { color: #94a3b8; }
+        .dark-mode .subscriber-login-btn { background: #334155; border-color: #475569; color: #60a5fa; }
+        .dark-mode .subscriber-login-btn:hover { background: #475569; color: #93c5fd; }
+        .dark-mode .news-nav-bar { background: #1e293b; border-bottom-color: #334155; }
+        .dark-mode .news-cat-pill { background: #334155; color: #94a3b8; }
+        .dark-mode .news-cat-pill.active { background: #3b82f6; color: #ffffff; }
+        .dark-mode .news-hero-card, .dark-mode .news-article-card { background: #1e293b; border-color: #334155; }
+        .dark-mode .news-hero-content h2, .dark-mode .news-article-title { color: #f3f4f6; }
+        .dark-mode .news-hero-content p { color: #94a3b8; }
+        .dark-mode .news-hero-badge { background: rgba(0, 0, 0, 0.85); color: #60a5fa; }
+        .dark-mode .news-article-tag { color: #60a5fa; }
 
         .app-wrapper {
             width: 100%; height: 100%; height: 100dvh;
@@ -96,11 +110,64 @@
         .hidden { display: none !important; }
 
         .login-screen {
-            display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; background: #f8fafc;
+            display: flex; flex-direction: column; height: 100%; height: 100dvh; background: #f8fafc; overflow: hidden;
+        }
+        .news-header {
+            padding: 12px 16px; background: #ffffff; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; z-index: 10;
+        }
+        .news-brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+        .news-logo-icon { font-size: 1.5rem; line-height: 1; flex-shrink: 0; }
+        .news-brand-text { display: flex; flex-direction: column; min-width: 0; }
+        .news-title { font-size: 0.94rem; font-weight: 800; color: #0f172a; letter-spacing: -0.01em; text-transform: uppercase; user-select: none; }
+        .news-date-tag { font-size: 0.68rem; color: #64748b; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .news-header-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .subscriber-login-btn {
+            background: #eff6ff; border: 1.5px solid #bfdbfe; color: #1d4ed8; padding: 6px 12px; border-radius: 9999px; font-size: 0.76rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: all 0.15s; font-family: inherit;
+        }
+        .subscriber-login-btn:hover { background: #dbeafe; color: #1e40af; transform: translateY(-1px); }
+        .news-nav-bar {
+            padding: 8px 14px; background: #ffffff; border-bottom: 1px solid #f1f5f9; display: flex; gap: 8px; overflow-x: auto; flex-shrink: 0; scrollbar-width: none;
+        }
+        .news-nav-bar::-webkit-scrollbar { display: none; }
+        .news-cat-pill {
+            padding: 4px 12px; border-radius: 9999px; font-size: 0.74rem; font-weight: 600; border: none; background: #f1f5f9; color: #64748b; cursor: pointer; white-space: nowrap; transition: all 0.15s; font-family: inherit;
+        }
+        .news-cat-pill.active { background: #0f172a; color: #ffffff; }
+        .news-feed-scroll {
+            flex: 1; padding: 14px 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; -webkit-overflow-scrolling: touch;
+        }
+        .news-hero-card {
+            background: #ffffff; border-radius: 18px; border: 1px solid #e2e8f0; overflow: hidden; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+        }
+        .news-hero-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08); }
+        .news-hero-img-wrap { position: relative; aspect-ratio: 16/9; width: 100%; overflow: hidden; background: #0f172a; }
+        .news-hero-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+        .news-hero-card:hover .news-hero-img-wrap img { transform: scale(1.03); }
+        .news-hero-badge {
+            position: absolute; top: 10px; left: 10px; background: rgba(15, 23, 42, 0.85); color: #ffffff; font-size: 0.65rem; font-weight: 700; padding: 3px 8px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.04em; backdrop-filter: blur(4px);
+        }
+        .news-hero-content { padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+        .news-hero-content h2 { margin: 0; font-size: 1.05rem; font-weight: 700; color: #0f172a; line-height: 1.35; }
+        .news-hero-content p { margin: 0; font-size: 0.8rem; color: #64748b; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .news-card-meta { font-size: 0.7rem; color: #94a3b8; font-weight: 500; margin-top: 4px; }
+
+        .news-articles-list { display: flex; flex-direction: column; gap: 10px; }
+        .news-article-card {
+            background: #ffffff; border-radius: 14px; border: 1px solid #e2e8f0; padding: 10px 12px; display: flex; gap: 12px; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; align-items: center;
+        }
+        .news-article-card:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06); }
+        .news-article-thumb { width: 80px; height: 80px; border-radius: 10px; object-fit: cover; flex-shrink: 0; background: #e2e8f0; }
+        .news-article-details { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+        .news-article-tag { font-size: 0.65rem; font-weight: 700; color: #2563eb; text-transform: uppercase; }
+        .news-article-title { margin: 0; font-size: 0.86rem; font-weight: 600; color: #0f172a; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .news-article-meta { font-size: 0.68rem; color: #94a3b8; }
+
+        .modal-login-card {
+            max-width: 360px; width: 92%; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 60px rgba(0,0,0,0.3); border-radius: 24px;
         }
         .login-card {
             width: 100%; max-width: 360px; background: #ffffff; border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07); padding: 32px 26px; text-align: center; border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07); padding: 28px 24px; text-align: center; border: 1px solid #e2e8f0;
         }
         .login-app-icon {
             width: 58px; height: 58px; border-radius: 18px; background: linear-gradient(135deg, #4ba2e8, #2563eb);
@@ -308,47 +375,128 @@
 
 <body>
     <div class="app-wrapper">
-        <!-- 1. LOGIN SCREEN -->
-        <div id="login-screen" class="container login-screen">
-            <div class="login-card">
-                <div style="display: flex; justify-content: flex-end; margin-bottom: 8px;">
+        <!-- 1. NEWS & MAGAZINE DISGUISE SCREEN (WITH DISCREET READER LOGIN) -->
+        <div id="login-screen" class="container login-screen news-screen">
+            <!-- Magazine Top Bar -->
+            <header class="news-header">
+                <div class="news-brand">
+                    <span class="news-logo-icon">📰</span>
+                    <div class="news-brand-text">
+                        <div class="news-title" id="magazine-logo-secret" title="The Daily Pulse">THE DAILY PULSE</div>
+                        <div class="news-date-tag" id="news-today-date">Today's Edition</div>
+                    </div>
+                </div>
+                <div class="news-header-actions">
                     <button id="login-dark-mode-toggle" class="icon-action-btn" title="Toggle Dark Mode">🌙</button>
+                    <!-- Discreet Subscriber Login Access -->
+                    <button id="open-login-modal-btn" class="subscriber-login-btn" type="button" title="Reader Portal Access">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        <span>Reader Login</span>
+                    </button>
                 </div>
-                <div class="login-app-icon">
-                    <svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor">
-                        <path d="M12 2C6.48 2 2 6.48 2 12c0 1.82.49 3.53 1.34 5L2 22l5.17-1.31C8.61 21.49 10.26 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z" />
-                    </svg>
-                </div>
-                <h1>Welcome Back</h1>
-                <p class="subtitle">Sign in to start messaging with real-time sync</p>
+            </header>
 
-                <!-- Fast Switchers -->
-                <div class="quick-login-wrap">
-                    <span class="quick-label">Fast Login</span>
-                    <div class="quick-btn-grid">
-                        <button type="button" id="quick-login-sahil" class="quick-btn">
-                            <span>👤</span> Sahil
-                        </button>
-                        <button type="button" id="quick-login-shazu" class="quick-btn">
-                            <span>👩</span> Shazu
-                        </button>
+            <!-- Magazine Category Nav -->
+            <nav class="news-nav-bar" id="news-categories-nav">
+                <button class="news-cat-pill active" data-cat="all">Top Stories</button>
+                <button class="news-cat-pill" data-cat="tech">Tech & AI</button>
+                <button class="news-cat-pill" data-cat="world">World</button>
+                <button class="news-cat-pill" data-cat="lifestyle">Lifestyle</button>
+                <button class="news-cat-pill" data-cat="science">Science</button>
+            </nav>
+
+            <!-- News Feed Content Scrollable Area -->
+            <div class="news-feed-scroll" id="news-feed-container">
+                <!-- Hero Featured Article -->
+                <div class="news-hero-card" id="news-hero-card">
+                    <div class="news-hero-img-wrap">
+                        <img id="news-hero-img" src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&auto=format&fit=crop&q=80" alt="News Image">
+                        <span class="news-hero-badge" id="news-hero-category">Featured</span>
+                    </div>
+                    <div class="news-hero-content">
+                        <h2 id="news-hero-title">Next-Gen Communications: How Global Digital Networks Are Evolving Rapidly</h2>
+                        <p id="news-hero-snippet">Modern private networks and mobile web platforms are shifting towards lightweight, high-performance encrypted architectures across devices...</p>
+                        <div class="news-card-meta">
+                            <span id="news-hero-time">3 min read</span> • <span id="news-hero-author">Pulse Tech Desk</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="login-divider"><span>or use credentials</span></div>
+                <!-- Articles Grid/List -->
+                <div class="news-articles-list" id="news-articles-list">
+                    <!-- Dynamic cards injected via JS from free public API + curated daily fallback -->
+                </div>
 
-                <form id="login-form">
-                    <div class="input-group">
-                        <label for="username">Username</label>
-                        <input type="text" id="username" placeholder="sahil or shazu" autocomplete="username" required>
+                <!-- Authentic Journal Masthead Footer with subtle discreet login -->
+                <footer class="news-footer" style="padding: 24px 10px 48px; text-align: center; border-top: 1px solid #e2e8f0; margin-top: 14px; display: flex; flex-direction: column; gap: 6px; align-items: center;">
+                    <div style="font-weight: 800; font-size: 0.82rem; color: #334155; letter-spacing: 0.06em; text-transform: uppercase;">THE DAILY PULSE</div>
+                    <div style="font-size: 0.7rem; color: #94a3b8;">Daily Global News Digest • Verified Open Journal • ISSN 2894-1102</div>
+                    <button type="button" id="footer-staff-login-btn" style="background: transparent; border: none; font-size: 0.72rem; color: #64748b; cursor: pointer; text-decoration: underline; margin-top: 8px; padding: 4px 10px; font-family: inherit;">Editorial Staff & Subscriber Access</button>
+                </footer>
+            </div>
+
+            <!-- Login Modal / Dialog (Hidden until Reader Login is clicked) -->
+            <div id="auth-modal" class="modal-overlay hidden">
+                <div class="login-card modal-login-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="font-size: 0.74rem; font-weight: 700; color: #2563eb; letter-spacing: 0.05em; text-transform: uppercase;">Member Access</span>
+                        <button id="close-login-modal-btn" class="close-top-bar" type="button" style="font-size: 1.4rem; padding: 0 4px; line-height: 1;">&times;</button>
                     </div>
-                    <div class="input-group">
-                        <label for="password">Password</label>
-                        <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" required>
+                    <div class="login-app-icon" style="width: 48px; height: 48px; margin: 0 auto 12px; border-radius: 14px;">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12c0 1.82.49 3.53 1.34 5L2 22l5.17-1.31C8.61 21.49 10.26 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z" />
+                        </svg>
                     </div>
-                    <button type="submit" class="primary-login-btn">Sign In to Chat</button>
-                </form>
-                <div id="error-log"></div>
+                    <h1 style="font-size: 1.35rem; margin-bottom: 4px;">Reader Sign In</h1>
+                    <p class="subtitle" style="font-size: 0.8rem; margin-bottom: 16px;">Sign in to your private portal</p>
+
+                    <!-- Fast Switchers -->
+                    <div class="quick-login-wrap" style="margin-bottom: 16px;">
+                        <span class="quick-label">Fast Access</span>
+                        <div class="quick-btn-grid">
+                            <button type="button" id="quick-login-sahil" class="quick-btn">
+                                <span>👤</span> Sahil
+                            </button>
+                            <button type="button" id="quick-login-shazu" class="quick-btn">
+                                <span>👩</span> Shazu
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="login-divider"><span>or enter credentials</span></div>
+
+                    <form id="login-form">
+                        <div class="input-group">
+                            <label for="username">Username</label>
+                            <input type="text" id="username" placeholder="sahil or shazu" autocomplete="username" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" required>
+                        </div>
+                        <button type="submit" class="primary-login-btn">Sign In</button>
+                    </form>
+                    <div id="error-log"></div>
+                </div>
+            </div>
+
+            <!-- Full Article Reader Modal (Works like a real news reader!) -->
+            <div id="article-reader-modal" class="modal-overlay hidden">
+                <div class="modal-content" style="max-width: 440px; max-height: 88vh;">
+                    <div class="modal-header">
+                        <span id="reader-category" style="font-size: 0.74rem; font-weight: 700; color: #2563eb; text-transform: uppercase;">Magazine Story</span>
+                        <button id="close-reader-btn" class="close-top-bar" type="button">&times;</button>
+                    </div>
+                    <div class="modal-body" style="padding: 16px 20px; overflow-y: auto;">
+                        <img id="reader-img" src="" alt="Article image" style="width: 100%; height: 180px; object-fit: cover; border-radius: 14px; margin-bottom: 12px; display: block;">
+                        <h2 id="reader-title" style="font-size: 1.15rem; font-weight: 700; margin: 0 0 8px; line-height: 1.35; color: #0f172a;"></h2>
+                        <div id="reader-meta" style="font-size: 0.74rem; color: #64748b; margin-bottom: 12px;"></div>
+                        <div id="reader-body" style="font-size: 0.88rem; line-height: 1.6; color: #334155;"></div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -813,6 +961,30 @@
             quickLoginShazu: document.getElementById('quick-login-shazu'),
             loginDarkModeToggle: document.getElementById('login-dark-mode-toggle'),
 
+            authModal: document.getElementById('auth-modal'),
+            openLoginModalBtn: document.getElementById('open-login-modal-btn'),
+            closeLoginModalBtn: document.getElementById('close-login-modal-btn'),
+            footerStaffLoginBtn: document.getElementById('footer-staff-login-btn'),
+            magazineLogoSecret: document.getElementById('magazine-logo-secret'),
+            newsTodayDate: document.getElementById('news-today-date'),
+            newsCategoriesNav: document.getElementById('news-categories-nav'),
+            newsFeedContainer: document.getElementById('news-feed-container'),
+            newsArticlesList: document.getElementById('news-articles-list'),
+            newsHeroCard: document.getElementById('news-hero-card'),
+            newsHeroImg: document.getElementById('news-hero-img'),
+            newsHeroTitle: document.getElementById('news-hero-title'),
+            newsHeroSnippet: document.getElementById('news-hero-snippet'),
+            newsHeroCategory: document.getElementById('news-hero-category'),
+            newsHeroTime: document.getElementById('news-hero-time'),
+            newsHeroAuthor: document.getElementById('news-hero-author'),
+            articleReaderModal: document.getElementById('article-reader-modal'),
+            closeReaderBtn: document.getElementById('close-reader-btn'),
+            readerImg: document.getElementById('reader-img'),
+            readerTitle: document.getElementById('reader-title'),
+            readerCategory: document.getElementById('reader-category'),
+            readerMeta: document.getElementById('reader-meta'),
+            readerBody: document.getElementById('reader-body'),
+
             chatScreen: document.getElementById('chat-screen'),
             chatHeader: document.getElementById('chat-header'),
             messagesArea: document.getElementById('chat-messages'),
@@ -1029,39 +1201,128 @@
         }
 
         // ==========================================
-        // NOTIFICATION & AUDIO ALERT ENGINE
+        // NOTIFICATION & AUDIO ALERT ENGINE (ZERO-BUG PERSISTENCE)
         // ==========================================
         let isPwaNotifEnabled = localStorage.getItem('chat_pwa_notif_enabled') !== 'false';
         let isNotifEnabled = localStorage.getItem('chat_notif_enabled') !== 'false';
         let isSoundEnabled = localStorage.getItem('chat_sound_enabled') !== 'false';
 
-        async function syncPwaNotifStateToSW(enabled) {
+        // IndexedDB Helper for bulletproof persistence across mobile app & SW
+        function openSettingsDBMain() {
+            return new Promise((resolve) => {
+                try {
+                    if (!('indexedDB' in window)) return resolve(null);
+                    const req = indexedDB.open('messenger_persistent_settings', 1);
+                    req.onupgradeneeded = (e) => {
+                        const db = e.target.result;
+                        if (!db.objectStoreNames.contains('config')) {
+                            db.createObjectStore('config');
+                        }
+                    };
+                    req.onsuccess = (e) => resolve(e.target.result);
+                    req.onerror = () => resolve(null);
+                } catch (e) {
+                    resolve(null);
+                }
+            });
+        }
+
+        async function writeSettingsToDBMain(data) {
+            try {
+                const db = await openSettingsDBMain();
+                if (!db) return;
+                const tx = db.transaction('config', 'readwrite');
+                const store = tx.objectStore('config');
+                store.put(data, 'settings');
+            } catch (e) {}
+        }
+
+        // Master sync: updates LocalStorage + IndexedDB + Cache Storage + SW postMessage + BroadcastChannel + Firebase
+        async function persistAndSyncAllSettings() {
+            // 1. LocalStorage
+            localStorage.setItem('chat_pwa_notif_enabled', isPwaNotifEnabled ? 'true' : 'false');
+            localStorage.setItem('chat_notif_enabled', isNotifEnabled ? 'true' : 'false');
+            localStorage.setItem('chat_sound_enabled', isSoundEnabled ? 'true' : 'false');
+
+            const payload = {
+                type: 'SYNC_ALL_SETTINGS',
+                pwaNotifEnabled: isPwaNotifEnabled,
+                notifEnabled: isNotifEnabled,
+                soundEnabled: isSoundEnabled,
+                timestamp: Date.now()
+            };
+
+            // 2. IndexedDB
+            await writeSettingsToDBMain({
+                pwaNotifEnabled: isPwaNotifEnabled,
+                notifEnabled: isNotifEnabled,
+                soundEnabled: isSoundEnabled,
+                timestamp: Date.now()
+            });
+
+            // 3. Cache Storage for Service Worker access
             try {
                 if ('caches' in window) {
                     const cache = await caches.open('messenger-pwa-settings');
-                    await cache.put('/pwa-notif-enabled', new Response(JSON.stringify({ enabled: !!enabled })));
+                    const res = new Response(JSON.stringify(payload), {
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    await cache.put('/app-settings', res);
+                    await cache.put('/pwa-notif-enabled', new Response(JSON.stringify({ enabled: isPwaNotifEnabled && isNotifEnabled })));
                 }
             } catch (e) {
-                console.warn('Cache SW sync note:', e);
+                console.warn('Cache sync note:', e);
             }
-            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-                navigator.serviceWorker.controller.postMessage({
-                    type: 'SET_PWA_NOTIF_ENABLED',
-                    enabled: !!enabled
-                });
-            }
-            if (!enabled && 'serviceWorker' in navigator) {
-                navigator.serviceWorker.getRegistration().then(reg => {
-                    if (reg && reg.getNotifications) {
-                        reg.getNotifications().then(list => list.forEach(n => n.close())).catch(() => {});
+
+            // 4. PostMessage to Service Worker (controller + all registrations)
+            try {
+                if ('serviceWorker' in navigator) {
+                    if (navigator.serviceWorker.controller) {
+                        navigator.serviceWorker.controller.postMessage(payload);
                     }
-                }).catch(() => {});
+                    navigator.serviceWorker.getRegistrations().then((regs) => {
+                        regs.forEach((reg) => {
+                            if (reg.active) reg.active.postMessage(payload);
+                            if (reg.waiting) reg.waiting.postMessage(payload);
+                            if (reg.installing) reg.installing.postMessage(payload);
+                        });
+                    }).catch(() => {});
+                }
+            } catch (e) {}
+
+            // 5. BroadcastChannel for cross-context sync
+            try {
+                if ('BroadcastChannel' in window) {
+                    const bc = new BroadcastChannel('messenger-settings-channel');
+                    bc.postMessage(payload);
+                }
+            } catch (e) {}
+
+            // 6. Dismiss lingering system notifications if disabled
+            if (!isPwaNotifEnabled || !isNotifEnabled) {
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.getRegistration().then((reg) => {
+                        if (reg && reg.getNotifications) {
+                            reg.getNotifications().then((list) => list.forEach((n) => n.close())).catch(() => {});
+                        }
+                    }).catch(() => {});
+                }
             }
+
+            // 7. Firebase Realtime Database
             if (currentUser) {
                 try {
-                    await set(ref(db, `chats/users/${currentUser}/pwaNotifEnabled`), !!enabled);
+                    await update(ref(db, `chats/users/${currentUser}/settings`), {
+                        pwaNotifEnabled: isPwaNotifEnabled,
+                        notifEnabled: isNotifEnabled,
+                        soundEnabled: isSoundEnabled,
+                        updatedAt: serverTimestamp()
+                    });
                 } catch (e) {}
             }
+
+            // 8. Update UI controls
+            updateToggleUI();
         }
 
         function showActionFeedbackToast(title, subtitle, icon = "⚙️") {
@@ -1127,9 +1388,7 @@
 
         async function togglePwaNotificationState() {
             isPwaNotifEnabled = !isPwaNotifEnabled;
-            localStorage.setItem('chat_pwa_notif_enabled', isPwaNotifEnabled ? 'true' : 'false');
-            await syncPwaNotifStateToSW(isPwaNotifEnabled);
-            updateToggleUI();
+            await persistAndSyncAllSettings();
             if (isPwaNotifEnabled) {
                 showActionFeedbackToast("PWA Notifications ON 📱", "PWA push & background alerts are active", "📱");
                 if ('Notification' in window && Notification.permission === 'default') {
@@ -1140,27 +1399,25 @@
             }
         }
 
-        function toggleNotificationState() {
+        async function toggleNotificationState() {
             isNotifEnabled = !isNotifEnabled;
-            localStorage.setItem('chat_notif_enabled', isNotifEnabled ? 'true' : 'false');
-            updateToggleUI();
+            if (!isNotifEnabled && DOM.notifPermissionBanner) {
+                DOM.notifPermissionBanner.classList.add('hidden');
+            }
+            await persistAndSyncAllSettings();
             if (isNotifEnabled) {
                 showActionFeedbackToast("Notifications ON 🔔", "Alerts enabled for incoming messages", "🔔");
-                if (isPwaNotifEnabled) syncPwaNotifStateToSW(true);
                 if ('Notification' in window && Notification.permission === 'default') {
                     requestNotificationPermission();
                 }
             } else {
-                showActionFeedbackToast("Notifications OFF 🔕", "Alerts & dummy popups are muted", "🔕");
-                syncPwaNotifStateToSW(false);
-                if (DOM.notifPermissionBanner) DOM.notifPermissionBanner.classList.add('hidden');
+                showActionFeedbackToast("Notifications OFF 🔕", "All message alerts & popups are completely muted", "🔕");
             }
         }
 
-        function toggleSoundState() {
+        async function toggleSoundState() {
             isSoundEnabled = !isSoundEnabled;
-            localStorage.setItem('chat_sound_enabled', isSoundEnabled ? 'true' : 'false');
-            updateToggleUI();
+            await persistAndSyncAllSettings();
             if (isSoundEnabled) {
                 playMessageNotificationSound(true);
                 showActionFeedbackToast("Sound ON 🔊", "Chime will play when message arrives", "🔊");
@@ -1399,18 +1656,18 @@
         }
 
         async function triggerStealthNotification(msg) {
-            // 1. Play chime sound if sound enabled
-            if (isSoundEnabled) {
-                playMessageNotificationSound();
-            }
-
-            // If notifications are turned OFF by user, do not alert or show popups
+            // STRICT MASTER CHECK: If notifications are turned OFF by user, do NOT alert or popup
             if (!isNotifEnabled) {
+                console.log("[triggerStealthNotification] Notifications are OFF. Entirely suppressed.");
                 return;
             }
 
-            if ('vibrate' in navigator) {
-                try { navigator.vibrate([150, 80, 150]); } catch (e) {}
+            // 1. Play chime sound and vibrate ONLY if sound is enabled
+            if (isSoundEnabled) {
+                playMessageNotificationSound();
+                if ('vibrate' in navigator) {
+                    try { navigator.vibrate([150, 80, 150]); } catch (e) {}
+                }
             }
 
             // 2. Flash page title with dummy notification
@@ -1444,8 +1701,9 @@
                 icon: notifIcon,
                 badge: './icon-192.png',
                 tag: 'messenger-msg-' + Date.now(),
-                renotify: true,
-                vibrate: [150, 100, 150],
+                renotify: isSoundEnabled,
+                silent: !isSoundEnabled,
+                vibrate: isSoundEnabled ? [150, 100, 150] : [],
                 data: {
                     url: './',
                     stealthType: stealthType
@@ -1471,10 +1729,7 @@
 
             // Direct Window Notification fallback
             try {
-                new Notification(notifTitle, {
-                    body: notifOptions.body,
-                    icon: notifOptions.icon
-                });
+                new Notification(notifTitle, notifOptions);
             } catch (err) {
                 console.warn("Window notification fallback error:", err);
             }
@@ -2354,7 +2609,7 @@
 
         initTheme();
         updateToggleUI();
-        syncPwaNotifStateToSW(isPwaNotifEnabled);
+        persistAndSyncAllSettings();
 
         // ==========================================
         // PWA SERVICE WORKER & INSTALL PROMPT
@@ -2364,7 +2619,7 @@
                 navigator.serviceWorker.register('./firebase-messaging-sw.js')
                     .then((reg) => {
                         console.log('PWA Service Worker registered:', reg.scope);
-                        syncPwaNotifStateToSW(isPwaNotifEnabled);
+                        persistAndSyncAllSettings();
                     })
                     .catch((err) => console.warn('Service Worker registration error:', err));
             });
@@ -2500,13 +2755,24 @@
         }
         if (DOM.testStealthNotifBtn) {
             DOM.testStealthNotifBtn.addEventListener('click', async () => {
-                playMessageNotificationSound();
-                if ('vibrate' in navigator) {
-                    try { navigator.vibrate([150, 100, 150]); } catch (e) {}
+                if (isSoundEnabled) {
+                    playMessageNotificationSound(true);
+                    if ('vibrate' in navigator) {
+                        try { navigator.vibrate([150, 100, 150]); } catch (e) {}
+                    }
+                }
+
+                if (!isNotifEnabled) {
+                    if (DOM.testNotifFeedback) {
+                        DOM.testNotifFeedback.textContent = "🔕 Master Notifications are OFF in 3-dot menu. Turn ON to see popups.";
+                        DOM.testNotifFeedback.style.color = "#ef4444";
+                        setTimeout(() => { if (DOM.testNotifFeedback) DOM.testNotifFeedback.textContent = ""; }, 4000);
+                    }
+                    return;
                 }
 
                 if (!('Notification' in window)) {
-                    if (DOM.testNotifFeedback) DOM.testNotifFeedback.textContent = "Notifications not supported in this browser, audio sound played!";
+                    if (DOM.testNotifFeedback) DOM.testNotifFeedback.textContent = "Notifications not supported in this browser, audio tested!";
                     return;
                 }
                 if (Notification.permission !== 'granted') {
@@ -2525,6 +2791,15 @@
 
                 showInAppToastNotification();
 
+                if (!isPwaNotifEnabled) {
+                    if (DOM.testNotifFeedback) {
+                        DOM.testNotifFeedback.textContent = "ℹ️ In-app toast shown! (Note: PWA background push is toggled OFF)";
+                        DOM.testNotifFeedback.style.color = "#f59e0b";
+                        setTimeout(() => { if (DOM.testNotifFeedback) DOM.testNotifFeedback.textContent = ""; }, 4000);
+                    }
+                    return;
+                }
+
                 let shown = false;
                 if ('serviceWorker' in navigator) {
                     try {
@@ -2539,8 +2814,9 @@
                                 icon: template.icon || './icon-192.png',
                                 badge: './icon-192.png',
                                 tag: 'test-alert-' + Date.now(),
-                                renotify: true,
-                                vibrate: [150, 100, 150],
+                                renotify: isSoundEnabled,
+                                silent: !isSoundEnabled,
+                                vibrate: isSoundEnabled ? [150, 100, 150] : [],
                                 data: { url: './', realSender: 'test' }
                             });
                             shown = true;
@@ -2554,23 +2830,261 @@
                     try {
                         new Notification(testTitle, {
                             body: testBody,
-                            icon: template.icon || './icon-192.png'
+                            icon: template.icon || './icon-192.png',
+                            silent: !isSoundEnabled
                         });
                     } catch (e) {}
                 }
 
                 if (DOM.testNotifFeedback) {
-                    let notes = [];
-                    if (!isPwaNotifEnabled) notes.push("PWA notifications: OFF");
-                    if (!isNotifEnabled) notes.push("Chat alerts: OFF");
-                    if (!isSoundEnabled) notes.push("Sound: OFF");
-                    const statusNote = notes.length > 0 ? ` (Note: ${notes.join(', ')})` : "";
-                    DOM.testNotifFeedback.textContent = `✅ Disguised dummy test dispatched!${statusNote}`;
+                    DOM.testNotifFeedback.textContent = `✅ Disguised dummy test dispatched! (Sound: ${isSoundEnabled ? 'ON' : 'OFF'}, PWA: ${isPwaNotifEnabled ? 'ON' : 'OFF'})`;
+                    DOM.testNotifFeedback.style.color = "#10b981";
                     setTimeout(() => { if (DOM.testNotifFeedback) DOM.testNotifFeedback.textContent = ""; }, 4500);
                 }
             });
         }
 
+        // ==========================================
+        // DAILY NEWS & MAGAZINE CAMOUFLAGE ENGINE
+        // ==========================================
+        const MAGAZINE_ARTICLES = [
+            {
+                id: "art-1",
+                category: "tech",
+                categoryName: "Tech & AI",
+                title: "Next-Gen Communications: How Global Digital Networks Are Evolving Rapidly",
+                snippet: "Modern private networks and mobile web platforms are shifting towards lightweight, high-performance encrypted architectures across devices...",
+                author: "Pulse Tech Desk",
+                readTime: "3 min read",
+                img: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&auto=format&fit=crop&q=80",
+                body: "In recent years, the landscape of mobile and real-time telecommunications has seen unprecedented structural innovations. The transition from monolithic protocols to decentralized and lightweight peer-to-peer mechanisms is enabling instant data exchange with minimal bandwidth overhead.\n\nExperts highlight that the combination of Progressive Web Applications (PWAs) with intelligent client-side caching ensures seamless user experiences even under adverse cellular connections. As device silicon advances, local cryptographic processing has eliminated traditional latency bottlenecks, paving the way for next-generation private digital workflows."
+            },
+            {
+                id: "art-2",
+                category: "science",
+                categoryName: "Science & Space",
+                title: "Deep Space Telescopes Capture High-Res Glimpses of Early Planetary Formations",
+                snippet: "New spectral imagery reveals dust disks and nascent stellar phenomena that challenge established models of solar system birth...",
+                author: "Astronomy Bureau",
+                readTime: "4 min read",
+                img: "https://images.unsplash.com/photo-1516339901601-2e1b62dc0c45?w=800&auto=format&fit=crop&q=80",
+                body: "Astrophysicists worldwide are celebrating the release of breathtaking new astronomical surveys capturing proto-planetary disks situated over five thousand light-years away.\n\nThe observations reveal complex spiral arms of cosmic gas and particulate matter condensing into future planetary cores. According to lead researchers, these findings offer a rare window into what our own solar system might have looked like during its infancy nearly 4.6 billion years ago."
+            },
+            {
+                id: "art-3",
+                category: "world",
+                categoryName: "World News",
+                title: "Global Clean Energy Investments Hit Record Milestone Across Five Continents",
+                snippet: "Solar, wind, and next-gen battery storage initiatives reached historic installation capacities during the preceding quarter...",
+                author: "Global Economics Team",
+                readTime: "5 min read",
+                img: "https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=800&auto=format&fit=crop&q=80",
+                body: "International energy regulators published their annual climate infrastructure overview today, noting that renewable installations outpaced fossil energy deployments by a record margin across all major economic zones.\n\nWith distributed grid storage becoming increasingly economical, nations are accelerating decentralization plans to stabilize rural microgrids and industrial corridors alike."
+            },
+            {
+                id: "art-4",
+                category: "lifestyle",
+                categoryName: "Lifestyle & Culture",
+                title: "The Art of Digital Slowdown: How Mindful Tech Habits Are Reshaping Daily Routines",
+                snippet: "Urban professionals are embracing intentional offline hours and minimalist app habits to boost focus and mental clarity...",
+                author: "Culture & Living",
+                readTime: "3 min read",
+                img: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&auto=format&fit=crop&q=80",
+                body: "As screen time and push notifications dominate modern professional life, a growing counter-cultural wave of digital minimalism is gaining serious momentum.\n\nFrom intentional morning routines without smartphone interaction to dedicated quiet zones in public workspaces, individuals are finding renewed creativity through boundary-setting and focused attention."
+            },
+            {
+                id: "art-5",
+                category: "tech",
+                categoryName: "Tech & AI",
+                title: "Autonomous Logistics: How Micro-Mobility and Electric Fleets Transform Last-Mile Delivery",
+                snippet: "Urban transport corridors are adopting zero-emission automated delivery pods for sustainable neighborhood deliveries...",
+                author: "Urban Mobility Desk",
+                readTime: "4 min read",
+                img: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&auto=format&fit=crop&q=80",
+                body: "Last-mile courier logistics has long been one of the most resource-intensive bottlenecks of global e-commerce. Today, metropolitan pilots featuring compact electric vehicles and smart routing algorithms are showing reductions in fuel consumption of up to 45%.\n\nCity planners are actively updating curbside infrastructure to support dedicated loading zones for these low-impact electric fleets."
+            },
+            {
+                id: "art-6",
+                category: "science",
+                categoryName: "Science",
+                title: "Oceanic Exploration Uncovers Thriving Deep-Sea Coral Ecosystems in Pristine Waters",
+                snippet: "Submersible expeditions in remote ocean ridges identify bioluminescent species and ancient volcanic reef formations...",
+                author: "Marine Biology Institute",
+                readTime: "3 min read",
+                img: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&auto=format&fit=crop&q=80",
+                body: "A collaborative oceanic expedition utilizing remotely operated deep-sea submersibles has documented an untouched coral ecosystem living more than 2,000 meters beneath the surface.\n\nScientists observed dozens of previously undocumented bioluminescent organisms thriving in high-pressure hydrothermal vents, providing critical clues regarding the resilience of deep marine biodiversity."
+            }
+        ];
+
+        let activeCategoryFilter = "all";
+
+        function initNewsFeed() {
+            // Set Today's formatted edition date
+            const today = new Date();
+            const dateStr = today.toLocaleDateString(undefined, {
+                weekday: 'long',
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+            });
+            if (DOM.newsTodayDate) {
+                DOM.newsTodayDate.textContent = `${dateStr} • Morning Digest`;
+            }
+
+            renderNewsArticles();
+
+            // Fetch live headlines from free Hacker News Firebase API to integrate dynamic daily news
+            fetchLiveNewsStories();
+        }
+
+        async function fetchLiveNewsStories() {
+            try {
+                const res = await fetch('https://hacker-news.firebaseio.com/v0/topstories.json');
+                if (!res.ok) return;
+                const ids = await res.json();
+                if (!Array.isArray(ids) || ids.length === 0) return;
+
+                // Fetch top 3 live stories
+                const topIds = ids.slice(0, 3);
+                const storyPromises = topIds.map(id => fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then(r => r.json()));
+                const stories = await Promise.race([
+                    Promise.all(storyPromises),
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000))
+                ]);
+
+                if (Array.isArray(stories) && stories.length > 0) {
+                    const fallbackImgs = [
+                        "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop&q=80",
+                        "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&auto=format&fit=crop&q=80",
+                        "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&auto=format&fit=crop&q=80"
+                    ];
+                    stories.forEach((s, idx) => {
+                        if (s && s.title) {
+                            MAGAZINE_ARTICLES.unshift({
+                                id: `hn-${s.id}`,
+                                category: "tech",
+                                categoryName: "Breaking Tech",
+                                title: s.title,
+                                snippet: `Latest top story trending globally with ${s.score || 120} readers discussing online...`,
+                                author: s.by ? `Reported by ${s.by}` : "Global Wire",
+                                readTime: "2 min read",
+                                img: fallbackImgs[idx % fallbackImgs.length],
+                                body: `Original Story: "${s.title}"\n\nThis story is currently receiving major interest across international tech communities. Points of discussion highlight the rapid velocity of modern software design, cryptographic data protection, and connected digital ecosystems.\n\n${s.url ? `Source Reference: ${s.url}` : "Distributed via global syndicated news services."}`
+                            });
+                        }
+                    });
+                    renderNewsArticles();
+                }
+            } catch (err) {
+                console.log("Live news note (using high-res curated edition):", err.message);
+            }
+        }
+
+        function renderNewsArticles() {
+            if (!DOM.newsArticlesList) return;
+
+            const filtered = MAGAZINE_ARTICLES.filter(a => activeCategoryFilter === 'all' || a.category === activeCategoryFilter);
+            if (filtered.length === 0) return;
+
+            // Hero article
+            const hero = filtered[0];
+            if (DOM.newsHeroTitle) DOM.newsHeroTitle.textContent = hero.title;
+            if (DOM.newsHeroSnippet) DOM.newsHeroSnippet.textContent = hero.snippet;
+            if (DOM.newsHeroCategory) DOM.newsHeroCategory.textContent = hero.categoryName;
+            if (DOM.newsHeroTime) DOM.newsHeroTime.textContent = hero.readTime;
+            if (DOM.newsHeroAuthor) DOM.newsHeroAuthor.textContent = hero.author;
+            if (DOM.newsHeroImg) DOM.newsHeroImg.src = hero.img;
+
+            if (DOM.newsHeroCard) {
+                DOM.newsHeroCard.onclick = () => openArticleReader(hero);
+            }
+
+            // Article List (remaining articles)
+            const listArticles = filtered.slice(1);
+            DOM.newsArticlesList.innerHTML = "";
+
+            listArticles.forEach(art => {
+                const card = document.createElement('div');
+                card.className = 'news-article-card';
+                card.innerHTML = `
+                    <img src="${art.img}" class="news-article-thumb" alt="${art.title}">
+                    <div class="news-article-details">
+                        <span class="news-article-tag">${art.categoryName}</span>
+                        <h3 class="news-article-title">${art.title}</h3>
+                        <span class="news-article-meta">${art.readTime} • ${art.author}</span>
+                    </div>
+                `;
+                card.onclick = () => openArticleReader(art);
+                DOM.newsArticlesList.appendChild(card);
+            });
+        }
+
+        function openArticleReader(article) {
+            if (!DOM.articleReaderModal) return;
+            if (DOM.readerTitle) DOM.readerTitle.textContent = article.title;
+            if (DOM.readerImg) DOM.readerImg.src = article.img;
+            if (DOM.readerCategory) DOM.readerCategory.textContent = article.categoryName;
+            if (DOM.readerMeta) DOM.readerMeta.textContent = `${article.author} • ${article.readTime} • Published Today`;
+            if (DOM.readerBody) {
+                DOM.readerBody.innerHTML = article.body.split('\n\n').map(p => `<p style="margin-bottom: 12px;">${p}</p>`).join('');
+            }
+            DOM.articleReaderModal.classList.remove('hidden');
+        }
+
+        // Category filter buttons
+        if (DOM.newsCategoriesNav) {
+            DOM.newsCategoriesNav.querySelectorAll('.news-cat-pill').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    DOM.newsCategoriesNav.querySelectorAll('.news-cat-pill').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    activeCategoryFilter = btn.dataset.cat || "all";
+                    renderNewsArticles();
+                });
+            });
+        }
+
+        if (DOM.closeReaderBtn) {
+            DOM.closeReaderBtn.addEventListener('click', () => {
+                if (DOM.articleReaderModal) DOM.articleReaderModal.classList.add('hidden');
+            });
+        }
+        if (DOM.articleReaderModal) {
+            DOM.articleReaderModal.addEventListener('click', (e) => {
+                if (e.target === DOM.articleReaderModal) DOM.articleReaderModal.classList.add('hidden');
+            });
+        }
+
+        // ==========================================
+        // DISCREET STEALTH LOGIN ACCESS HANDLERS
+        // ==========================================
+        function openAuthModal() {
+            if (DOM.authModal) {
+                DOM.authModal.classList.remove('hidden');
+                if (DOM.errorLog) DOM.errorLog.textContent = "";
+                setTimeout(() => { if (DOM.usernameInput) DOM.usernameInput.focus(); }, 150);
+            }
+        }
+        function closeAuthModal() {
+            if (DOM.authModal) DOM.authModal.classList.add('hidden');
+        }
+
+        if (DOM.openLoginModalBtn) DOM.openLoginModalBtn.addEventListener('click', openAuthModal);
+        if (DOM.footerStaffLoginBtn) DOM.footerStaffLoginBtn.addEventListener('click', openAuthModal);
+        if (DOM.magazineLogoSecret) {
+            DOM.magazineLogoSecret.style.cursor = 'pointer';
+            DOM.magazineLogoSecret.addEventListener('click', openAuthModal);
+        }
+        if (DOM.closeLoginModalBtn) DOM.closeLoginModalBtn.addEventListener('click', closeAuthModal);
+        if (DOM.authModal) {
+            DOM.authModal.addEventListener('click', (e) => {
+                if (e.target === DOM.authModal) closeAuthModal();
+            });
+        }
+
+        // Initialize News Feed
+        initNewsFeed();
+
+        // Check for existing active session
         const storedUser = localStorage.getItem('active_chat_user');
         if (storedUser === 'sahil' || storedUser === 'shazu') {
             startSession(storedUser);

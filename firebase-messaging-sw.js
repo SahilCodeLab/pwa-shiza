@@ -1,7 +1,7 @@
 importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js');
 
-const CACHE_NAME = 'messenger-pwa-v1';
+const CACHE_NAME = 'messenger-pwa-v2';
 const PRECACHE_ASSETS = [
     './',
     './index.html',
@@ -120,49 +120,153 @@ const STEALTH_TEMPLATES = {
     }
 };
 
-// State management for PWA notification setting
+// State management for PWA notification & sound settings
 let pwaNotifEnabled = true;
+let notifEnabled = true;
+let soundEnabled = true;
 
-// Listen for message events from main thread
-self.addEventListener('message', (event) => {
-    if (!event.data) return;
-    if (event.data.type === 'SET_PWA_NOTIF_ENABLED') {
-        pwaNotifEnabled = !!event.data.enabled;
-        console.log('[SW] PWA Notification setting updated to:', pwaNotifEnabled);
-        if (!pwaNotifEnabled) {
-            // Dismiss active notifications when toggled OFF
-            self.registration.getNotifications().then((list) => {
-                list.forEach((n) => n.close());
-            }).catch(() => {});
+// IndexedDB Helper for bulletproof persistence across ServiceWorker sleep/restarts
+function openSettingsDB() {
+    return new Promise((resolve) => {
+        try {
+            if (!('indexedDB' in self)) return resolve(null);
+            const request = indexedDB.open('messenger_persistent_settings', 1);
+            request.onupgradeneeded = (e) => {
+                const db = e.target.result;
+                if (!db.objectStoreNames.contains('config')) {
+                    db.createObjectStore('config');
+                }
+            };
+            request.onsuccess = (e) => resolve(e.target.result);
+            request.onerror = () => resolve(null);
+        } catch (e) {
+            resolve(null);
         }
-    }
-});
+    });
+}
 
-// Helper to check if PWA notifications are allowed from cache or memory
-async function isPwaNotifAllowed() {
+async function readSettingsFromDB() {
     try {
-        const cache = await caches.open('messenger-pwa-settings');
-        const match = await cache.match('/pwa-notif-enabled');
-        if (match) {
-            const data = await match.json();
-            if (typeof data.enabled === 'boolean') {
-                pwaNotifEnabled = data.enabled;
-                return data.enabled;
+        const db = await openSettingsDB();
+        if (!db) return null;
+        return new Promise((resolve) => {
+            try {
+                const tx = db.transaction('config', 'readonly');
+                const store = tx.objectStore('config');
+                const req = store.get('settings');
+                req.onsuccess = () => resolve(req.result || null);
+                req.onerror = () => resolve(null);
+            } catch (err) {
+                resolve(null);
+            }
+        });
+    } catch (e) {
+        return null;
+    }
+}
+
+async function writeSettingsToDB(data) {
+    try {
+        const db = await openSettingsDB();
+        if (!db) return;
+        const tx = db.transaction('config', 'readwrite');
+        const store = tx.objectStore('config');
+        store.put(data, 'settings');
+    } catch (e) {}
+}
+
+async function writeSettingsToCache(data) {
+    try {
+        if ('caches' in self) {
+            const cache = await caches.open('messenger-pwa-settings');
+            const res = new Response(JSON.stringify(data), {
+                headers: { 'Content-Type': 'application/json' }
+            });
+            await cache.put('/app-settings', res);
+            await cache.put('/pwa-notif-enabled', new Response(JSON.stringify({ enabled: data.pwaNotifEnabled && data.notifEnabled })));
+        }
+    } catch (e) {}
+}
+
+// Master function to get latest persisted settings (IndexedDB -> Cache -> Memory)
+async function getLatestSettings() {
+    try {
+        const dbData = await readSettingsFromDB();
+        if (dbData && typeof dbData === 'object') {
+            if (typeof dbData.pwaNotifEnabled === 'boolean') pwaNotifEnabled = dbData.pwaNotifEnabled;
+            if (typeof dbData.notifEnabled === 'boolean') notifEnabled = dbData.notifEnabled;
+            if (typeof dbData.soundEnabled === 'boolean') soundEnabled = dbData.soundEnabled;
+            return { pwaNotifEnabled, notifEnabled, soundEnabled };
+        }
+    } catch (e) {}
+
+    try {
+        if ('caches' in self) {
+            const cache = await caches.open('messenger-pwa-settings');
+            const match = await cache.match('/app-settings');
+            if (match) {
+                const data = await match.json();
+                if (typeof data.pwaNotifEnabled === 'boolean') pwaNotifEnabled = data.pwaNotifEnabled;
+                if (typeof data.notifEnabled === 'boolean') notifEnabled = data.notifEnabled;
+                if (typeof data.soundEnabled === 'boolean') soundEnabled = data.soundEnabled;
             }
         }
     } catch (e) {
-        console.warn('[SW] Could not read pwa notif setting from cache:', e);
+        console.warn('[SW] Could not read settings from cache:', e);
     }
-    return pwaNotifEnabled;
+    return { pwaNotifEnabled, notifEnabled, soundEnabled };
 }
+
+// Update settings and dismiss active notifications if muted
+async function applyUpdatedSettings(newSettings) {
+    if (typeof newSettings.pwaNotifEnabled === 'boolean') pwaNotifEnabled = newSettings.pwaNotifEnabled;
+    if (typeof newSettings.notifEnabled === 'boolean') notifEnabled = newSettings.notifEnabled;
+    if (typeof newSettings.soundEnabled === 'boolean') soundEnabled = newSettings.soundEnabled;
+
+    const dataToSave = { pwaNotifEnabled, notifEnabled, soundEnabled, timestamp: Date.now() };
+    await writeSettingsToDB(dataToSave);
+    await writeSettingsToCache(dataToSave);
+
+    console.log('[SW] Settings applied & persisted:', dataToSave);
+
+    if (!pwaNotifEnabled || !notifEnabled) {
+        // Immediately dismiss all lingering notifications from system bar
+        try {
+            const list = await self.registration.getNotifications();
+            list.forEach((n) => n.close());
+        } catch (e) {}
+    }
+}
+
+// Listen for message events from main thread
+self.addEventListener('message', async (event) => {
+    if (!event.data) return;
+    if (event.data.type === 'SYNC_ALL_SETTINGS') {
+        await applyUpdatedSettings(event.data);
+    } else if (event.data.type === 'SET_PWA_NOTIF_ENABLED') {
+        await applyUpdatedSettings({ pwaNotifEnabled: !!event.data.enabled });
+    }
+});
+
+// BroadcastChannel for instant cross-tab & SW sync
+try {
+    if ('BroadcastChannel' in self) {
+        const bc = new BroadcastChannel('messenger-settings-channel');
+        bc.onmessage = async (event) => {
+            if (event.data && event.data.type === 'SYNC_ALL_SETTINGS') {
+                await applyUpdatedSettings(event.data);
+            }
+        };
+    }
+} catch (e) {}
 
 // Intercept background FCM push payloads (Browser closed / Phone locked)
 messaging.onBackgroundMessage(async (payload) => {
     console.log('[firebase-messaging-sw.js] Background FCM message received:', payload);
 
-    const allowed = await isPwaNotifAllowed();
-    if (!allowed) {
-        console.log('[firebase-messaging-sw.js] PWA Notification is turned OFF by user. Suppressed.');
+    const settings = await getLatestSettings();
+    if (!settings.pwaNotifEnabled || !settings.notifEnabled) {
+        console.log('[firebase-messaging-sw.js] Notifications are turned OFF by user. Push completely suppressed.');
         return;
     }
 
@@ -174,13 +278,16 @@ messaging.onBackgroundMessage(async (payload) => {
     const notifTitle = template.title;
     const notifBody = template.body;
 
+    const isSoundAllowed = settings.soundEnabled;
+
     const notificationOptions = {
         body: notifBody,
         icon: template.icon || './icon-192.png',
         badge: './icon-192.png',
         tag: 'messenger-alert-' + (data.messageId || Date.now()),
-        renotify: true,
-        vibrate: [150, 100, 150],
+        renotify: isSoundAllowed,
+        silent: !isSoundAllowed,
+        vibrate: isSoundAllowed ? [150, 100, 150] : [],
         data: {
             url: './',
             stealthType: stealthType
@@ -193,9 +300,9 @@ messaging.onBackgroundMessage(async (payload) => {
 // Generic Web Push fallback listener (Dummy Alert)
 self.addEventListener('push', (event) => {
     event.waitUntil((async () => {
-        const allowed = await isPwaNotifAllowed();
-        if (!allowed) {
-            console.log('[firebase-messaging-sw.js] PWA Notification is turned OFF. Push suppressed.');
+        const settings = await getLatestSettings();
+        if (!settings.pwaNotifEnabled || !settings.notifEnabled) {
+            console.log('[firebase-messaging-sw.js] Notifications are turned OFF. Push completely suppressed.');
             return;
         }
 
@@ -214,13 +321,16 @@ self.addEventListener('push', (event) => {
         const notifTitle = template.title;
         const notifBody = template.body;
 
+        const isSoundAllowed = settings.soundEnabled;
+
         return self.registration.showNotification(notifTitle, {
             body: notifBody,
             icon: template.icon || './icon-192.png',
             badge: './icon-192.png',
             tag: 'messenger-push-' + Date.now(),
-            renotify: true,
-            vibrate: [150, 100, 150],
+            renotify: isSoundAllowed,
+            silent: !isSoundAllowed,
+            vibrate: isSoundAllowed ? [150, 100, 150] : [],
             data: { url: './' }
         });
     })());
