@@ -248,7 +248,7 @@
         .modal-header h3 { margin: 0; font-size: 1.05rem; color: #111827; font-weight: 700; }
         .modal-body { padding: 18px 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
 
-        .profile-dropdown { position: absolute; top: 56px; right: 16px; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.12); width: 220px; z-index: 50; overflow: hidden; display: flex; flex-direction: column; }
+        .profile-dropdown { position: absolute; top: 56px; right: 16px; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.12); width: 236px; max-height: calc(100dvh - 75px); overflow-y: auto; z-index: 50; display: flex; flex-direction: column; }
         .profile-dropdown button { padding: 12px 16px; text-align: left; border: none; background: transparent; font-size: 0.88rem; font-weight: 500; color: #374151; cursor: pointer; display: flex; align-items: center; gap: 12px; font-family: inherit; }
         .profile-dropdown button:hover { background: #f8fafc; color: #2563eb; }
         .profile-dropdown button.danger { color: #ef4444; border-top: 1px solid #f1f3f6; }
@@ -457,13 +457,29 @@
                     </svg>
                     <span>Shared Media</span>
                 </button>
-                <button id="open-notif-modal-btn">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                    </svg>
-                    <span>Notifications & Alerts 🔔</span>
+                <div style="height: 1px; background: #f1f5f9; margin: 4px 0;"></div>
+                <button id="toggle-notif-menu-btn" type="button" style="display: flex; justify-content: space-between; align-items: center; width: 100%; cursor: pointer;" title="Toggle notifications ON/OFF">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span id="menu-notif-icon" style="font-size: 1.05rem;">🔔</span>
+                        <span>Notifications</span>
+                    </div>
+                    <span id="menu-notif-badge" style="font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; background: #10b981; color: #ffffff; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">ON</span>
                 </button>
+                <button id="toggle-sound-menu-btn" type="button" style="display: flex; justify-content: space-between; align-items: center; width: 100%; cursor: pointer;" title="Toggle sound ON/OFF">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span id="menu-sound-icon" style="font-size: 1.05rem;">🔊</span>
+                        <span>Sound</span>
+                    </div>
+                    <span id="menu-sound-badge" style="font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; background: #10b981; color: #ffffff; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">ON</span>
+                </button>
+                <button id="open-notif-modal-btn" type="button">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                    <span>Notification Settings ⚙️</span>
+                </button>
+                <div style="height: 1px; background: #f1f5f9; margin: 4px 0;"></div>
                 <button id="pwa-install-menu-btn">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -675,6 +691,24 @@
                         <p style="font-size: 0.84rem; color: #64748b; margin: 0; line-height: 1.45;">
                             When you receive a message, the sender name and real message content are 100% hidden. A disguised dummy message is displayed instead!
                         </p>
+
+                        <!-- Master On/Off Toggles -->
+                        <div style="display: flex; flex-direction: column; gap: 10px; background: #f8fafc; padding: 12px 14px; border-radius: 14px; border: 1px solid #e2e8f0;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div style="font-weight: 600; font-size: 0.88rem; color: #1e293b;">🔔 Notifications Alert</div>
+                                    <div style="font-size: 0.74rem; color: #64748b;">Turn alerts on or off anytime</div>
+                                </div>
+                                <button id="modal-notif-toggle-btn" type="button" style="padding: 6px 16px; border-radius: 9999px; font-size: 0.78rem; font-weight: 700; border: none; cursor: pointer; background: #10b981; color: #ffffff; transition: background 0.2s;">ON</button>
+                            </div>
+                            <div style="border-top: 1px solid #e2e8f0; padding-top: 10px; display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div style="font-weight: 600; font-size: 0.88rem; color: #1e293b;">🔊 Message Chime Sound</div>
+                                    <div style="font-size: 0.74rem; color: #64748b;">Play audio chime when message arrives</div>
+                                </div>
+                                <button id="modal-sound-toggle-btn" type="button" style="padding: 6px 16px; border-radius: 9999px; font-size: 0.78rem; font-weight: 700; border: none; cursor: pointer; background: #10b981; color: #ffffff; transition: background 0.2s;">ON</button>
+                            </div>
+                        </div>
                         
                         <div style="background: rgba(37, 99, 235, 0.06); border: 1px solid rgba(37, 99, 235, 0.2); border-radius: 12px; padding: 12px; display: flex; justify-content: space-between; align-items: center;">
                             <div>
@@ -867,7 +901,16 @@
             inAppToastAvatar: document.getElementById('in-app-toast-avatar'),
             inAppToastSender: document.getElementById('in-app-toast-sender'),
             inAppToastText: document.getElementById('in-app-toast-text'),
-            inAppToastClose: document.getElementById('in-app-toast-close')
+            inAppToastClose: document.getElementById('in-app-toast-close'),
+
+            toggleNotifMenuBtn: document.getElementById('toggle-notif-menu-btn'),
+            menuNotifBadge: document.getElementById('menu-notif-badge'),
+            menuNotifIcon: document.getElementById('menu-notif-icon'),
+            toggleSoundMenuBtn: document.getElementById('toggle-sound-menu-btn'),
+            menuSoundBadge: document.getElementById('menu-sound-badge'),
+            menuSoundIcon: document.getElementById('menu-sound-icon'),
+            modalNotifToggleBtn: document.getElementById('modal-notif-toggle-btn'),
+            modalSoundToggleBtn: document.getElementById('modal-sound-toggle-btn')
         };
 
         let currentUser = "";
@@ -969,7 +1012,84 @@
         // ==========================================
         // NOTIFICATION & AUDIO ALERT ENGINE
         // ==========================================
-        function playMessageNotificationSound() {
+        let isNotifEnabled = localStorage.getItem('chat_notif_enabled') !== 'false';
+        let isSoundEnabled = localStorage.getItem('chat_sound_enabled') !== 'false';
+
+        function showActionFeedbackToast(title, subtitle, icon = "⚙️") {
+            if (!DOM.inAppToast) return;
+            if (DOM.inAppToastSender) DOM.inAppToastSender.textContent = title;
+            if (DOM.inAppToastText) DOM.inAppToastText.textContent = subtitle;
+            if (DOM.inAppToastAvatar) DOM.inAppToastAvatar.textContent = icon;
+            DOM.inAppToast.classList.remove('hidden');
+            if (inAppToastTimer) clearTimeout(inAppToastTimer);
+            inAppToastTimer = setTimeout(() => {
+                if (DOM.inAppToast) DOM.inAppToast.classList.add('hidden');
+            }, 2600);
+        }
+
+        function updateToggleUI() {
+            // 1. Notification Toggle in 3-dot menu
+            if (DOM.menuNotifBadge) {
+                DOM.menuNotifBadge.textContent = isNotifEnabled ? 'ON' : 'OFF';
+                DOM.menuNotifBadge.style.background = isNotifEnabled ? '#10b981' : '#ef4444';
+                DOM.menuNotifBadge.style.color = '#ffffff';
+            }
+            if (DOM.menuNotifIcon) {
+                DOM.menuNotifIcon.textContent = isNotifEnabled ? '🔔' : '🔕';
+            }
+
+            // 2. Sound Toggle in 3-dot menu
+            if (DOM.menuSoundBadge) {
+                DOM.menuSoundBadge.textContent = isSoundEnabled ? 'ON' : 'OFF';
+                DOM.menuSoundBadge.style.background = isSoundEnabled ? '#10b981' : '#ef4444';
+                DOM.menuSoundBadge.style.color = '#ffffff';
+            }
+            if (DOM.menuSoundIcon) {
+                DOM.menuSoundIcon.textContent = isSoundEnabled ? '🔊' : '🔇';
+            }
+
+            // 3. Modal Toggles
+            if (DOM.modalNotifToggleBtn) {
+                DOM.modalNotifToggleBtn.textContent = isNotifEnabled ? 'ON' : 'OFF';
+                DOM.modalNotifToggleBtn.style.background = isNotifEnabled ? '#10b981' : '#ef4444';
+                DOM.modalNotifToggleBtn.style.color = '#ffffff';
+            }
+            if (DOM.modalSoundToggleBtn) {
+                DOM.modalSoundToggleBtn.textContent = isSoundEnabled ? 'ON' : 'OFF';
+                DOM.modalSoundToggleBtn.style.background = isSoundEnabled ? '#10b981' : '#ef4444';
+                DOM.modalSoundToggleBtn.style.color = '#ffffff';
+            }
+        }
+
+        function toggleNotificationState() {
+            isNotifEnabled = !isNotifEnabled;
+            localStorage.setItem('chat_notif_enabled', isNotifEnabled ? 'true' : 'false');
+            updateToggleUI();
+            if (isNotifEnabled) {
+                showActionFeedbackToast("Notifications ON 🔔", "Alerts enabled for incoming messages", "🔔");
+                if ('Notification' in window && Notification.permission === 'default') {
+                    requestNotificationPermission();
+                }
+            } else {
+                showActionFeedbackToast("Notifications OFF 🔕", "Alerts & dummy popups are muted", "🔕");
+                if (DOM.notifPermissionBanner) DOM.notifPermissionBanner.classList.add('hidden');
+            }
+        }
+
+        function toggleSoundState() {
+            isSoundEnabled = !isSoundEnabled;
+            localStorage.setItem('chat_sound_enabled', isSoundEnabled ? 'true' : 'false');
+            updateToggleUI();
+            if (isSoundEnabled) {
+                playMessageNotificationSound(true);
+                showActionFeedbackToast("Sound ON 🔊", "Chime will play when message arrives", "🔊");
+            } else {
+                showActionFeedbackToast("Sound OFF 🔇", "Incoming messages will arrive silently", "🔇");
+            }
+        }
+
+        function playMessageNotificationSound(force = false) {
+            if (!isSoundEnabled && !force) return;
             try {
                 const AudioCtx = window.AudioContext || window.webkitAudioContext;
                 if (!AudioCtx) return;
@@ -1124,11 +1244,12 @@
         }
 
         async function setupStealthNotifications() {
+            updateToggleUI();
             updateNotifUI();
             if (!('Notification' in window)) return;
             if (Notification.permission === 'granted') {
                 await registerFCMToken();
-            } else if (Notification.permission === 'default') {
+            } else if (Notification.permission === 'default' && isNotifEnabled) {
                 if (DOM.notifPermissionBanner) DOM.notifPermissionBanner.classList.remove('hidden');
             }
         }
@@ -1197,8 +1318,16 @@
         }
 
         async function triggerStealthNotification(msg) {
-            // 1. Play chime sound & trigger vibration
-            playMessageNotificationSound();
+            // 1. Play chime sound if sound enabled
+            if (isSoundEnabled) {
+                playMessageNotificationSound();
+            }
+
+            // If notifications are turned OFF by user, do not alert or show popups
+            if (!isNotifEnabled) {
+                return;
+            }
+
             if ('vibrate' in navigator) {
                 try { navigator.vibrate([150, 80, 150]); } catch (e) {}
             }
@@ -2137,6 +2266,7 @@
         });
 
         initTheme();
+        updateToggleUI();
 
         // ==========================================
         // PWA SERVICE WORKER & INSTALL PROMPT
@@ -2217,9 +2347,34 @@
             });
         }
 
+        // 3-Dot Menu & Modal Notification / Sound Toggles
+        if (DOM.toggleNotifMenuBtn) {
+            DOM.toggleNotifMenuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleNotificationState();
+            });
+        }
+        if (DOM.toggleSoundMenuBtn) {
+            DOM.toggleSoundMenuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleSoundState();
+            });
+        }
+        if (DOM.modalNotifToggleBtn) {
+            DOM.modalNotifToggleBtn.addEventListener('click', () => {
+                toggleNotificationState();
+            });
+        }
+        if (DOM.modalSoundToggleBtn) {
+            DOM.modalSoundToggleBtn.addEventListener('click', () => {
+                toggleSoundState();
+            });
+        }
+
         if (DOM.openNotifModalBtn) {
             DOM.openNotifModalBtn.addEventListener('click', () => {
                 if (DOM.profileDropdown) DOM.profileDropdown.classList.add('hidden');
+                updateToggleUI();
                 updateNotifUI();
                 const savedType = localStorage.getItem('stealth_type_preference') || "1";
                 if (DOM.stealthTemplateSelect) DOM.stealthTemplateSelect.value = savedType;
