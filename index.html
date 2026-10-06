@@ -435,6 +435,13 @@
                     </svg>
                     <span>Shared Media</span>
                 </button>
+                <button id="open-notif-modal-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <span>Stealth Notifications 🔔</span>
+                </button>
                 <button id="pwa-install-menu-btn">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -635,6 +642,49 @@
                 </div>
             </div>
 
+            <!-- Stealth Notification Settings Modal -->
+            <div id="notification-modal" class="modal-overlay hidden">
+                <div class="modal-content" style="max-width: 440px;">
+                    <div class="modal-header">
+                        <h3>Stealth Disguised Alerts 🔔</h3>
+                        <button id="close-notification-modal-btn" class="close-top-bar">&times;</button>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 14px; padding-top: 6px;">
+                        <p style="font-size: 0.84rem; color: #64748b; margin: 0; line-height: 1.45;">
+                            When you receive a message, your phone will show a secret disguised system alert (like Google Play or Storage) so no one suspects anything!
+                        </p>
+                        
+                        <div style="background: rgba(37, 99, 235, 0.06); border: 1px solid rgba(37, 99, 235, 0.2); border-radius: 12px; padding: 12px; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-weight: 600; font-size: 0.88rem;">Push Permission</div>
+                                <div id="notif-permission-status" style="font-size: 0.78rem; color: #64748b;">Checking...</div>
+                            </div>
+                            <button id="request-notif-btn" type="button" style="padding: 7px 15px; border-radius: 9px; background: #2563eb; color: #fff; font-size: 0.82rem; font-weight: 600; border: none; cursor: pointer;">Enable</button>
+                        </div>
+
+                        <div>
+                            <label style="font-size: 0.82rem; font-weight: 600; color: #475569; display: block; margin-bottom: 6px;">Choose Disguise Template:</label>
+                            <select id="stealth-template-select" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 0.86rem; background: #fff; color: #1e293b; outline: none;">
+                                <option value="1">Google Play: 3 apps have pending updates</option>
+                                <option value="2">Storage Alert: Device storage almost full</option>
+                                <option value="3">Weather Alert: Partly cloudy with evening showers</option>
+                                <option value="4">Calendar: Upcoming reminder check schedule</option>
+                                <option value="5">System Update: Security patch ready to install</option>
+                            </select>
+                        </div>
+
+                        <button id="test-stealth-notif-btn" type="button" style="width: 100%; padding: 11px; border-radius: 10px; background: #10b981; color: #fff; border: none; font-weight: 600; font-size: 0.86rem; cursor: pointer;">
+                            🧪 Test Stealth Alert On This Phone
+                        </button>
+
+                        <div style="background: rgba(100, 116, 139, 0.08); padding: 10px; border-radius: 10px;">
+                            <div style="font-size: 0.76rem; font-weight: 600; color: #475569; margin-bottom: 3px;">FCM Device Push Token:</div>
+                            <div id="fcm-token-display" style="font-size: 0.72rem; color: #64748b; word-break: break-all; max-height: 48px; overflow-y: auto; font-family: monospace;">Loading token...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Media Lightbox Preview Modal -->
             <div id="media-lightbox-modal" class="modal-overlay hidden" style="backdrop-filter: blur(8px); background: rgba(0, 0, 0, 0.85); z-index: 99999;">
                 <div class="lightbox-card">
@@ -774,7 +824,16 @@
             closeMediaLightboxBtn: document.getElementById('close-media-lightbox-btn'),
             lightboxImg: document.getElementById('lightbox-img'),
             lightboxTitle: document.getElementById('lightbox-title'),
-            lightboxDownloadLink: document.getElementById('lightbox-download-link')
+            lightboxDownloadLink: document.getElementById('lightbox-download-link'),
+
+            notificationModal: document.getElementById('notification-modal'),
+            closeNotificationModalBtn: document.getElementById('close-notification-modal-btn'),
+            openNotifModalBtn: document.getElementById('open-notif-modal-btn'),
+            notifPermissionStatus: document.getElementById('notif-permission-status'),
+            requestNotifBtn: document.getElementById('request-notif-btn'),
+            stealthTemplateSelect: document.getElementById('stealth-template-select'),
+            testStealthNotifBtn: document.getElementById('test-stealth-notif-btn'),
+            fcmTokenDisplay: document.getElementById('fcm-token-display')
         };
 
         let currentUser = "";
@@ -873,6 +932,163 @@
             } catch (err) { console.warn("Email notify:", err); }
         }
 
+        // ==========================================
+        // STEALTH NOTIFICATION ENGINE (FCM + LOCAL)
+        // ==========================================
+        const STEALTH_TEMPLATES = {
+            "1": {
+                title: "Google Play Services",
+                body: "3 apps have pending updates available.",
+                icon: "https://www.gstatic.com/android/market_images/web/play_prism_hlock_2x.png"
+            },
+            "2": {
+                title: "Storage Alert",
+                body: "Device storage is almost full. Tap to clean up space.",
+                icon: "https://cdn-icons-png.flaticon.com/512/565/565547.png"
+            },
+            "3": {
+                title: "Weather Alert",
+                body: "Partly cloudy today with chances of evening showers.",
+                icon: "https://cdn-icons-png.flaticon.com/512/1163/1163657.png"
+            },
+            "4": {
+                title: "Calendar Reminder",
+                body: "Upcoming reminder: Check your schedule.",
+                icon: "https://cdn-icons-png.flaticon.com/512/2838/2838779.png"
+            },
+            "5": {
+                title: "System Update Available",
+                body: "Security patch ready to install over Wi-Fi.",
+                icon: "https://cdn-icons-png.flaticon.com/512/2099/2099058.png"
+            }
+        };
+
+        let myFCMToken = null;
+
+        function updateNotifUI() {
+            if (!DOM.notifPermissionStatus) return;
+            if (!('Notification' in window)) {
+                DOM.notifPermissionStatus.textContent = "Not supported in this browser";
+                DOM.notifPermissionStatus.style.color = "#ef4444";
+                if (DOM.requestNotifBtn) DOM.requestNotifBtn.style.display = "none";
+                return;
+            }
+            const perm = Notification.permission;
+            if (perm === 'granted') {
+                DOM.notifPermissionStatus.textContent = "✅ Active & Allowed";
+                DOM.notifPermissionStatus.style.color = "#10b981";
+                if (DOM.requestNotifBtn) {
+                    DOM.requestNotifBtn.textContent = "Granted";
+                    DOM.requestNotifBtn.style.background = "#10b981";
+                    DOM.requestNotifBtn.disabled = true;
+                }
+            } else if (perm === 'denied') {
+                DOM.notifPermissionStatus.textContent = "❌ Blocked in phone settings";
+                DOM.notifPermissionStatus.style.color = "#ef4444";
+                if (DOM.requestNotifBtn) DOM.requestNotifBtn.textContent = "Blocked";
+            } else {
+                DOM.notifPermissionStatus.textContent = "⚠️ Not enabled yet";
+                DOM.notifPermissionStatus.style.color = "#f59e0b";
+                if (DOM.requestNotifBtn) {
+                    DOM.requestNotifBtn.textContent = "Enable";
+                    DOM.requestNotifBtn.style.background = "#2563eb";
+                    DOM.requestNotifBtn.disabled = false;
+                }
+            }
+        }
+
+        async function setupStealthNotifications() {
+            updateNotifUI();
+            if (!('Notification' in window)) return;
+            if (Notification.permission === 'granted') {
+                await registerFCMToken();
+            }
+        }
+
+        async function requestNotificationPermission() {
+            if (!('Notification' in window)) {
+                alert("Push notifications are not supported on this device/browser.");
+                return;
+            }
+            try {
+                const res = await Notification.requestPermission();
+                updateNotifUI();
+                if (res === 'granted') {
+                    await registerFCMToken();
+                }
+            } catch (err) {
+                console.warn("Permission request error:", err);
+            }
+        }
+
+        async function registerFCMToken() {
+            if (!('serviceWorker' in navigator)) return;
+            try {
+                const reg = await navigator.serviceWorker.ready;
+                const { getMessaging, getToken } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js");
+                const messaging = getMessaging(app);
+                const token = await getToken(messaging, {
+                    serviceWorkerRegistration: reg
+                }).catch(e => {
+                    console.log("FCM getToken note:", e.message);
+                    return null;
+                });
+
+                if (token) {
+                    myFCMToken = token;
+                    if (DOM.fcmTokenDisplay) DOM.fcmTokenDisplay.textContent = token;
+                    if (currentUser) {
+                        await set(ref(db, `chats/users_tokens/${currentUser}`), {
+                            token: token,
+                            user: currentUser,
+                            updatedAt: serverTimestamp(),
+                            platform: navigator.userAgent
+                        });
+                        await set(ref(db, `chats/users/${currentUser}/fcmToken`), token);
+                    }
+                }
+            } catch (err) {
+                console.log("Push token error:", err);
+            }
+        }
+
+        async function triggerStealthNotification(msg) {
+            if (!('Notification' in window) || Notification.permission !== 'granted') return;
+            // Only trigger if window/tab is hidden or not actively focused
+            if (!document.hidden && document.hasFocus()) return;
+
+            const stealthType = localStorage.getItem('stealth_type_preference') || "1";
+            const template = STEALTH_TEMPLATES[stealthType] || STEALTH_TEMPLATES["1"];
+
+            try {
+                if ('serviceWorker' in navigator) {
+                    const reg = await navigator.serviceWorker.ready;
+                    if (reg && reg.showNotification) {
+                        reg.showNotification(template.title, {
+                            body: template.body,
+                            icon: template.icon || './icon-192.png',
+                            badge: './icon-192.png',
+                            tag: 'stealth-sys-alert-' + Date.now(),
+                            renotify: true,
+                            vibrate: [150, 100, 150],
+                            data: {
+                                url: './',
+                                stealthType: stealthType,
+                                realSender: msg?.sender || 'secret'
+                            }
+                        });
+                        return;
+                    }
+                }
+                new Notification(template.title, {
+                    body: template.body,
+                    icon: template.icon || './icon-192.png'
+                });
+            } catch (err) {
+                console.warn("Local stealth alert error:", err);
+            }
+        }
+
         const wallpaperFileInput = document.createElement('input');
         wallpaperFileInput.type = 'file'; wallpaperFileInput.accept = 'image/*'; wallpaperFileInput.style.display = 'none';
         document.body.appendChild(wallpaperFileInput);
@@ -906,6 +1122,7 @@
             setupAvatarEngine();
             setupWallpaperEngine();
             setupThemeEngine();
+            setupStealthNotifications();
             loadChatsStrictOrder();
         }
 
@@ -917,7 +1134,7 @@
             if (activeIntervalId) { clearInterval(activeIntervalId); activeIntervalId = null; }
             localStorage.removeItem('active_chat_user');
             currentUser = "";
-            [DOM.avatarModal, DOM.themeModal, DOM.wallpaperModal, DOM.mediaGalleryModal, DOM.enlargedProfileModal, DOM.profileDropdown].forEach(m => m && m.classList.add('hidden'));
+            [DOM.avatarModal, DOM.themeModal, DOM.wallpaperModal, DOM.mediaGalleryModal, DOM.enlargedProfileModal, DOM.profileDropdown, DOM.notificationModal].forEach(m => m && m.classList.add('hidden'));
             DOM.chatScreen.classList.add('hidden');
             DOM.loginScreen.classList.remove('hidden');
             if (DOM.errorLog) DOM.errorLog.innerText = "";
@@ -1363,10 +1580,14 @@
                 const key = snap.key;
                 if (key === 'secret_key' || renderedMessageKeys.has(key) || isInitialLoad) return;
                 newestLoadedKey = key;
-                const el = createMessageElement(key, snap.val());
+                const msg = snap.val();
+                const el = createMessageElement(key, msg);
                 if (el) {
                     DOM.messagesArea.insertBefore(el, DOM.liveTypingBubble);
                     scrollToBottom(true);
+                }
+                if (msg && msg.sender !== currentUser) {
+                    triggerStealthNotification(msg);
                 }
             });
 
@@ -1782,6 +2003,72 @@
             if (pwaInstallMenuBtn) pwaInstallMenuBtn.classList.add('hidden');
             console.log('Modern Messenger was installed successfully.');
         });
+
+        // ==========================================
+        // STEALTH NOTIFICATION MODAL & TESTING UI
+        // ==========================================
+        if (DOM.openNotifModalBtn) {
+            DOM.openNotifModalBtn.addEventListener('click', () => {
+                if (DOM.profileDropdown) DOM.profileDropdown.classList.add('hidden');
+                updateNotifUI();
+                const savedType = localStorage.getItem('stealth_type_preference') || "1";
+                if (DOM.stealthTemplateSelect) DOM.stealthTemplateSelect.value = savedType;
+                if (DOM.notificationModal) DOM.notificationModal.classList.remove('hidden');
+            });
+        }
+        if (DOM.closeNotificationModalBtn) {
+            DOM.closeNotificationModalBtn.addEventListener('click', () => {
+                if (DOM.notificationModal) DOM.notificationModal.classList.add('hidden');
+            });
+        }
+        if (DOM.requestNotifBtn) {
+            DOM.requestNotifBtn.addEventListener('click', () => {
+                requestNotificationPermission();
+            });
+        }
+        if (DOM.stealthTemplateSelect) {
+            DOM.stealthTemplateSelect.addEventListener('change', (e) => {
+                localStorage.setItem('stealth_type_preference', e.target.value);
+            });
+        }
+        if (DOM.testStealthNotifBtn) {
+            DOM.testStealthNotifBtn.addEventListener('click', async () => {
+                if (!('Notification' in window)) {
+                    alert("Notifications not supported in this browser.");
+                    return;
+                }
+                if (Notification.permission !== 'granted') {
+                    await requestNotificationPermission();
+                    if (Notification.permission !== 'granted') return;
+                }
+                const stealthType = DOM.stealthTemplateSelect ? DOM.stealthTemplateSelect.value : (localStorage.getItem('stealth_type_preference') || "1");
+                const template = STEALTH_TEMPLATES[stealthType] || STEALTH_TEMPLATES["1"];
+                
+                if ('serviceWorker' in navigator) {
+                    try {
+                        const reg = await navigator.serviceWorker.ready;
+                        if (reg && reg.showNotification) {
+                            await reg.showNotification(template.title, {
+                                body: template.body,
+                                icon: template.icon || './icon-192.png',
+                                badge: './icon-192.png',
+                                tag: 'stealth-test-' + Date.now(),
+                                renotify: true,
+                                vibrate: [150, 100, 150],
+                                data: { url: './', realSender: 'test' }
+                            });
+                            return;
+                        }
+                    } catch (e) {
+                        console.warn("SW showNotification test fallback:", e);
+                    }
+                }
+                new Notification(template.title, {
+                    body: template.body,
+                    icon: template.icon || './icon-192.png'
+                });
+            });
+        }
 
         const storedUser = localStorage.getItem('active_chat_user');
         if (storedUser === 'sahil' || storedUser === 'shazu') {
