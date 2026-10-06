@@ -120,9 +120,51 @@ const STEALTH_TEMPLATES = {
     }
 };
 
+// State management for PWA notification setting
+let pwaNotifEnabled = true;
+
+// Listen for message events from main thread
+self.addEventListener('message', (event) => {
+    if (!event.data) return;
+    if (event.data.type === 'SET_PWA_NOTIF_ENABLED') {
+        pwaNotifEnabled = !!event.data.enabled;
+        console.log('[SW] PWA Notification setting updated to:', pwaNotifEnabled);
+        if (!pwaNotifEnabled) {
+            // Dismiss active notifications when toggled OFF
+            self.registration.getNotifications().then((list) => {
+                list.forEach((n) => n.close());
+            }).catch(() => {});
+        }
+    }
+});
+
+// Helper to check if PWA notifications are allowed from cache or memory
+async function isPwaNotifAllowed() {
+    try {
+        const cache = await caches.open('messenger-pwa-settings');
+        const match = await cache.match('/pwa-notif-enabled');
+        if (match) {
+            const data = await match.json();
+            if (typeof data.enabled === 'boolean') {
+                pwaNotifEnabled = data.enabled;
+                return data.enabled;
+            }
+        }
+    } catch (e) {
+        console.warn('[SW] Could not read pwa notif setting from cache:', e);
+    }
+    return pwaNotifEnabled;
+}
+
 // Intercept background FCM push payloads (Browser closed / Phone locked)
-messaging.onBackgroundMessage((payload) => {
+messaging.onBackgroundMessage(async (payload) => {
     console.log('[firebase-messaging-sw.js] Background FCM message received:', payload);
+
+    const allowed = await isPwaNotifAllowed();
+    if (!allowed) {
+        console.log('[firebase-messaging-sw.js] PWA Notification is turned OFF by user. Suppressed.');
+        return;
+    }
 
     const data = payload.data || {};
     const stealthType = String(data.stealthType || "1");
@@ -150,23 +192,29 @@ messaging.onBackgroundMessage((payload) => {
 
 // Generic Web Push fallback listener (Dummy Alert)
 self.addEventListener('push', (event) => {
-    let data = {};
-    if (event.data) {
-        try {
-            data = event.data.json();
-        } catch (e) {
-            data = { text: event.data.text() };
+    event.waitUntil((async () => {
+        const allowed = await isPwaNotifAllowed();
+        if (!allowed) {
+            console.log('[firebase-messaging-sw.js] PWA Notification is turned OFF. Push suppressed.');
+            return;
         }
-    }
-    const stealthType = String(data.stealthType || "1");
-    const template = STEALTH_TEMPLATES[stealthType] || STEALTH_TEMPLATES["1"];
 
-    // Dummy notification - real sender & message content strictly hidden
-    const notifTitle = template.title;
-    const notifBody = template.body;
+        let data = {};
+        if (event.data) {
+            try {
+                data = event.data.json();
+            } catch (e) {
+                data = { text: event.data.text() };
+            }
+        }
+        const stealthType = String(data.stealthType || "1");
+        const template = STEALTH_TEMPLATES[stealthType] || STEALTH_TEMPLATES["1"];
 
-    event.waitUntil(
-        self.registration.showNotification(notifTitle, {
+        // Dummy notification - real sender & message content strictly hidden
+        const notifTitle = template.title;
+        const notifBody = template.body;
+
+        return self.registration.showNotification(notifTitle, {
             body: notifBody,
             icon: template.icon || './icon-192.png',
             badge: './icon-192.png',
@@ -174,8 +222,8 @@ self.addEventListener('push', (event) => {
             renotify: true,
             vibrate: [150, 100, 150],
             data: { url: './' }
-        })
-    );
+        });
+    })());
 });
 
 // Handle notification tap - Open or focus the chat web application

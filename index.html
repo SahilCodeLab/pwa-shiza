@@ -458,6 +458,13 @@
                     <span>Shared Media</span>
                 </button>
                 <div style="height: 1px; background: #f1f5f9; margin: 4px 0;"></div>
+                <button id="toggle-pwa-notif-menu-btn" type="button" style="display: flex; justify-content: space-between; align-items: center; width: 100%; cursor: pointer;" title="Toggle PWA notifications ON/OFF">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span id="menu-pwa-notif-icon" style="font-size: 1.05rem;">📱</span>
+                        <span>PWA Notification</span>
+                    </div>
+                    <span id="menu-pwa-notif-badge" style="font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; background: #10b981; color: #ffffff; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">ON</span>
+                </button>
                 <button id="toggle-notif-menu-btn" type="button" style="display: flex; justify-content: space-between; align-items: center; width: 100%; cursor: pointer;" title="Toggle notifications ON/OFF">
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <span id="menu-notif-icon" style="font-size: 1.05rem;">🔔</span>
@@ -696,7 +703,14 @@
                         <div style="display: flex; flex-direction: column; gap: 10px; background: #f8fafc; padding: 12px 14px; border-radius: 14px; border: 1px solid #e2e8f0;">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <div>
-                                    <div style="font-weight: 600; font-size: 0.88rem; color: #1e293b;">🔔 Notifications Alert</div>
+                                    <div style="font-weight: 600; font-size: 0.88rem; color: #1e293b;">📱 PWA Notification</div>
+                                    <div style="font-size: 0.74rem; color: #64748b;">Phone / background PWA push alerts</div>
+                                </div>
+                                <button id="modal-pwa-notif-toggle-btn" type="button" style="padding: 6px 16px; border-radius: 9999px; font-size: 0.78rem; font-weight: 700; border: none; cursor: pointer; background: #10b981; color: #ffffff; transition: background 0.2s;">ON</button>
+                            </div>
+                            <div style="border-top: 1px solid #e2e8f0; padding-top: 10px; display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div style="font-weight: 600; font-size: 0.88rem; color: #1e293b;">🔔 In-App Notifications</div>
                                     <div style="font-size: 0.74rem; color: #64748b;">Turn alerts on or off anytime</div>
                                 </div>
                                 <button id="modal-notif-toggle-btn" type="button" style="padding: 6px 16px; border-radius: 9999px; font-size: 0.78rem; font-weight: 700; border: none; cursor: pointer; background: #10b981; color: #ffffff; transition: background 0.2s;">ON</button>
@@ -903,6 +917,11 @@
             inAppToastText: document.getElementById('in-app-toast-text'),
             inAppToastClose: document.getElementById('in-app-toast-close'),
 
+            togglePwaNotifMenuBtn: document.getElementById('toggle-pwa-notif-menu-btn'),
+            menuPwaNotifBadge: document.getElementById('menu-pwa-notif-badge'),
+            menuPwaNotifIcon: document.getElementById('menu-pwa-notif-icon'),
+            modalPwaNotifToggleBtn: document.getElementById('modal-pwa-notif-toggle-btn'),
+
             toggleNotifMenuBtn: document.getElementById('toggle-notif-menu-btn'),
             menuNotifBadge: document.getElementById('menu-notif-badge'),
             menuNotifIcon: document.getElementById('menu-notif-icon'),
@@ -1012,8 +1031,38 @@
         // ==========================================
         // NOTIFICATION & AUDIO ALERT ENGINE
         // ==========================================
+        let isPwaNotifEnabled = localStorage.getItem('chat_pwa_notif_enabled') !== 'false';
         let isNotifEnabled = localStorage.getItem('chat_notif_enabled') !== 'false';
         let isSoundEnabled = localStorage.getItem('chat_sound_enabled') !== 'false';
+
+        async function syncPwaNotifStateToSW(enabled) {
+            try {
+                if ('caches' in window) {
+                    const cache = await caches.open('messenger-pwa-settings');
+                    await cache.put('/pwa-notif-enabled', new Response(JSON.stringify({ enabled: !!enabled })));
+                }
+            } catch (e) {
+                console.warn('Cache SW sync note:', e);
+            }
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage({
+                    type: 'SET_PWA_NOTIF_ENABLED',
+                    enabled: !!enabled
+                });
+            }
+            if (!enabled && 'serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistration().then(reg => {
+                    if (reg && reg.getNotifications) {
+                        reg.getNotifications().then(list => list.forEach(n => n.close())).catch(() => {});
+                    }
+                }).catch(() => {});
+            }
+            if (currentUser) {
+                try {
+                    await set(ref(db, `chats/users/${currentUser}/pwaNotifEnabled`), !!enabled);
+                } catch (e) {}
+            }
+        }
 
         function showActionFeedbackToast(title, subtitle, icon = "⚙️") {
             if (!DOM.inAppToast) return;
@@ -1028,6 +1077,16 @@
         }
 
         function updateToggleUI() {
+            // 0. PWA Notification Toggle in 3-dot menu
+            if (DOM.menuPwaNotifBadge) {
+                DOM.menuPwaNotifBadge.textContent = isPwaNotifEnabled ? 'ON' : 'OFF';
+                DOM.menuPwaNotifBadge.style.background = isPwaNotifEnabled ? '#10b981' : '#ef4444';
+                DOM.menuPwaNotifBadge.style.color = '#ffffff';
+            }
+            if (DOM.menuPwaNotifIcon) {
+                DOM.menuPwaNotifIcon.textContent = isPwaNotifEnabled ? '📱' : '🔕';
+            }
+
             // 1. Notification Toggle in 3-dot menu
             if (DOM.menuNotifBadge) {
                 DOM.menuNotifBadge.textContent = isNotifEnabled ? 'ON' : 'OFF';
@@ -1049,6 +1108,11 @@
             }
 
             // 3. Modal Toggles
+            if (DOM.modalPwaNotifToggleBtn) {
+                DOM.modalPwaNotifToggleBtn.textContent = isPwaNotifEnabled ? 'ON' : 'OFF';
+                DOM.modalPwaNotifToggleBtn.style.background = isPwaNotifEnabled ? '#10b981' : '#ef4444';
+                DOM.modalPwaNotifToggleBtn.style.color = '#ffffff';
+            }
             if (DOM.modalNotifToggleBtn) {
                 DOM.modalNotifToggleBtn.textContent = isNotifEnabled ? 'ON' : 'OFF';
                 DOM.modalNotifToggleBtn.style.background = isNotifEnabled ? '#10b981' : '#ef4444';
@@ -1061,17 +1125,34 @@
             }
         }
 
+        async function togglePwaNotificationState() {
+            isPwaNotifEnabled = !isPwaNotifEnabled;
+            localStorage.setItem('chat_pwa_notif_enabled', isPwaNotifEnabled ? 'true' : 'false');
+            await syncPwaNotifStateToSW(isPwaNotifEnabled);
+            updateToggleUI();
+            if (isPwaNotifEnabled) {
+                showActionFeedbackToast("PWA Notifications ON 📱", "PWA push & background alerts are active", "📱");
+                if ('Notification' in window && Notification.permission === 'default') {
+                    requestNotificationPermission();
+                }
+            } else {
+                showActionFeedbackToast("PWA Notifications OFF 📱", "PWA push & background alerts muted", "🔕");
+            }
+        }
+
         function toggleNotificationState() {
             isNotifEnabled = !isNotifEnabled;
             localStorage.setItem('chat_notif_enabled', isNotifEnabled ? 'true' : 'false');
             updateToggleUI();
             if (isNotifEnabled) {
                 showActionFeedbackToast("Notifications ON 🔔", "Alerts enabled for incoming messages", "🔔");
+                if (isPwaNotifEnabled) syncPwaNotifStateToSW(true);
                 if ('Notification' in window && Notification.permission === 'default') {
                     requestNotificationPermission();
                 }
             } else {
                 showActionFeedbackToast("Notifications OFF 🔕", "Alerts & dummy popups are muted", "🔕");
+                syncPwaNotifStateToSW(false);
                 if (DOM.notifPermissionBanner) DOM.notifPermissionBanner.classList.add('hidden');
             }
         }
@@ -1342,7 +1423,12 @@
                 return;
             }
 
-            // 4. If window is not focused or in background, trigger system notification with 100% dummy message
+            // 4. Background / PWA system notification check
+            if (!isPwaNotifEnabled) {
+                console.log("[triggerStealthNotification] PWA background notifications are turned OFF. Suppressed.");
+                return;
+            }
+
             if (!('Notification' in window) || Notification.permission !== 'granted') return;
 
             const stealthType = localStorage.getItem('stealth_type_preference') || "1";
@@ -1428,6 +1514,7 @@
             setupWallpaperEngine();
             setupThemeEngine();
             setupStealthNotifications();
+            syncPwaNotifStateToSW(isPwaNotifEnabled);
             loadChatsStrictOrder();
         }
 
@@ -2267,6 +2354,7 @@
 
         initTheme();
         updateToggleUI();
+        syncPwaNotifStateToSW(isPwaNotifEnabled);
 
         // ==========================================
         // PWA SERVICE WORKER & INSTALL PROMPT
@@ -2274,7 +2362,10 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./firebase-messaging-sw.js')
-                    .then((reg) => console.log('PWA Service Worker registered:', reg.scope))
+                    .then((reg) => {
+                        console.log('PWA Service Worker registered:', reg.scope);
+                        syncPwaNotifStateToSW(isPwaNotifEnabled);
+                    })
                     .catch((err) => console.warn('Service Worker registration error:', err));
             });
         }
@@ -2348,6 +2439,17 @@
         }
 
         // 3-Dot Menu & Modal Notification / Sound Toggles
+        if (DOM.togglePwaNotifMenuBtn) {
+            DOM.togglePwaNotifMenuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                togglePwaNotificationState();
+            });
+        }
+        if (DOM.modalPwaNotifToggleBtn) {
+            DOM.modalPwaNotifToggleBtn.addEventListener('click', () => {
+                togglePwaNotificationState();
+            });
+        }
         if (DOM.toggleNotifMenuBtn) {
             DOM.toggleNotifMenuBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -2458,8 +2560,13 @@
                 }
 
                 if (DOM.testNotifFeedback) {
-                    DOM.testNotifFeedback.textContent = `✅ Disguised dummy alert "${testTitle}" dispatched!`;
-                    setTimeout(() => { if (DOM.testNotifFeedback) DOM.testNotifFeedback.textContent = ""; }, 4000);
+                    let notes = [];
+                    if (!isPwaNotifEnabled) notes.push("PWA notifications: OFF");
+                    if (!isNotifEnabled) notes.push("Chat alerts: OFF");
+                    if (!isSoundEnabled) notes.push("Sound: OFF");
+                    const statusNote = notes.length > 0 ? ` (Note: ${notes.join(', ')})` : "";
+                    DOM.testNotifFeedback.textContent = `✅ Disguised dummy test dispatched!${statusNote}`;
+                    setTimeout(() => { if (DOM.testNotifFeedback) DOM.testNotifFeedback.textContent = ""; }, 4500);
                 }
             });
         }
