@@ -1974,7 +1974,13 @@
             if (!currentUser) return;
             setTyping(false);
             if (currentUser) {
-                try { set(ref(db, `chats/presence/${currentUser}`), { isOnline: false, lastSeen: serverTimestamp() }); } catch (e) { }
+                try {
+                    update(ref(db, `chats/presence/${currentUser}`), {
+                        isOnline: false,
+                        offlineAt: serverTimestamp(),
+                        lastSeen: serverTimestamp()
+                    });
+                } catch (e) { }
             }
             if (activeIntervalId) { clearInterval(activeIntervalId); activeIntervalId = null; }
             currentUser = "";
@@ -2296,23 +2302,41 @@
             if (!currentUser) return;
             const connectedRef = ref(db, ".info/connected");
             const myStatusRef = ref(db, `chats/presence/${currentUser}`);
+            let lastReportedOnline = null;
 
             // Updates my presence to online only when document is visible, active, and focused in chat
             function setMyPresence(online) {
                 if (!currentUser) return;
                 const isChatActive = !DOM.chatScreen.classList.contains('hidden');
                 const isTabFocused = !document.hidden && document.hasFocus();
-                const shouldBeOnline = online && isChatActive && isTabFocused;
+                const shouldBeOnline = !!(online && isChatActive && isTabFocused);
 
-                set(myStatusRef, {
-                    isOnline: shouldBeOnline,
-                    lastSeen: serverTimestamp()
-                }).catch(() => {});
+                if (shouldBeOnline === lastReportedOnline) return;
+                lastReportedOnline = shouldBeOnline;
+
+                if (shouldBeOnline) {
+                    update(myStatusRef, {
+                        isOnline: true,
+                        onlineAt: serverTimestamp(),
+                        lastSeen: serverTimestamp()
+                    }).catch(() => {});
+                } else {
+                    update(myStatusRef, {
+                        isOnline: false,
+                        offlineAt: serverTimestamp(),
+                        lastSeen: serverTimestamp()
+                    }).catch(() => {});
+                }
             }
 
             onValue(connectedRef, (snap) => {
                 if (snap.val() === true) {
-                    onDisconnect(myStatusRef).set({ isOnline: false, lastSeen: serverTimestamp() }).then(() => {
+                    onDisconnect(myStatusRef).update({
+                        isOnline: false,
+                        offlineAt: serverTimestamp(),
+                        lastSeen: serverTimestamp()
+                    }).then(() => {
+                        lastReportedOnline = null;
                         setMyPresence(true);
                     });
                 }
@@ -2335,21 +2359,63 @@
             window.addEventListener('focus', handleFocus);
 
             if (otherUser) {
-                onValue(ref(db, `chats/presence/${otherUser}`), (s) => { otherData = s.val() || { isOnline: false, lastSeen: null }; updateUIState(); });
-                onValue(ref(db, `chats/typing_status/${otherUser}`), (s) => { otherTyping = s.val() ? s.val().isTyping : false; updateUIState(); });
+                onValue(ref(db, `chats/presence/${otherUser}`), (s) => {
+                    otherData = s.val() || { isOnline: false, lastSeen: null };
+                    updateUIState();
+                });
+                onValue(ref(db, `chats/typing_status/${otherUser}`), (s) => {
+                    otherTyping = s.val() ? s.val().isTyping : false;
+                    updateUIState();
+                });
             }
             if (activeIntervalId) clearInterval(activeIntervalId);
-            activeIntervalId = setInterval(updateUIState, 10000);
+            activeIntervalId = setInterval(updateUIState, 5000);
         }
 
-        function formatLastSeen(ts) {
-            if (!ts) return "Offline";
-            const d = new Date(ts); if (isNaN(d.getTime())) return "Offline";
-            const diff = Math.floor((Date.now() - d.getTime()) / 60000);
-            if (diff < 1) return "last seen just now";
-            if (diff < 60) return `last seen ${diff}m ago`;
-            const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            return new Date().toDateString() === d.toDateString() ? `last seen today at ${timeStr}` : `last seen ${d.toLocaleDateString([], { month: 'short', day: 'numeric' })} at ${timeStr}`;
+        // Format timestamp in Indian Standard Time (IST - Asia/Kolkata)
+        function formatISTTime(ts) {
+            if (!ts) return "";
+            const d = new Date(ts);
+            if (isNaN(d.getTime())) return "";
+            return d.toLocaleTimeString('en-IN', {
+                timeZone: 'Asia/Kolkata',
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true
+            }).toUpperCase();
+        }
+
+        // Determine if date is today, yesterday, or specific date in Indian Time
+        function formatISTDay(ts) {
+            if (!ts) return "today";
+            const d = new Date(ts);
+            if (isNaN(d.getTime())) return "today";
+            const now = new Date();
+            const targetDate = d.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+            const nowDate = now.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+            const yesterday = new Date(now.getTime() - 86400000);
+            const yesterdayDate = yesterday.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+
+            if (targetDate === nowDate) return "today";
+            if (targetDate === yesterdayDate) return "yesterday";
+            return d.toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short' });
+        }
+
+        // Replaces "just now" with exact clean time so users know when partner came online & went offline
+        function formatLastSeen(data) {
+            if (!data) return "offline";
+            const isOnline = typeof data === 'object' ? !!data.isOnline : false;
+            const lastSeenTs = typeof data === 'object' ? (data.offlineAt || data.lastSeen) : data;
+
+            if (isOnline) {
+                return "online";
+            }
+
+            if (!lastSeenTs) return "offline";
+            const dayStr = formatISTDay(lastSeenTs);
+            const timeStr = formatISTTime(lastSeenTs);
+            if (!timeStr) return "offline";
+            return `last seen ${dayStr} at ${timeStr}`;
         }
 
         function updateUIState() {
@@ -2363,10 +2429,24 @@
             } else {
                 DOM.liveTypingBubble.classList.add('hidden');
                 if (DOM.bottomTypingBar) DOM.bottomTypingBar.classList.add('hidden');
-                if (otherData?.isOnline) { newText = "Online"; newDot = true; isOnline = true; }
-                else { newText = formatLastSeen(otherData?.lastSeen); }
+                if (otherData?.isOnline) {
+                    newText = formatLastSeen(otherData);
+                    newDot = true;
+                    isOnline = true;
+                } else {
+                    newText = formatLastSeen(otherData);
+                }
             }
-            if (newText !== currentStatusText) { DOM.typingStatusText.innerText = newText; currentStatusText = newText; }
+            if (newText !== currentStatusText) {
+                DOM.typingStatusText.innerText = newText;
+                currentStatusText = newText;
+            }
+            if (otherData) {
+                const offT = formatISTTime(otherData.offlineAt || otherData.lastSeen);
+                const onT = formatISTTime(otherData.onlineAt);
+                let tip = otherData.isOnline ? (onT ? `Active in chat (since ${onT})` : 'Active now') : `Offline (Left at: ${offT || 'unknown'}${onT ? `, came on: ${onT}` : ''})`;
+                DOM.typingStatusText.title = tip;
+            }
             DOM.typingStatusText.className = isTyping ? 'typing-active' : (isOnline ? 'online-active' : '');
             if (newDot !== isDotActive) {
                 if (newDot) DOM.onlineDot.classList.add('active'); else DOM.onlineDot.classList.remove('active');
@@ -2645,7 +2725,7 @@
 
             const foot = document.createElement('div'); foot.className = 'msg-footer';
             if (msg.edited) foot.innerHTML += `<span class="edited-tag">edited</span>`;
-            const timeStr = msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "";
+            const timeStr = msg.timestamp ? formatISTTime(msg.timestamp) : "";
             foot.innerHTML += `<span>${timeStr}</span>`;
             if (isMe) foot.innerHTML += `<span id="ticks-${key}" class="ticks ${msg.status === 'seen' ? 'seen' : ''}">${msg.status === 'seen' ? '✓✓' : '✓'}</span>`;
             div.appendChild(foot);
