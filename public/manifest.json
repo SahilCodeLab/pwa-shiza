@@ -1,13 +1,13 @@
 {
   "id": "./",
-  "name": "Modern Messenger",
-  "short_name": "Messenger",
-  "description": "A clean, modern chat application with real-time messaging, voice notes, media sharing, and presence indicators.",
+  "name": "The Chronicle Magazine",
+  "short_name": "Chronicle",
+  "description": "Daily digital magazine featuring global news, technology insights, business reports, and editorial culture.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "theme_color": "#2563eb",
+  "theme_color": "#0f172a",
   "background_color": "#ffffff",
   "icons": [
     {
