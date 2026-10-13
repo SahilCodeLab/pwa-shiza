@@ -77,20 +77,6 @@
             background: #111827; border-color: #374151;
         }
         .dark-mode .scope-pill.active { background: #374151; color: #60a5fa; }
-        .dark-mode .news-screen { background: #0f172a; color: #f3f4f6; }
-        .dark-mode .news-header { background: #1e293b; border-bottom-color: #334155; }
-        .dark-mode .news-title { color: #f3f4f6; }
-        .dark-mode .news-date-tag { color: #94a3b8; }
-        .dark-mode .subscriber-login-btn { background: #334155; border-color: #475569; color: #60a5fa; }
-        .dark-mode .subscriber-login-btn:hover { background: #475569; color: #93c5fd; }
-        .dark-mode .news-nav-bar { background: #1e293b; border-bottom-color: #334155; }
-        .dark-mode .news-cat-pill { background: #334155; color: #94a3b8; }
-        .dark-mode .news-cat-pill.active { background: #3b82f6; color: #ffffff; }
-        .dark-mode .news-hero-card, .dark-mode .news-article-card { background: #1e293b; border-color: #334155; }
-        .dark-mode .news-hero-content h2, .dark-mode .news-article-title { color: #f3f4f6; }
-        .dark-mode .news-hero-content p { color: #94a3b8; }
-        .dark-mode .news-hero-badge { background: rgba(0, 0, 0, 0.85); color: #60a5fa; }
-        .dark-mode .news-article-tag { color: #60a5fa; }
 
         .app-wrapper {
             width: 100%; height: 100%; height: 100dvh;
@@ -110,64 +96,11 @@
         .hidden { display: none !important; }
 
         .login-screen {
-            display: flex; flex-direction: column; height: 100%; height: 100dvh; background: #f8fafc; overflow: hidden;
-        }
-        .news-header {
-            padding: 12px 16px; background: #ffffff; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; z-index: 10;
-        }
-        .news-brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
-        .news-logo-icon { font-size: 1.5rem; line-height: 1; flex-shrink: 0; }
-        .news-brand-text { display: flex; flex-direction: column; min-width: 0; }
-        .news-title { font-size: 0.94rem; font-weight: 800; color: #0f172a; letter-spacing: -0.01em; text-transform: uppercase; user-select: none; }
-        .news-date-tag { font-size: 0.68rem; color: #64748b; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .news-header-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-        .subscriber-login-btn {
-            background: #eff6ff; border: 1.5px solid #bfdbfe; color: #1d4ed8; padding: 6px 12px; border-radius: 9999px; font-size: 0.76rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: all 0.15s; font-family: inherit;
-        }
-        .subscriber-login-btn:hover { background: #dbeafe; color: #1e40af; transform: translateY(-1px); }
-        .news-nav-bar {
-            padding: 8px 14px; background: #ffffff; border-bottom: 1px solid #f1f5f9; display: flex; gap: 8px; overflow-x: auto; flex-shrink: 0; scrollbar-width: none;
-        }
-        .news-nav-bar::-webkit-scrollbar { display: none; }
-        .news-cat-pill {
-            padding: 4px 12px; border-radius: 9999px; font-size: 0.74rem; font-weight: 600; border: none; background: #f1f5f9; color: #64748b; cursor: pointer; white-space: nowrap; transition: all 0.15s; font-family: inherit;
-        }
-        .news-cat-pill.active { background: #0f172a; color: #ffffff; }
-        .news-feed-scroll {
-            flex: 1; padding: 14px 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; -webkit-overflow-scrolling: touch;
-        }
-        .news-hero-card {
-            background: #ffffff; border-radius: 18px; border: 1px solid #e2e8f0; overflow: hidden; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
-        }
-        .news-hero-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08); }
-        .news-hero-img-wrap { position: relative; aspect-ratio: 16/9; width: 100%; overflow: hidden; background: #0f172a; }
-        .news-hero-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
-        .news-hero-card:hover .news-hero-img-wrap img { transform: scale(1.03); }
-        .news-hero-badge {
-            position: absolute; top: 10px; left: 10px; background: rgba(15, 23, 42, 0.85); color: #ffffff; font-size: 0.65rem; font-weight: 700; padding: 3px 8px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.04em; backdrop-filter: blur(4px);
-        }
-        .news-hero-content { padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
-        .news-hero-content h2 { margin: 0; font-size: 1.05rem; font-weight: 700; color: #0f172a; line-height: 1.35; }
-        .news-hero-content p { margin: 0; font-size: 0.8rem; color: #64748b; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .news-card-meta { font-size: 0.7rem; color: #94a3b8; font-weight: 500; margin-top: 4px; }
-
-        .news-articles-list { display: flex; flex-direction: column; gap: 10px; }
-        .news-article-card {
-            background: #ffffff; border-radius: 14px; border: 1px solid #e2e8f0; padding: 10px 12px; display: flex; gap: 12px; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; align-items: center;
-        }
-        .news-article-card:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06); }
-        .news-article-thumb { width: 80px; height: 80px; border-radius: 10px; object-fit: cover; flex-shrink: 0; background: #e2e8f0; }
-        .news-article-details { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
-        .news-article-tag { font-size: 0.65rem; font-weight: 700; color: #2563eb; text-transform: uppercase; }
-        .news-article-title { margin: 0; font-size: 0.86rem; font-weight: 600; color: #0f172a; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .news-article-meta { font-size: 0.68rem; color: #94a3b8; }
-
-        .modal-login-card {
-            max-width: 360px; width: 92%; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 60px rgba(0,0,0,0.3); border-radius: 24px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; background: #f8fafc;
         }
         .login-card {
             width: 100%; max-width: 360px; background: #ffffff; border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07); padding: 28px 24px; text-align: center; border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07); padding: 32px 26px; text-align: center; border: 1px solid #e2e8f0;
         }
         .login-app-icon {
             width: 58px; height: 58px; border-radius: 18px; background: linear-gradient(135deg, #4ba2e8, #2563eb);
@@ -237,6 +170,15 @@
             flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
             background-color: #ffffff; background-size: cover; background-position: center; overscroll-behavior: contain; scroll-behavior: smooth;
         }
+        .chat-loading-placeholder {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 30px 16px; gap: 12px; color: #64748b; font-size: 0.88rem; font-weight: 500;
+        }
+        .chat-spinner {
+            width: 26px; height: 26px; border: 3px solid rgba(37, 99, 235, 0.15);
+            border-top-color: #2563eb; border-radius: 50%; animation: chatSpin 0.8s linear infinite;
+        }
+        @keyframes chatSpin { to { transform: rotate(360deg); } }
         .date-divider { text-align: center; margin: 4px 0 10px 0; user-select: none; }
         .date-divider span { font-size: 0.78rem; font-weight: 600; color: #6b7280; background: rgba(243, 244, 246, 0.85); padding: 3px 10px; border-radius: 12px; }
         .load-more-container { text-align: center; padding: 6px 0 10px 0; flex-shrink: 0; }
@@ -315,10 +257,15 @@
         .modal-header h3 { margin: 0; font-size: 1.05rem; color: #111827; font-weight: 700; }
         .modal-body { padding: 18px 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
 
-        .profile-dropdown { position: absolute; top: 56px; right: 16px; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.12); width: 236px; max-height: calc(100dvh - 75px); overflow-y: auto; z-index: 50; display: flex; flex-direction: column; }
+        .profile-dropdown { position: absolute; top: 56px; right: 16px; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.12); width: 220px; z-index: 50; overflow: hidden; display: flex; flex-direction: column; }
         .profile-dropdown button { padding: 12px 16px; text-align: left; border: none; background: transparent; font-size: 0.88rem; font-weight: 500; color: #374151; cursor: pointer; display: flex; align-items: center; gap: 12px; font-family: inherit; }
         .profile-dropdown button:hover { background: #f8fafc; color: #2563eb; }
+        .profile-dropdown button.primary-action { color: #2563eb; font-weight: 600; background: #eff6ff; }
+        .profile-dropdown button.primary-action:hover { background: #dbeafe; color: #1d4ed8; }
         .profile-dropdown button.danger { color: #ef4444; border-top: 1px solid #f1f3f6; }
+
+        .stealth-toast { position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%) translateY(20px); background: #0f172a; color: #ffffff; padding: 10px 18px; border-radius: 24px; font-size: 0.84rem; font-weight: 500; display: flex; align-items: center; gap: 8px; box-shadow: 0 12px 30px rgba(0,0,0,0.3); z-index: 99999; opacity: 0; pointer-events: none; transition: all 0.25s ease; border: 1px solid rgba(255,255,255,0.15); }
+        .stealth-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
 
         .scope-pill-group { display: grid; grid-template-columns: 1fr 1fr; background: #f1f5f9; padding: 4px; border-radius: 12px; gap: 4px; }
         .scope-pill { padding: 8px 6px; border-radius: 9px; font-size: 0.8rem; font-weight: 600; text-align: center; border: none; cursor: pointer; background: transparent; color: #64748b; font-family: inherit; }
@@ -375,116 +322,47 @@
 
 <body>
     <div class="app-wrapper">
-        <!-- 1. NEWS & MAGAZINE DISGUISE SCREEN (WITH DISCREET READER LOGIN) -->
-        <div id="login-screen" class="container login-screen news-screen">
-            <!-- Magazine Top Bar -->
-            <header class="news-header">
-                <div class="news-brand">
-                    <span class="news-logo-icon">📰</span>
-                    <div class="news-brand-text">
-                        <div class="news-title" id="magazine-logo-secret" title="The Daily Pulse">THE DAILY PULSE</div>
-                        <div class="news-date-tag" id="news-today-date">Today's Edition</div>
-                    </div>
-                </div>
-                <div class="news-header-actions">
+        <!-- 1. LOGIN SCREEN -->
+        <div id="login-screen" class="container login-screen">
+            <div class="login-card">
+                <div style="display: flex; justify-content: flex-end; margin-bottom: 8px;">
                     <button id="login-dark-mode-toggle" class="icon-action-btn" title="Toggle Dark Mode">🌙</button>
-                    <!-- Discreet Subscriber Login Access -->
-                    <button id="open-login-modal-btn" class="subscriber-login-btn" type="button" title="Reader Portal Access">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                        </svg>
-                        <span>Reader Login</span>
-                    </button>
                 </div>
-            </header>
+                <div class="login-app-icon">
+                    <svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12c0 1.82.49 3.53 1.34 5L2 22l5.17-1.31C8.61 21.49 10.26 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z" />
+                    </svg>
+                </div>
+                <h1>Welcome Back</h1>
+                <p class="subtitle">Sign in to start messaging with real-time sync</p>
 
-            <!-- Magazine Category Nav -->
-            <nav class="news-nav-bar" id="news-categories-nav">
-                <button class="news-cat-pill active" data-cat="all">Top Stories</button>
-                <button class="news-cat-pill" data-cat="tech">Tech & AI</button>
-                <button class="news-cat-pill" data-cat="world">World</button>
-                <button class="news-cat-pill" data-cat="lifestyle">Lifestyle</button>
-                <button class="news-cat-pill" data-cat="science">Science</button>
-            </nav>
-
-            <!-- News Feed Content Scrollable Area -->
-            <div class="news-feed-scroll" id="news-feed-container">
-                <!-- Hero Featured Article -->
-                <div class="news-hero-card" id="news-hero-card">
-                    <div class="news-hero-img-wrap">
-                        <img id="news-hero-img" src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&auto=format&fit=crop&q=80" alt="News Image">
-                        <span class="news-hero-badge" id="news-hero-category">Featured</span>
-                    </div>
-                    <div class="news-hero-content">
-                        <h2 id="news-hero-title">Next-Gen Communications: How Global Digital Networks Are Evolving Rapidly</h2>
-                        <p id="news-hero-snippet">Modern private networks and mobile web platforms are shifting towards lightweight, high-performance encrypted architectures across devices...</p>
-                        <div class="news-card-meta">
-                            <span id="news-hero-time">3 min read</span> • <span id="news-hero-author">Pulse Tech Desk</span>
-                        </div>
+                <!-- Fast Switchers -->
+                <div class="quick-login-wrap">
+                    <span class="quick-label">Fast Login</span>
+                    <div class="quick-btn-grid">
+                        <button type="button" id="quick-login-sahil" class="quick-btn">
+                            <span>👤</span> Sahil
+                        </button>
+                        <button type="button" id="quick-login-shazu" class="quick-btn">
+                            <span>👩</span> Shazu
+                        </button>
                     </div>
                 </div>
 
-                <!-- Articles Grid/List -->
-                <div class="news-articles-list" id="news-articles-list">
-                    <!-- Dynamic cards injected via JS from free public API + curated daily fallback -->
-                </div>
+                <div class="login-divider"><span>or use credentials</span></div>
 
-                <!-- Authentic Journal Masthead Footer with subtle discreet login -->
-                <footer class="news-footer" style="padding: 24px 10px 48px; text-align: center; border-top: 1px solid #e2e8f0; margin-top: 14px; display: flex; flex-direction: column; gap: 6px; align-items: center;">
-                    <div style="font-weight: 800; font-size: 0.82rem; color: #334155; letter-spacing: 0.06em; text-transform: uppercase;">THE DAILY PULSE</div>
-                    <div style="font-size: 0.7rem; color: #94a3b8;">Daily Global News Digest • Verified Open Journal • ISSN 2894-1102</div>
-                    <button type="button" id="footer-staff-login-btn" style="background: transparent; border: none; font-size: 0.72rem; color: #64748b; cursor: pointer; text-decoration: underline; margin-top: 8px; padding: 4px 10px; font-family: inherit;">Editorial Staff & Subscriber Access</button>
-                </footer>
-            </div>
-
-            <!-- Login Modal / Dialog (Hidden until Reader Login is clicked) -->
-            <div id="auth-modal" class="modal-overlay hidden">
-                <div class="login-card modal-login-card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <span style="font-size: 0.74rem; font-weight: 700; color: #2563eb; letter-spacing: 0.05em; text-transform: uppercase;">Member Access</span>
-                        <button id="close-login-modal-btn" class="close-top-bar" type="button" style="font-size: 1.4rem; padding: 0 4px; line-height: 1;">&times;</button>
+                <form id="login-form">
+                    <div class="input-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" placeholder="sahil or shazu" autocomplete="username" required>
                     </div>
-                    <div class="login-app-icon" style="width: 48px; height: 48px; margin: 0 auto 12px; border-radius: 14px;">
-                        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-                            <path d="M12 2C6.48 2 2 6.48 2 12c0 1.82.49 3.53 1.34 5L2 22l5.17-1.31C8.61 21.49 10.26 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z" />
-                        </svg>
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" required>
                     </div>
-                    <h1 style="font-size: 1.35rem; margin-bottom: 4px;">Reader Sign In</h1>
-                    <p class="subtitle" style="font-size: 0.8rem; margin-bottom: 16px;">Sign in to your private portal</p>
-
-                    <!-- Fast Switchers -->
-                   
-
-                    <form id="login-form">
-                        <div class="input-group">
-                            <label for="username">Username</label>
-                            <input type="text" id="username" placeholder="enter username" autocomplete="username" required>
-                        </div>
-                        <div class="input-group">
-                            <label for="password">Password</label>
-                            <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" required>
-                        </div>
-                        <button type="submit" class="primary-login-btn">Sign In</button>
-                    </form>
-                    <div id="error-log"></div>
-                </div>
-            </div>
-
-            <!-- Full Article Reader Modal (Works like a real news reader!) -->
-            <div id="article-reader-modal" class="modal-overlay hidden">
-                <div class="modal-content" style="max-width: 440px; max-height: 88vh;">
-                    <div class="modal-header">
-                        <span id="reader-category" style="font-size: 0.74rem; font-weight: 700; color: #2563eb; text-transform: uppercase;">Magazine Story</span>
-                        <button id="close-reader-btn" class="close-top-bar" type="button">&times;</button>
-                    </div>
-                    <div class="modal-body" style="padding: 16px 20px; overflow-y: auto;">
-                        <img id="reader-img" src="" alt="Article image" style="width: 100%; height: 180px; object-fit: cover; border-radius: 14px; margin-bottom: 12px; display: block;">
-                        <h2 id="reader-title" style="font-size: 1.15rem; font-weight: 700; margin: 0 0 8px; line-height: 1.35; color: #0f172a;"></h2>
-                        <div id="reader-meta" style="font-size: 0.74rem; color: #64748b; margin-bottom: 12px;"></div>
-                        <div id="reader-body" style="font-size: 0.88rem; line-height: 1.6; color: #334155;"></div>
-                    </div>
-                </div>
+                    <button type="submit" class="primary-login-btn">Sign In to Chat</button>
+                </form>
+                <div id="error-log"></div>
             </div>
         </div>
 
@@ -532,28 +410,6 @@
                 </div>
             </div>
 
-            <!-- Permission Banner -->
-            <div id="notif-permission-banner" class="hidden" style="background: linear-gradient(135deg, #eff6ff, #dbeafe); border-bottom: 1px solid #bfdbfe; padding: 9px 14px; display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 0.82rem; z-index: 15; flex-shrink: 0;">
-                <div style="display: flex; align-items: center; gap: 8px; color: #1e40af; font-weight: 500; min-width: 0;">
-                    <span style="font-size: 1.1rem; flex-shrink: 0;">🔔</span>
-                    <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Turn on notifications to get instant alerts</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
-                    <button id="banner-enable-notif-btn" type="button" style="background: #2563eb; color: #ffffff; border: none; padding: 5px 12px; border-radius: 8px; font-size: 0.78rem; font-weight: 600; cursor: pointer;">Enable</button>
-                    <button id="banner-dismiss-notif-btn" type="button" style="background: transparent; border: none; color: #64748b; font-size: 1.1rem; cursor: pointer; padding: 0 4px; line-height: 1;">&times;</button>
-                </div>
-            </div>
-
-            <!-- In-App Floating Toast Notification -->
-            <div id="in-app-toast" class="hidden" style="position: absolute; top: 62px; left: 14px; right: 14px; background: rgba(15, 23, 42, 0.95); color: #ffffff; backdrop-filter: blur(8px); padding: 10px 14px; border-radius: 14px; display: flex; align-items: center; gap: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.25); z-index: 100; cursor: pointer; border: 1px solid rgba(255,255,255,0.12); transition: all 0.25s ease;">
-                <div style="width: 34px; height: 34px; border-radius: 50%; background: #2563eb; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; flex-shrink: 0;" id="in-app-toast-avatar">💬</div>
-                <div style="flex: 1; overflow: hidden; min-width: 0;">
-                    <div id="in-app-toast-sender" style="font-weight: 600; font-size: 0.82rem; color: #60a5fa;">Shazu</div>
-                    <div id="in-app-toast-text" style="font-size: 0.78rem; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">New message</div>
-                </div>
-                <button id="in-app-toast-close" style="background: transparent; border: none; color: #94a3b8; font-size: 1.1rem; cursor: pointer; padding: 2px;">&times;</button>
-            </div>
-
             <!-- Profile Dropdown Menu -->
             <div id="profile-dropdown" class="profile-dropdown hidden">
                 <button id="open-wallpaper-modal-btn">
@@ -593,36 +449,19 @@
                     </svg>
                     <span>Shared Media</span>
                 </button>
-                <div style="height: 1px; background: #f1f5f9; margin: 4px 0;"></div>
-                <button id="toggle-pwa-notif-menu-btn" type="button" style="display: flex; justify-content: space-between; align-items: center; width: 100%; cursor: pointer;" title="Toggle PWA notifications ON/OFF">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <span id="menu-pwa-notif-icon" style="font-size: 1.05rem;">📱</span>
-                        <span>PWA Notification</span>
-                    </div>
-                    <span id="menu-pwa-notif-badge" style="font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; background: #10b981; color: #ffffff; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">ON</span>
-                </button>
-                <button id="toggle-notif-menu-btn" type="button" style="display: flex; justify-content: space-between; align-items: center; width: 100%; cursor: pointer;" title="Toggle notifications ON/OFF">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <span id="menu-notif-icon" style="font-size: 1.05rem;">🔔</span>
-                        <span>Notifications</span>
-                    </div>
-                    <span id="menu-notif-badge" style="font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; background: #10b981; color: #ffffff; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">ON</span>
-                </button>
-                <button id="toggle-sound-menu-btn" type="button" style="display: flex; justify-content: space-between; align-items: center; width: 100%; cursor: pointer;" title="Toggle sound ON/OFF">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <span id="menu-sound-icon" style="font-size: 1.05rem;">🔊</span>
-                        <span>Sound</span>
-                    </div>
-                    <span id="menu-sound-badge" style="font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; background: #10b981; color: #ffffff; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">ON</span>
-                </button>
-                <button id="open-notif-modal-btn" type="button">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="3"></circle>
-                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                <button id="send-fake-notif-btn" class="primary-action">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
                     </svg>
-                    <span>Notification Settings ⚙️</span>
+                    <span>⚡ Send Fake Notification</span>
                 </button>
-                <div style="height: 1px; background: #f1f5f9; margin: 4px 0;"></div>
+                <button id="open-notif-modal-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <span>Stealth Notifications 🔔</span>
+                </button>
                 <button id="pwa-install-menu-btn">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -643,8 +482,12 @@
 
             <!-- Messages Feed -->
             <div id="chat-messages" class="messages-area">
+                <div id="chat-loading-placeholder" class="chat-loading-placeholder">
+                    <div class="chat-spinner"></div>
+                    <span>Loading latest messages...</span>
+                </div>
                 <div id="load-more-container" class="load-more-container hidden">
-                    <button id="load-more-btn" class="load-more-btn">Load Older Messages</button>
+                    <button id="load-more-btn" class="load-more-btn">⬆️ Load Older Messages (20)</button>
                 </div>
                 <div class="date-divider"><span>Messages</span></div>
                 <div id="live-typing-bubble" class="msg-wrapper other hidden">
@@ -823,71 +666,44 @@
                 </div>
             </div>
 
-            <!-- Notification Settings Modal -->
+            <!-- Stealth Notification Settings Modal -->
             <div id="notification-modal" class="modal-overlay hidden">
                 <div class="modal-content" style="max-width: 440px;">
                     <div class="modal-header">
-                        <h3>Notification Settings 🔔</h3>
+                        <h3>Stealth Disguised Alerts 🔔</h3>
                         <button id="close-notification-modal-btn" class="close-top-bar">&times;</button>
                     </div>
-                    <div style="display: flex; flex-direction: column; gap: 14px; padding: 18px 20px;">
+                    <div style="display: flex; flex-direction: column; gap: 14px; padding-top: 6px;">
                         <p style="font-size: 0.84rem; color: #64748b; margin: 0; line-height: 1.45;">
-                            When you receive a message, the sender name and real message content are 100% hidden. A disguised dummy message is displayed instead!
+                            When you receive a message, your phone will show a secret disguised system alert (like Google Play or Storage) so no one suspects anything!
                         </p>
-
-                        <!-- Master On/Off Toggles -->
-                        <div style="display: flex; flex-direction: column; gap: 10px; background: #f8fafc; padding: 12px 14px; border-radius: 14px; border: 1px solid #e2e8f0;">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <div>
-                                    <div style="font-weight: 600; font-size: 0.88rem; color: #1e293b;">📱 PWA Notification</div>
-                                    <div style="font-size: 0.74rem; color: #64748b;">Phone / background PWA push alerts</div>
-                                </div>
-                                <button id="modal-pwa-notif-toggle-btn" type="button" style="padding: 6px 16px; border-radius: 9999px; font-size: 0.78rem; font-weight: 700; border: none; cursor: pointer; background: #10b981; color: #ffffff; transition: background 0.2s;">ON</button>
-                            </div>
-                            <div style="border-top: 1px solid #e2e8f0; padding-top: 10px; display: flex; justify-content: space-between; align-items: center;">
-                                <div>
-                                    <div style="font-weight: 600; font-size: 0.88rem; color: #1e293b;">🔔 In-App Notifications</div>
-                                    <div style="font-size: 0.74rem; color: #64748b;">Turn alerts on or off anytime</div>
-                                </div>
-                                <button id="modal-notif-toggle-btn" type="button" style="padding: 6px 16px; border-radius: 9999px; font-size: 0.78rem; font-weight: 700; border: none; cursor: pointer; background: #10b981; color: #ffffff; transition: background 0.2s;">ON</button>
-                            </div>
-                            <div style="border-top: 1px solid #e2e8f0; padding-top: 10px; display: flex; justify-content: space-between; align-items: center;">
-                                <div>
-                                    <div style="font-weight: 600; font-size: 0.88rem; color: #1e293b;">🔊 Message Chime Sound</div>
-                                    <div style="font-size: 0.74rem; color: #64748b;">Play audio chime when message arrives</div>
-                                </div>
-                                <button id="modal-sound-toggle-btn" type="button" style="padding: 6px 16px; border-radius: 9999px; font-size: 0.78rem; font-weight: 700; border: none; cursor: pointer; background: #10b981; color: #ffffff; transition: background 0.2s;">ON</button>
-                            </div>
-                        </div>
                         
                         <div style="background: rgba(37, 99, 235, 0.06); border: 1px solid rgba(37, 99, 235, 0.2); border-radius: 12px; padding: 12px; display: flex; justify-content: space-between; align-items: center;">
                             <div>
-                                <div style="font-weight: 600; font-size: 0.88rem;">Push / Browser Permission</div>
+                                <div style="font-weight: 600; font-size: 0.88rem;">Push Permission</div>
                                 <div id="notif-permission-status" style="font-size: 0.78rem; color: #64748b;">Checking...</div>
                             </div>
                             <button id="request-notif-btn" type="button" style="padding: 7px 15px; border-radius: 9px; background: #2563eb; color: #fff; font-size: 0.82rem; font-weight: 600; border: none; cursor: pointer;">Enable</button>
                         </div>
 
                         <div>
-                            <label style="font-size: 0.82rem; font-weight: 600; color: #475569; display: block; margin-bottom: 6px;">Choose Dummy Message Template:</label>
+                            <label style="font-size: 0.82rem; font-weight: 600; color: #475569; display: block; margin-bottom: 6px;">Choose Disguise Template:</label>
                             <select id="stealth-template-select" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 0.86rem; background: #fff; color: #1e293b; outline: none;">
-                                <option value="1">🕵️ Google Play: 3 apps have pending updates</option>
-                                <option value="2">🕵️ Storage Alert: Device storage almost full</option>
-                                <option value="3">🕵️ Weather Alert: Partly cloudy with evening showers</option>
-                                <option value="4">🕵️ Calendar: Upcoming reminder check schedule</option>
-                                <option value="5">🕵️ System Update: Security patch ready to install</option>
-                                <option value="0">🔒 System Notification: You have 1 new pending notification</option>
+                                <option value="1">Google Play: 3 apps have pending updates</option>
+                                <option value="2">Storage Alert: Device storage almost full</option>
+                                <option value="3">Weather Alert: Partly cloudy with evening showers</option>
+                                <option value="4">Calendar: Upcoming reminder check schedule</option>
+                                <option value="5">System Update: Security patch ready to install</option>
                             </select>
                         </div>
 
                         <button id="test-stealth-notif-btn" type="button" style="width: 100%; padding: 11px; border-radius: 10px; background: #10b981; color: #fff; border: none; font-weight: 600; font-size: 0.86rem; cursor: pointer;">
-                            🧪 Test Notification & Sound Now
+                            🧪 Test Stealth Alert On This Phone
                         </button>
-                        <div id="test-notif-feedback" style="font-size: 0.78rem; color: #10b981; font-weight: 600; min-height: 16px; text-align: center;"></div>
 
                         <div style="background: rgba(100, 116, 139, 0.08); padding: 10px; border-radius: 10px;">
-                            <div style="font-size: 0.76rem; font-weight: 600; color: #475569; margin-bottom: 3px;">Push & Device Status:</div>
-                            <div id="fcm-token-display" style="font-size: 0.72rem; color: #64748b; word-break: break-all; max-height: 48px; overflow-y: auto; font-family: monospace;">Local & ServiceWorker alerts ready</div>
+                            <div style="font-size: 0.76rem; font-weight: 600; color: #475569; margin-bottom: 3px;">FCM Device Push Token:</div>
+                            <div id="fcm-token-display" style="font-size: 0.72rem; color: #64748b; word-break: break-all; max-height: 48px; overflow-y: auto; font-family: monospace;">Loading token...</div>
                         </div>
                     </div>
                 </div>
@@ -924,7 +740,7 @@
         import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
         const firebaseConfig = {
-            apiKey: (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_FIREBASE_API_KEY) || "AIzaSyAii2t4g5DuJ7-BLm8v9-syyrtOmyWK8_8",
+            apiKey: "AIzaSyAii2t4g5DuJ7-BLm8v9-syyrtOmyWK8_8",
             authDomain: "sr-login-cef1c.firebaseapp.com",
             databaseURL: "https://sr-login-cef1c-default-rtdb.firebaseio.com",
             projectId: "sr-login-cef1c",
@@ -935,8 +751,8 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        const SUPABASE_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_SUPABASE_URL) || "https://mogirffjqlbciwgyiqkx.supabase.co";
-        const SUPABASE_ANON_KEY = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_SUPABASE_ANON_KEY) || "sb_publishable_fcn77s414JmfsLxQ95PBbw_O5tnt3Wy";
+        const SUPABASE_URL = "https://mogirffjqlbciwgyiqkx.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_fcn77s414JmfsLxQ95PBbw_O5tnt3Wy";
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         const DOM = {
@@ -948,30 +764,6 @@
             quickLoginSahil: document.getElementById('quick-login-sahil'),
             quickLoginShazu: document.getElementById('quick-login-shazu'),
             loginDarkModeToggle: document.getElementById('login-dark-mode-toggle'),
-
-            authModal: document.getElementById('auth-modal'),
-            openLoginModalBtn: document.getElementById('open-login-modal-btn'),
-            closeLoginModalBtn: document.getElementById('close-login-modal-btn'),
-            footerStaffLoginBtn: document.getElementById('footer-staff-login-btn'),
-            magazineLogoSecret: document.getElementById('magazine-logo-secret'),
-            newsTodayDate: document.getElementById('news-today-date'),
-            newsCategoriesNav: document.getElementById('news-categories-nav'),
-            newsFeedContainer: document.getElementById('news-feed-container'),
-            newsArticlesList: document.getElementById('news-articles-list'),
-            newsHeroCard: document.getElementById('news-hero-card'),
-            newsHeroImg: document.getElementById('news-hero-img'),
-            newsHeroTitle: document.getElementById('news-hero-title'),
-            newsHeroSnippet: document.getElementById('news-hero-snippet'),
-            newsHeroCategory: document.getElementById('news-hero-category'),
-            newsHeroTime: document.getElementById('news-hero-time'),
-            newsHeroAuthor: document.getElementById('news-hero-author'),
-            articleReaderModal: document.getElementById('article-reader-modal'),
-            closeReaderBtn: document.getElementById('close-reader-btn'),
-            readerImg: document.getElementById('reader-img'),
-            readerTitle: document.getElementById('reader-title'),
-            readerCategory: document.getElementById('reader-category'),
-            readerMeta: document.getElementById('reader-meta'),
-            readerBody: document.getElementById('reader-body'),
 
             chatScreen: document.getElementById('chat-screen'),
             chatHeader: document.getElementById('chat-header'),
@@ -1061,35 +853,13 @@
             notificationModal: document.getElementById('notification-modal'),
             closeNotificationModalBtn: document.getElementById('close-notification-modal-btn'),
             openNotifModalBtn: document.getElementById('open-notif-modal-btn'),
+            sendFakeNotifBtn: document.getElementById('send-fake-notif-btn'),
             notifPermissionStatus: document.getElementById('notif-permission-status'),
             requestNotifBtn: document.getElementById('request-notif-btn'),
             stealthTemplateSelect: document.getElementById('stealth-template-select'),
             testStealthNotifBtn: document.getElementById('test-stealth-notif-btn'),
-            testNotifFeedback: document.getElementById('test-notif-feedback'),
             fcmTokenDisplay: document.getElementById('fcm-token-display'),
-
-            notifPermissionBanner: document.getElementById('notif-permission-banner'),
-            bannerEnableNotifBtn: document.getElementById('banner-enable-notif-btn'),
-            bannerDismissNotifBtn: document.getElementById('banner-dismiss-notif-btn'),
-            inAppToast: document.getElementById('in-app-toast'),
-            inAppToastAvatar: document.getElementById('in-app-toast-avatar'),
-            inAppToastSender: document.getElementById('in-app-toast-sender'),
-            inAppToastText: document.getElementById('in-app-toast-text'),
-            inAppToastClose: document.getElementById('in-app-toast-close'),
-
-            togglePwaNotifMenuBtn: document.getElementById('toggle-pwa-notif-menu-btn'),
-            menuPwaNotifBadge: document.getElementById('menu-pwa-notif-badge'),
-            menuPwaNotifIcon: document.getElementById('menu-pwa-notif-icon'),
-            modalPwaNotifToggleBtn: document.getElementById('modal-pwa-notif-toggle-btn'),
-
-            toggleNotifMenuBtn: document.getElementById('toggle-notif-menu-btn'),
-            menuNotifBadge: document.getElementById('menu-notif-badge'),
-            menuNotifIcon: document.getElementById('menu-notif-icon'),
-            toggleSoundMenuBtn: document.getElementById('toggle-sound-menu-btn'),
-            menuSoundBadge: document.getElementById('menu-sound-badge'),
-            menuSoundIcon: document.getElementById('menu-sound-icon'),
-            modalNotifToggleBtn: document.getElementById('modal-notif-toggle-btn'),
-            modalSoundToggleBtn: document.getElementById('modal-sound-toggle-btn')
+            chatLoadingPlaceholder: document.getElementById('chat-loading-placeholder')
         };
 
         let currentUser = "";
@@ -1189,303 +959,10 @@
         }
 
         // ==========================================
-        // NOTIFICATION & AUDIO ALERT ENGINE (ZERO-BUG PERSISTENCE)
+        // STEALTH NOTIFICATION ENGINE (FCM + PUSH + SERVICE WORKER)
+        // Disguised system alerts with pure system alert icons and NO chat badge/icon
         // ==========================================
-        let isPwaNotifEnabled = localStorage.getItem('chat_pwa_notif_enabled') !== 'false';
-        let isNotifEnabled = localStorage.getItem('chat_notif_enabled') !== 'false';
-        let isSoundEnabled = localStorage.getItem('chat_sound_enabled') !== 'false';
-
-        // IndexedDB Helper for bulletproof persistence across mobile app & SW
-        function openSettingsDBMain() {
-            return new Promise((resolve) => {
-                try {
-                    if (!('indexedDB' in window)) return resolve(null);
-                    const req = indexedDB.open('messenger_persistent_settings', 1);
-                    req.onupgradeneeded = (e) => {
-                        const db = e.target.result;
-                        if (!db.objectStoreNames.contains('config')) {
-                            db.createObjectStore('config');
-                        }
-                    };
-                    req.onsuccess = (e) => resolve(e.target.result);
-                    req.onerror = () => resolve(null);
-                } catch (e) {
-                    resolve(null);
-                }
-            });
-        }
-
-        async function writeSettingsToDBMain(data) {
-            try {
-                const db = await openSettingsDBMain();
-                if (!db) return;
-                const tx = db.transaction('config', 'readwrite');
-                const store = tx.objectStore('config');
-                store.put(data, 'settings');
-            } catch (e) {}
-        }
-
-        // Master sync: updates LocalStorage + IndexedDB + Cache Storage + SW postMessage + BroadcastChannel + Firebase
-        async function persistAndSyncAllSettings() {
-            // 1. LocalStorage
-            localStorage.setItem('chat_pwa_notif_enabled', isPwaNotifEnabled ? 'true' : 'false');
-            localStorage.setItem('chat_notif_enabled', isNotifEnabled ? 'true' : 'false');
-            localStorage.setItem('chat_sound_enabled', isSoundEnabled ? 'true' : 'false');
-
-            const payload = {
-                type: 'SYNC_ALL_SETTINGS',
-                pwaNotifEnabled: isPwaNotifEnabled,
-                notifEnabled: isNotifEnabled,
-                soundEnabled: isSoundEnabled,
-                timestamp: Date.now()
-            };
-
-            // 2. IndexedDB
-            await writeSettingsToDBMain({
-                pwaNotifEnabled: isPwaNotifEnabled,
-                notifEnabled: isNotifEnabled,
-                soundEnabled: isSoundEnabled,
-                timestamp: Date.now()
-            });
-
-            // 3. Cache Storage for Service Worker access
-            try {
-                if ('caches' in window) {
-                    const cache = await caches.open('messenger-pwa-settings');
-                    const res = new Response(JSON.stringify(payload), {
-                        headers: { 'Content-Type': 'application/json' }
-                    });
-                    await cache.put('/app-settings', res);
-                    await cache.put('/pwa-notif-enabled', new Response(JSON.stringify({ enabled: isPwaNotifEnabled && isNotifEnabled })));
-                }
-            } catch (e) {
-                console.warn('Cache sync note:', e);
-            }
-
-            // 4. PostMessage to Service Worker (controller + all registrations)
-            try {
-                if ('serviceWorker' in navigator) {
-                    if (navigator.serviceWorker.controller) {
-                        navigator.serviceWorker.controller.postMessage(payload);
-                    }
-                    navigator.serviceWorker.getRegistrations().then((regs) => {
-                        regs.forEach((reg) => {
-                            if (reg.active) reg.active.postMessage(payload);
-                            if (reg.waiting) reg.waiting.postMessage(payload);
-                            if (reg.installing) reg.installing.postMessage(payload);
-                        });
-                    }).catch(() => {});
-                }
-            } catch (e) {}
-
-            // 5. BroadcastChannel for cross-context sync
-            try {
-                if ('BroadcastChannel' in window) {
-                    const bc = new BroadcastChannel('messenger-settings-channel');
-                    bc.postMessage(payload);
-                }
-            } catch (e) {}
-
-            // 6. Dismiss lingering system notifications if disabled
-            if (!isPwaNotifEnabled || !isNotifEnabled) {
-                if ('serviceWorker' in navigator) {
-                    navigator.serviceWorker.getRegistration().then((reg) => {
-                        if (reg && reg.getNotifications) {
-                            reg.getNotifications().then((list) => list.forEach((n) => n.close())).catch(() => {});
-                        }
-                    }).catch(() => {});
-                }
-            }
-
-            // 7. Firebase Realtime Database
-            if (currentUser) {
-                try {
-                    await update(ref(db, `chats/users/${currentUser}/settings`), {
-                        pwaNotifEnabled: isPwaNotifEnabled,
-                        notifEnabled: isNotifEnabled,
-                        soundEnabled: isSoundEnabled,
-                        updatedAt: serverTimestamp()
-                    });
-                } catch (e) {}
-            }
-
-            // 8. Update UI controls
-            updateToggleUI();
-        }
-
-        function showActionFeedbackToast(title, subtitle, icon = "⚙️") {
-            if (!DOM.inAppToast) return;
-            if (DOM.inAppToastSender) DOM.inAppToastSender.textContent = title;
-            if (DOM.inAppToastText) DOM.inAppToastText.textContent = subtitle;
-            if (DOM.inAppToastAvatar) DOM.inAppToastAvatar.textContent = icon;
-            DOM.inAppToast.classList.remove('hidden');
-            if (inAppToastTimer) clearTimeout(inAppToastTimer);
-            inAppToastTimer = setTimeout(() => {
-                if (DOM.inAppToast) DOM.inAppToast.classList.add('hidden');
-            }, 2600);
-        }
-
-        function updateToggleUI() {
-            // 0. PWA Notification Toggle in 3-dot menu
-            if (DOM.menuPwaNotifBadge) {
-                DOM.menuPwaNotifBadge.textContent = isPwaNotifEnabled ? 'ON' : 'OFF';
-                DOM.menuPwaNotifBadge.style.background = isPwaNotifEnabled ? '#10b981' : '#ef4444';
-                DOM.menuPwaNotifBadge.style.color = '#ffffff';
-            }
-            if (DOM.menuPwaNotifIcon) {
-                DOM.menuPwaNotifIcon.textContent = isPwaNotifEnabled ? '📱' : '🔕';
-            }
-
-            // 1. Notification Toggle in 3-dot menu
-            if (DOM.menuNotifBadge) {
-                DOM.menuNotifBadge.textContent = isNotifEnabled ? 'ON' : 'OFF';
-                DOM.menuNotifBadge.style.background = isNotifEnabled ? '#10b981' : '#ef4444';
-                DOM.menuNotifBadge.style.color = '#ffffff';
-            }
-            if (DOM.menuNotifIcon) {
-                DOM.menuNotifIcon.textContent = isNotifEnabled ? '🔔' : '🔕';
-            }
-
-            // 2. Sound Toggle in 3-dot menu
-            if (DOM.menuSoundBadge) {
-                DOM.menuSoundBadge.textContent = isSoundEnabled ? 'ON' : 'OFF';
-                DOM.menuSoundBadge.style.background = isSoundEnabled ? '#10b981' : '#ef4444';
-                DOM.menuSoundBadge.style.color = '#ffffff';
-            }
-            if (DOM.menuSoundIcon) {
-                DOM.menuSoundIcon.textContent = isSoundEnabled ? '🔊' : '🔇';
-            }
-
-            // 3. Modal Toggles
-            if (DOM.modalPwaNotifToggleBtn) {
-                DOM.modalPwaNotifToggleBtn.textContent = isPwaNotifEnabled ? 'ON' : 'OFF';
-                DOM.modalPwaNotifToggleBtn.style.background = isPwaNotifEnabled ? '#10b981' : '#ef4444';
-                DOM.modalPwaNotifToggleBtn.style.color = '#ffffff';
-            }
-            if (DOM.modalNotifToggleBtn) {
-                DOM.modalNotifToggleBtn.textContent = isNotifEnabled ? 'ON' : 'OFF';
-                DOM.modalNotifToggleBtn.style.background = isNotifEnabled ? '#10b981' : '#ef4444';
-                DOM.modalNotifToggleBtn.style.color = '#ffffff';
-            }
-            if (DOM.modalSoundToggleBtn) {
-                DOM.modalSoundToggleBtn.textContent = isSoundEnabled ? 'ON' : 'OFF';
-                DOM.modalSoundToggleBtn.style.background = isSoundEnabled ? '#10b981' : '#ef4444';
-                DOM.modalSoundToggleBtn.style.color = '#ffffff';
-            }
-        }
-
-        async function togglePwaNotificationState() {
-            isPwaNotifEnabled = !isPwaNotifEnabled;
-            await persistAndSyncAllSettings();
-            if (isPwaNotifEnabled) {
-                showActionFeedbackToast("PWA Notifications ON 📱", "PWA push & background alerts are active", "📱");
-                if ('Notification' in window && Notification.permission === 'default') {
-                    requestNotificationPermission();
-                }
-            } else {
-                showActionFeedbackToast("PWA Notifications OFF 📱", "PWA push & background alerts muted", "🔕");
-            }
-        }
-
-        async function toggleNotificationState() {
-            isNotifEnabled = !isNotifEnabled;
-            if (!isNotifEnabled && DOM.notifPermissionBanner) {
-                DOM.notifPermissionBanner.classList.add('hidden');
-            }
-            await persistAndSyncAllSettings();
-            if (isNotifEnabled) {
-                showActionFeedbackToast("Notifications ON 🔔", "Alerts enabled for incoming messages", "🔔");
-                if ('Notification' in window && Notification.permission === 'default') {
-                    requestNotificationPermission();
-                }
-            } else {
-                showActionFeedbackToast("Notifications OFF 🔕", "All message alerts & popups are completely muted", "🔕");
-            }
-        }
-
-        async function toggleSoundState() {
-            isSoundEnabled = !isSoundEnabled;
-            await persistAndSyncAllSettings();
-            if (isSoundEnabled) {
-                playMessageNotificationSound(true);
-                showActionFeedbackToast("Sound ON 🔊", "Chime will play when message arrives", "🔊");
-            } else {
-                showActionFeedbackToast("Sound OFF 🔇", "Incoming messages will arrive silently", "🔇");
-            }
-        }
-
-        function playMessageNotificationSound(force = false) {
-            if (!isSoundEnabled && !force) return;
-            try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) return;
-                const ctx = new AudioCtx();
-                if (ctx.state === 'suspended') {
-                    ctx.resume();
-                }
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.type = 'sine';
-
-                // Two-tone friendly chime: 659Hz (E5) -> 880Hz (A5)
-                osc.frequency.setValueAtTime(659.25, ctx.currentTime);
-                osc.frequency.setValueAtTime(880.00, ctx.currentTime + 0.1);
-
-                gain.gain.setValueAtTime(0, ctx.currentTime);
-                gain.gain.linearRampToValueAtTime(0.28, ctx.currentTime + 0.02);
-                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.42);
-
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.start(ctx.currentTime);
-                osc.stop(ctx.currentTime + 0.42);
-            } catch (e) {
-                // Audio autoplay might be delayed before interaction
-            }
-        }
-
-        let originalDocTitle = "Modern Messenger";
-        let titleFlashTimer = null;
-        function flashDocumentTitle() {
-            if (!document.hidden && document.hasFocus()) return;
-            if (titleFlashTimer) clearInterval(titleFlashTimer);
-            let toggle = false;
-            titleFlashTimer = setInterval(() => {
-                if (!document.hidden && document.hasFocus()) {
-                    clearInterval(titleFlashTimer);
-                    titleFlashTimer = null;
-                    document.title = originalDocTitle;
-                    return;
-                }
-                document.title = toggle ? originalDocTitle : `🔔 (1) New Notification`;
-                toggle = !toggle;
-            }, 1000);
-        }
-        window.addEventListener('focus', () => {
-            if (titleFlashTimer) {
-                clearInterval(titleFlashTimer);
-                titleFlashTimer = null;
-                document.title = originalDocTitle;
-            }
-        });
-
-        let inAppToastTimer = null;
-        function showInAppToastNotification() {
-            if (!DOM.inAppToast) return;
-            const stealthType = localStorage.getItem('stealth_type_preference') || "1";
-            const template = STEALTH_TEMPLATES[stealthType] || STEALTH_TEMPLATES["1"];
-
-            // Pure dummy notification - real sender identity and chat content 100% hidden
-            if (DOM.inAppToastSender) DOM.inAppToastSender.textContent = template.title;
-            if (DOM.inAppToastText) DOM.inAppToastText.textContent = template.body;
-            if (DOM.inAppToastAvatar) DOM.inAppToastAvatar.textContent = "🔔";
-
-            DOM.inAppToast.classList.remove('hidden');
-            if (inAppToastTimer) clearTimeout(inAppToastTimer);
-            inAppToastTimer = setTimeout(() => {
-                if (DOM.inAppToast) DOM.inAppToast.classList.add('hidden');
-            }, 4500);
-        }
+        const TRANSPARENT_PIXEL = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
 
         const STEALTH_TEMPLATES = {
             "1": {
@@ -1512,71 +989,71 @@
                 title: "System Update Available",
                 body: "Security patch ready to install over Wi-Fi.",
                 icon: "https://cdn-icons-png.flaticon.com/512/2099/2099058.png"
-            },
-            "0": {
-                title: "System Notification",
-                body: "You have 1 new pending notification.",
-                icon: "./icon-192.png"
             }
         };
 
         let myFCMToken = null;
+        let lastNotificationTimestamp = 0;
 
         function updateNotifUI() {
+            if (!DOM.notifPermissionStatus) return;
             if (!('Notification' in window)) {
-                if (DOM.notifPermissionStatus) {
-                    DOM.notifPermissionStatus.textContent = "Not supported in this browser";
-                    DOM.notifPermissionStatus.style.color = "#ef4444";
-                }
+                DOM.notifPermissionStatus.textContent = "Not supported in this browser";
+                DOM.notifPermissionStatus.style.color = "#ef4444";
                 if (DOM.requestNotifBtn) DOM.requestNotifBtn.style.display = "none";
-                if (DOM.notifPermissionBanner) DOM.notifPermissionBanner.classList.add('hidden');
                 return;
             }
             const perm = Notification.permission;
             if (perm === 'granted') {
-                if (DOM.notifPermissionStatus) {
-                    DOM.notifPermissionStatus.textContent = "✅ Active & Allowed";
-                    DOM.notifPermissionStatus.style.color = "#10b981";
-                }
+                DOM.notifPermissionStatus.textContent = "✅ Active & Allowed";
+                DOM.notifPermissionStatus.style.color = "#10b981";
                 if (DOM.requestNotifBtn) {
                     DOM.requestNotifBtn.textContent = "Granted";
                     DOM.requestNotifBtn.style.background = "#10b981";
                     DOM.requestNotifBtn.disabled = true;
                 }
-                if (DOM.notifPermissionBanner) DOM.notifPermissionBanner.classList.add('hidden');
             } else if (perm === 'denied') {
-                if (DOM.notifPermissionStatus) {
-                    DOM.notifPermissionStatus.textContent = "❌ Blocked in phone settings";
-                    DOM.notifPermissionStatus.style.color = "#ef4444";
-                }
-                if (DOM.requestNotifBtn) {
-                    DOM.requestNotifBtn.textContent = "Blocked";
-                    DOM.requestNotifBtn.style.background = "#6b7280";
-                    DOM.requestNotifBtn.disabled = true;
-                }
-                if (DOM.notifPermissionBanner) DOM.notifPermissionBanner.classList.add('hidden');
+                DOM.notifPermissionStatus.textContent = "❌ Blocked in phone settings";
+                DOM.notifPermissionStatus.style.color = "#ef4444";
+                if (DOM.requestNotifBtn) DOM.requestNotifBtn.textContent = "Blocked";
             } else {
-                if (DOM.notifPermissionStatus) {
-                    DOM.notifPermissionStatus.textContent = "⚠️ Not enabled yet";
-                    DOM.notifPermissionStatus.style.color = "#f59e0b";
-                }
+                DOM.notifPermissionStatus.textContent = "⚠️ Not enabled yet";
+                DOM.notifPermissionStatus.style.color = "#f59e0b";
                 if (DOM.requestNotifBtn) {
                     DOM.requestNotifBtn.textContent = "Enable";
                     DOM.requestNotifBtn.style.background = "#2563eb";
                     DOM.requestNotifBtn.disabled = false;
                 }
-                if (DOM.notifPermissionBanner) DOM.notifPermissionBanner.classList.remove('hidden');
             }
         }
 
+        function showToast(text) {
+            let toast = document.getElementById('stealth-toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'stealth-toast';
+                toast.className = 'stealth-toast';
+                document.body.appendChild(toast);
+            }
+            toast.textContent = text;
+            toast.classList.add('show');
+            clearTimeout(toast._timer);
+            toast._timer = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
         async function setupStealthNotifications() {
-            updateToggleUI();
             updateNotifUI();
             if (!('Notification' in window)) return;
             if (Notification.permission === 'granted') {
                 await registerFCMToken();
-            } else if (Notification.permission === 'default' && isNotifEnabled) {
-                if (DOM.notifPermissionBanner) DOM.notifPermissionBanner.classList.remove('hidden');
+            } else if (Notification.permission === 'default') {
+                try {
+                    const res = await Notification.requestPermission();
+                    updateNotifUI();
+                    if (res === 'granted') await registerFCMToken();
+                } catch (e) { }
             }
         }
 
@@ -1586,16 +1063,9 @@
                 return;
             }
             try {
-                let res;
-                if (Notification.requestPermission.length === 0) {
-                    res = await Notification.requestPermission();
-                } else {
-                    res = await new Promise((resolve) => Notification.requestPermission(resolve));
-                }
+                const res = await Notification.requestPermission();
                 updateNotifUI();
                 if (res === 'granted') {
-                    if (DOM.notifPermissionBanner) DOM.notifPermissionBanner.classList.add('hidden');
-                    playMessageNotificationSound();
                     await registerFCMToken();
                 }
             } catch (err) {
@@ -1606,13 +1076,7 @@
         async function registerFCMToken() {
             if (!('serviceWorker' in navigator)) return;
             try {
-                const reg = await Promise.race([
-                    navigator.serviceWorker.ready,
-                    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 1000))
-                ]).catch(async () => await navigator.serviceWorker.getRegistration());
-
-                if (!reg) return;
-
+                const reg = await navigator.serviceWorker.ready;
                 const { getMessaging, getToken } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js");
                 const messaging = getMessaging(app);
                 const token = await getToken(messaging, {
@@ -1634,93 +1098,148 @@
                         });
                         await set(ref(db, `chats/users/${currentUser}/fcmToken`), token);
                     }
-                } else {
-                    if (DOM.fcmTokenDisplay) DOM.fcmTokenDisplay.textContent = "Local & ServiceWorker alerts active";
                 }
             } catch (err) {
                 console.log("Push token error:", err);
-                if (DOM.fcmTokenDisplay) DOM.fcmTokenDisplay.textContent = "Local & ServiceWorker alerts active";
             }
         }
 
-        async function triggerStealthNotification(msg) {
-            // STRICT MASTER CHECK: If notifications are turned OFF by user, do NOT alert or popup
-            if (!isNotifEnabled) {
-                console.log("[triggerStealthNotification] Notifications are OFF. Entirely suppressed.");
-                return;
-            }
+        // Instant stealth disguised notification display
+        // Strips any chat app icons - only uses disguise template icon and transparent badge
+        async function triggerStealthAlert(stealthCode, senderName = 'secret', messageId = Date.now()) {
+            if (!('Notification' in window)) return;
 
-            // 1. Play chime sound and vibrate ONLY if sound is enabled
-            if (isSoundEnabled) {
-                playMessageNotificationSound();
-                if ('vibrate' in navigator) {
-                    try { navigator.vibrate([150, 80, 150]); } catch (e) {}
+            if (Notification.permission !== 'granted') {
+                if (Notification.permission === 'default') {
+                    try {
+                        const perm = await Notification.requestPermission();
+                        updateNotifUI();
+                        if (perm !== 'granted') return;
+                    } catch (e) { return; }
+                } else {
+                    return;
                 }
             }
 
-            // 2. Flash page title with dummy notification
-            flashDocumentTitle();
+            // Debounce so identical notifications don't duplicate within 800ms
+            const now = Date.now();
+            if (now - lastNotificationTimestamp < 800) return;
+            lastNotificationTimestamp = now;
 
-            // 3. If window is currently open and focused, show in-app banner toast with dummy text
-            const isWindowFocused = !document.hidden && document.hasFocus();
-            if (isWindowFocused) {
-                showInAppToastNotification();
-                return;
-            }
-
-            // 4. Background / PWA system notification check
-            if (!isPwaNotifEnabled) {
-                console.log("[triggerStealthNotification] PWA background notifications are turned OFF. Suppressed.");
-                return;
-            }
-
-            if (!('Notification' in window) || Notification.permission !== 'granted') return;
-
-            const stealthType = localStorage.getItem('stealth_type_preference') || "1";
+            const stealthType = String(stealthCode || localStorage.getItem('stealth_type_preference') || "1");
             const template = STEALTH_TEMPLATES[stealthType] || STEALTH_TEMPLATES["1"];
 
-            // Pure dummy notification - real sender identity and chat content 100% hidden
-            const notifTitle = template.title;
-            const notifBody = template.body;
-            const notifIcon = template.icon || './icon-192.png';
-
             const notifOptions = {
-                body: notifBody,
-                icon: notifIcon,
-                badge: './icon-192.png',
-                tag: 'messenger-msg-' + Date.now(),
-                renotify: isSoundEnabled,
-                silent: !isSoundEnabled,
-                vibrate: isSoundEnabled ? [150, 100, 150] : [],
+                body: template.body,
+                icon: template.icon || TRANSPARENT_PIXEL,
+                badge: TRANSPARENT_PIXEL,
+                tag: 'stealth-sys-alert-' + messageId,
+                renotify: true,
+                vibrate: [200, 100, 200],
+                silent: false,
+                requireInteraction: false,
                 data: {
                     url: './',
-                    stealthType: stealthType
+                    stealthType: stealthType,
+                    realSender: senderName
                 }
             };
 
-            // Attempt via Service Worker with timeout protection
+            // 1. Try active ServiceWorker registration (Works even when app is minimized or backgrounded)
             if ('serviceWorker' in navigator) {
                 try {
-                    const reg = await Promise.race([
-                        navigator.serviceWorker.ready,
-                        new Promise((_, reject) => setTimeout(() => reject(new Error('SW timeout')), 800))
-                    ]).catch(async () => await navigator.serviceWorker.getRegistration());
-
+                    const reg = await navigator.serviceWorker.ready;
                     if (reg && reg.showNotification) {
-                        await reg.showNotification(notifTitle, notifOptions);
+                        await reg.showNotification(template.title, notifOptions);
                         return;
                     }
                 } catch (e) {
-                    console.warn("SW showNotification error:", e);
+                    console.warn("SW showNotification error, falling back to Notification API:", e);
                 }
+
+                // If SW active, postMessage directly to SW controller
+                try {
+                    if (navigator.serviceWorker.controller) {
+                        navigator.serviceWorker.controller.postMessage({
+                            type: 'SHOW_STEALTH_NOTIFICATION',
+                            payload: { stealthType, sender: senderName, messageId }
+                        });
+                        return;
+                    }
+                } catch (e) { }
             }
 
-            // Direct Window Notification fallback
+            // 2. Standard Web Notification fallback
             try {
-                new Notification(notifTitle, notifOptions);
+                new Notification(template.title, {
+                    body: template.body,
+                    icon: template.icon || TRANSPARENT_PIXEL,
+                    badge: TRANSPARENT_PIXEL
+                });
             } catch (err) {
-                console.warn("Window notification fallback error:", err);
+                console.warn("Notification fallback error:", err);
             }
+        }
+
+        // Called on every new incoming message received from partner
+        async function triggerStealthNotification(msg) {
+            if (!msg || msg.sender === currentUser) return;
+            const stealthType = localStorage.getItem('stealth_type_preference') || "1";
+            await triggerStealthAlert(stealthType, msg?.sender || 'secret', Date.now());
+        }
+
+        // Dispatches notification trigger to recipient via Firebase RTDB push queue + instant signal
+        async function sendNotificationDispatch(senderName, previewText = "") {
+            if (!otherUser) return;
+            try {
+                const stealthType = localStorage.getItem('stealth_type_preference') || "1";
+                const payload = {
+                    from: senderName,
+                    to: otherUser,
+                    stealthType: stealthType,
+                    timestamp: serverTimestamp(),
+                    preview: previewText ? String(previewText).slice(0, 50) : "",
+                    ts: Date.now()
+                };
+                // 1. Push to queue
+                await push(ref(db, `chats/notification_queue/${otherUser}`), { ...payload, processed: false });
+                // 2. Set instant live signal (guaranteed to trigger onValue listener immediately!)
+                await set(ref(db, `chats/instant_alert/${otherUser}`), { ...payload, rand: Math.random() });
+            } catch (e) {
+                console.warn("Notification dispatch queue note:", e.message);
+            }
+        }
+
+        // Listens to incoming notification dispatch for instant background/foreground alert
+        function listenForIncomingNotifications() {
+            if (!currentUser) return;
+
+            // 1. Instant live alert signal listener
+            const instantRef = ref(db, `chats/instant_alert/${currentUser}`);
+            let instantInitialized = false;
+            onValue(instantRef, (snap) => {
+                if (!instantInitialized) {
+                    instantInitialized = true;
+                    return;
+                }
+                const data = snap.val();
+                if (!data || !data.from || data.from === currentUser) return;
+                if (data.ts && (Date.now() - data.ts > 15000)) return;
+                triggerStealthAlert(data.stealthType || "1", data.from, Date.now());
+            });
+
+            // 2. Queue child listener
+            const notifRef = query(ref(db, `chats/notification_queue/${currentUser}`), orderByKey(), limitToLast(5));
+            let initialQueueLoaded = false;
+            get(notifRef).then(() => { initialQueueLoaded = true; }).catch(() => { initialQueueLoaded = true; });
+
+            onChildAdded(notifRef, (snap) => {
+                if (!initialQueueLoaded) return;
+                const data = snap.val();
+                if (!data || data.processed || data.from === currentUser) return;
+                update(ref(db, `chats/notification_queue/${currentUser}/${snap.key}`), { processed: true }).catch(() => {});
+                triggerStealthAlert(data.stealthType || "1", data.from || "secret", Date.now());
+            });
         }
 
         const wallpaperFileInput = document.createElement('input');
@@ -1757,7 +1276,7 @@
             setupWallpaperEngine();
             setupThemeEngine();
             setupStealthNotifications();
-            syncPwaNotifStateToSW(isPwaNotifEnabled);
+            listenForIncomingNotifications();
             loadChatsStrictOrder();
         }
 
@@ -1782,9 +1301,6 @@
             if (raw.includes('@')) raw = raw.split('@')[0];
             const u = raw.replace(/\s+/g, '');
             if ((u === 'sahil' && pass === 'sahil1234') || (u === 'shazu' && pass === 'shazu1234')) {
-                if ('Notification' in window && Notification.permission === 'default') {
-                    requestNotificationPermission();
-                }
                 startSession(u);
             } else {
                 DOM.errorLog.innerText = "Invalid credentials! Use sahil/sahil1234 or shazu/shazu1234";
@@ -1793,20 +1309,12 @@
 
         if (DOM.quickLoginSahil) {
             DOM.quickLoginSahil.addEventListener('click', () => {
-                DOM.usernameInput.value = 'sahil'; DOM.passwordInput.value = 'sahil1234';
-                if ('Notification' in window && Notification.permission === 'default') {
-                    requestNotificationPermission();
-                }
-                startSession('sahil');
+                DOM.usernameInput.value = 'sahil'; DOM.passwordInput.value = 'sahil1234'; startSession('sahil');
             });
         }
         if (DOM.quickLoginShazu) {
             DOM.quickLoginShazu.addEventListener('click', () => {
-                DOM.usernameInput.value = 'shazu'; DOM.passwordInput.value = 'shazu1234';
-                if ('Notification' in window && Notification.permission === 'default') {
-                    requestNotificationPermission();
-                }
-                startSession('shazu');
+                DOM.usernameInput.value = 'shazu'; DOM.passwordInput.value = 'shazu1234'; startSession('shazu');
             });
         }
 
@@ -2092,13 +1600,42 @@
             const connectedRef = ref(db, ".info/connected");
             const myStatusRef = ref(db, `chats/presence/${currentUser}`);
 
+            // Updates my presence to online only when document is visible, active, and focused in chat
+            function setMyPresence(online) {
+                if (!currentUser) return;
+                const isChatActive = !DOM.chatScreen.classList.contains('hidden');
+                const isTabFocused = !document.hidden && document.hasFocus();
+                const shouldBeOnline = online && isChatActive && isTabFocused;
+
+                set(myStatusRef, {
+                    isOnline: shouldBeOnline,
+                    lastSeen: serverTimestamp()
+                }).catch(() => {});
+            }
+
             onValue(connectedRef, (snap) => {
                 if (snap.val() === true) {
                     onDisconnect(myStatusRef).set({ isOnline: false, lastSeen: serverTimestamp() }).then(() => {
-                        set(myStatusRef, { isOnline: true, lastSeen: serverTimestamp() });
+                        setMyPresence(true);
                     });
                 }
             });
+
+            // Immediately mark as offline when switching tabs, minimizing, locking phone, or blurring
+            const handleVisibility = () => {
+                if (document.hidden) {
+                    setMyPresence(false);
+                } else {
+                    setMyPresence(true);
+                }
+            };
+            const handleBlur = () => setMyPresence(false);
+            const handleFocus = () => setMyPresence(true);
+
+            window.addEventListener('visibilitychange', handleVisibility);
+            window.addEventListener('pagehide', handleBlur);
+            window.addEventListener('blur', handleBlur);
+            window.addEventListener('focus', handleFocus);
 
             if (otherUser) {
                 onValue(ref(db, `chats/presence/${otherUser}`), (s) => { otherData = s.val() || { isOnline: false, lastSeen: null }; updateUIState(); });
@@ -2187,8 +1724,11 @@
 
         function loadChatsStrictOrder() {
             const mRef = ref(db, 'chats/main_session');
-            // Load latest 30 messages on startup: smooth and lag-free
-            get(query(mRef, orderByKey(), limitToLast(30))).then((snap) => {
+            if (DOM.chatLoadingPlaceholder) DOM.chatLoadingPlaceholder.classList.remove('hidden');
+
+            // Load latest 20 messages initially for instant startup without hanging
+            get(query(mRef, orderByKey(), limitToLast(20))).then((snap) => {
+                if (DOM.chatLoadingPlaceholder) DOM.chatLoadingPlaceholder.classList.add('hidden');
                 const data = snap.val();
                 if (data) {
                     const keys = Object.keys(data).filter(k => k !== 'secret_key').sort();
@@ -2196,7 +1736,7 @@
                         oldestLoadedKey = keys[0];
                         newestLoadedKey = keys[keys.length - 1];
                     }
-                    hasMoreMessages = keys.length >= 30;
+                    hasMoreMessages = keys.length >= 20;
                     DOM.loadMoreContainer.classList.toggle('hidden', !hasMoreMessages);
                     const frag = document.createDocumentFragment();
                     keys.forEach(k => {
@@ -2209,6 +1749,11 @@
                     hasMoreMessages = false;
                     DOM.loadMoreContainer.classList.add('hidden');
                 }
+                isInitialLoad = false;
+                listenForNewMessages(mRef);
+            }).catch((err) => {
+                console.error("Chat load error:", err);
+                if (DOM.chatLoadingPlaceholder) DOM.chatLoadingPlaceholder.classList.add('hidden');
                 isInitialLoad = false;
                 listenForNewMessages(mRef);
             });
@@ -2257,9 +1802,10 @@
         function loadOlderMessages() {
             if (isLoadingOlder || !hasMoreMessages || !oldestLoadedKey) return;
             isLoadingOlder = true;
-            DOM.loadMoreBtn.innerText = "⏳ Loading older messages...";
+            DOM.loadMoreBtn.innerText = "⏳ Loading 20 older messages...";
 
-            get(query(ref(db, 'chats/main_session'), orderByKey(), endAt(oldestLoadedKey), limitToLast(36))).then((snap) => {
+            // Load next 20 older messages
+            get(query(ref(db, 'chats/main_session'), orderByKey(), endAt(oldestLoadedKey), limitToLast(21))).then((snap) => {
                 const data = snap.val();
                 if (data) {
                     const keys = Object.keys(data).filter(k => k !== 'secret_key').sort();
@@ -2270,7 +1816,7 @@
                         isLoadingOlder = false;
                         return;
                     }
-                    if (olderKeys.length < 30) {
+                    if (olderKeys.length < 20) {
                         hasMoreMessages = false;
                         DOM.loadMoreContainer.classList.add('hidden');
                     }
@@ -2293,7 +1839,7 @@
 
                     oldestLoadedKey = olderKeys[0];
                     DOM.messagesArea.scrollTop = (DOM.messagesArea.scrollHeight - prevScrollHeight) + prevScrollTop;
-                    DOM.loadMoreBtn.innerText = "⬆️ Load Older Messages";
+                    DOM.loadMoreBtn.innerText = "⬆️ Load Older Messages (20)";
                 } else {
                     hasMoreMessages = false;
                     DOM.loadMoreContainer.classList.add('hidden');
@@ -2301,13 +1847,13 @@
                 isLoadingOlder = false;
             }).catch(() => {
                 isLoadingOlder = false;
-                DOM.loadMoreBtn.innerText = "⬆️ Load Older Messages";
+                DOM.loadMoreBtn.innerText = "⬆️ Load Older Messages (20)";
             });
         }
 
         DOM.loadMoreBtn.addEventListener('click', loadOlderMessages);
 
-        // Auto load older messages when user scrolls up near top
+        // Auto load older 20 messages when user scrolls up near top
         DOM.messagesArea.addEventListener('scroll', () => {
             if (DOM.messagesArea.scrollTop < 120 && hasMoreMessages && !isLoadingOlder) {
                 loadOlderMessages();
@@ -2507,6 +2053,7 @@
                 let payload = { sender: currentUser, text: text, type: 'text', status: 'sent', timestamp: serverTimestamp(), secret_key: "SahilCodeLab" };
                 if (replyingTo) payload.replyTo = replyingTo;
                 await push(ref(db, `chats/main_session`), payload);
+                sendNotificationDispatch(currentUser, text);
                 sendEmailNotification(currentUser, text);
             }
             DOM.messageInput.value = ""; DOM.messageInput.style.height = 'auto';
@@ -2540,6 +2087,7 @@
             if (replyingTo) payload.replyTo = replyingTo;
             const newRef = await push(ref(db, `chats/main_session`), payload);
             allMediaCache.set(newRef.key, { ...payload, mediaType, mediaUrl: data.publicUrl, key: newRef.key, timestamp: Date.now() });
+            sendNotificationDispatch(currentUser, `Shared a ${mediaType}`);
             sendEmailNotification(currentUser, `[Shared a ${mediaType}]`);
             mediaFileInput.value = ""; DOM.uploadingBanner.classList.add('hidden'); cancelTopBars(); scrollToBottom(true);
         });
@@ -2561,6 +2109,7 @@
                         if (replyingTo) payload.replyTo = replyingTo;
                         const newRef = await push(ref(db, `chats/main_session`), payload);
                         allMediaCache.set(newRef.key, { ...payload, mediaType: 'audio', mediaUrl: data.publicUrl, key: newRef.key, timestamp: Date.now() });
+                        sendNotificationDispatch(currentUser, "Sent a voice message");
                         DOM.uploadingBanner.classList.add('hidden'); cancelTopBars(); scrollToBottom(true);
                         stream.getTracks().forEach(t => t.stop());
                     };
@@ -2596,8 +2145,6 @@
         });
 
         initTheme();
-        updateToggleUI();
-        persistAndSyncAllSettings();
 
         // ==========================================
         // PWA SERVICE WORKER & INSTALL PROMPT
@@ -2605,10 +2152,7 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./firebase-messaging-sw.js')
-                    .then((reg) => {
-                        console.log('PWA Service Worker registered:', reg.scope);
-                        persistAndSyncAllSettings();
-                    })
+                    .then((reg) => console.log('PWA Service Worker registered:', reg.scope))
                     .catch((err) => console.warn('Service Worker registration error:', err));
             });
         }
@@ -2656,70 +2200,11 @@
         });
 
         // ==========================================
-        // NOTIFICATION SETTINGS MODAL & TESTING UI
+        // STEALTH NOTIFICATION MODAL & TESTING UI
         // ==========================================
-        if (DOM.bannerEnableNotifBtn) {
-            DOM.bannerEnableNotifBtn.addEventListener('click', async () => {
-                await requestNotificationPermission();
-            });
-        }
-        if (DOM.bannerDismissNotifBtn) {
-            DOM.bannerDismissNotifBtn.addEventListener('click', () => {
-                if (DOM.notifPermissionBanner) DOM.notifPermissionBanner.classList.add('hidden');
-            });
-        }
-        if (DOM.inAppToastClose) {
-            DOM.inAppToastClose.addEventListener('click', (e) => {
-                e.stopPropagation();
-                if (DOM.inAppToast) DOM.inAppToast.classList.add('hidden');
-            });
-        }
-        if (DOM.inAppToast) {
-            DOM.inAppToast.addEventListener('click', () => {
-                DOM.inAppToast.classList.add('hidden');
-                scrollToBottom(true);
-            });
-        }
-
-        // 3-Dot Menu & Modal Notification / Sound Toggles
-        if (DOM.togglePwaNotifMenuBtn) {
-            DOM.togglePwaNotifMenuBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                togglePwaNotificationState();
-            });
-        }
-        if (DOM.modalPwaNotifToggleBtn) {
-            DOM.modalPwaNotifToggleBtn.addEventListener('click', () => {
-                togglePwaNotificationState();
-            });
-        }
-        if (DOM.toggleNotifMenuBtn) {
-            DOM.toggleNotifMenuBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                toggleNotificationState();
-            });
-        }
-        if (DOM.toggleSoundMenuBtn) {
-            DOM.toggleSoundMenuBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                toggleSoundState();
-            });
-        }
-        if (DOM.modalNotifToggleBtn) {
-            DOM.modalNotifToggleBtn.addEventListener('click', () => {
-                toggleNotificationState();
-            });
-        }
-        if (DOM.modalSoundToggleBtn) {
-            DOM.modalSoundToggleBtn.addEventListener('click', () => {
-                toggleSoundState();
-            });
-        }
-
         if (DOM.openNotifModalBtn) {
             DOM.openNotifModalBtn.addEventListener('click', () => {
                 if (DOM.profileDropdown) DOM.profileDropdown.classList.add('hidden');
-                updateToggleUI();
                 updateNotifUI();
                 const savedType = localStorage.getItem('stealth_type_preference') || "1";
                 if (DOM.stealthTemplateSelect) DOM.stealthTemplateSelect.value = savedType;
@@ -2741,338 +2226,40 @@
                 localStorage.setItem('stealth_type_preference', e.target.value);
             });
         }
+        if (DOM.sendFakeNotifBtn) {
+            DOM.sendFakeNotifBtn.addEventListener('click', async () => {
+                if (DOM.profileDropdown) DOM.profileDropdown.classList.add('hidden');
+                if ('Notification' in window && Notification.permission !== 'granted') {
+                    await requestNotificationPermission();
+                }
+                const stealthType = DOM.stealthTemplateSelect ? DOM.stealthTemplateSelect.value : (localStorage.getItem('stealth_type_preference') || "1");
+                
+                // 1. Send instant signal to partner
+                await sendNotificationDispatch(currentUser, "⚡ Secret System Alert");
+                
+                // 2. Also trigger on sender's device so sender sees the test notification immediately
+                await triggerStealthAlert(stealthType, currentUser, Date.now());
+                
+                // 3. User feedback toast
+                showToast(`⚡ Disguised notification sent to ${otherDisplayName}!`);
+            });
+        }
+
         if (DOM.testStealthNotifBtn) {
             DOM.testStealthNotifBtn.addEventListener('click', async () => {
-                if (isSoundEnabled) {
-                    playMessageNotificationSound(true);
-                    if ('vibrate' in navigator) {
-                        try { navigator.vibrate([150, 100, 150]); } catch (e) {}
-                    }
-                }
-
-                if (!isNotifEnabled) {
-                    if (DOM.testNotifFeedback) {
-                        DOM.testNotifFeedback.textContent = "🔕 Master Notifications are OFF in 3-dot menu. Turn ON to see popups.";
-                        DOM.testNotifFeedback.style.color = "#ef4444";
-                        setTimeout(() => { if (DOM.testNotifFeedback) DOM.testNotifFeedback.textContent = ""; }, 4000);
-                    }
-                    return;
-                }
-
                 if (!('Notification' in window)) {
-                    if (DOM.testNotifFeedback) DOM.testNotifFeedback.textContent = "Notifications not supported in this browser, audio tested!";
+                    alert("Notifications not supported in this browser.");
                     return;
                 }
                 if (Notification.permission !== 'granted') {
                     await requestNotificationPermission();
-                    if (Notification.permission !== 'granted') {
-                        if (DOM.testNotifFeedback) DOM.testNotifFeedback.textContent = "⚠️ Browser permission not enabled yet. Please allow notifications.";
-                        return;
-                    }
+                    if (Notification.permission !== 'granted') return;
                 }
-
                 const stealthType = DOM.stealthTemplateSelect ? DOM.stealthTemplateSelect.value : (localStorage.getItem('stealth_type_preference') || "1");
-                const template = STEALTH_TEMPLATES[stealthType] || STEALTH_TEMPLATES["1"];
-
-                const testTitle = template.title;
-                const testBody = template.body;
-
-                showInAppToastNotification();
-
-                if (!isPwaNotifEnabled) {
-                    if (DOM.testNotifFeedback) {
-                        DOM.testNotifFeedback.textContent = "ℹ️ In-app toast shown! (Note: PWA background push is toggled OFF)";
-                        DOM.testNotifFeedback.style.color = "#f59e0b";
-                        setTimeout(() => { if (DOM.testNotifFeedback) DOM.testNotifFeedback.textContent = ""; }, 4000);
-                    }
-                    return;
-                }
-
-                let shown = false;
-                if ('serviceWorker' in navigator) {
-                    try {
-                        const reg = await Promise.race([
-                            navigator.serviceWorker.ready,
-                            new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 800))
-                        ]).catch(async () => await navigator.serviceWorker.getRegistration());
-
-                        if (reg && reg.showNotification) {
-                            await reg.showNotification(testTitle, {
-                                body: testBody,
-                                icon: template.icon || './icon-192.png',
-                                badge: './icon-192.png',
-                                tag: 'test-alert-' + Date.now(),
-                                renotify: isSoundEnabled,
-                                silent: !isSoundEnabled,
-                                vibrate: isSoundEnabled ? [150, 100, 150] : [],
-                                data: { url: './', realSender: 'test' }
-                            });
-                            shown = true;
-                        }
-                    } catch (e) {
-                        console.warn("SW test fallback:", e);
-                    }
-                }
-
-                if (!shown) {
-                    try {
-                        new Notification(testTitle, {
-                            body: testBody,
-                            icon: template.icon || './icon-192.png',
-                            silent: !isSoundEnabled
-                        });
-                    } catch (e) {}
-                }
-
-                if (DOM.testNotifFeedback) {
-                    DOM.testNotifFeedback.textContent = `✅ Disguised dummy test dispatched! (Sound: ${isSoundEnabled ? 'ON' : 'OFF'}, PWA: ${isPwaNotifEnabled ? 'ON' : 'OFF'})`;
-                    DOM.testNotifFeedback.style.color = "#10b981";
-                    setTimeout(() => { if (DOM.testNotifFeedback) DOM.testNotifFeedback.textContent = ""; }, 4500);
-                }
+                await triggerStealthAlert(stealthType, 'test', Date.now());
             });
         }
 
-        // ==========================================
-        // DAILY NEWS & MAGAZINE CAMOUFLAGE ENGINE
-        // ==========================================
-        const MAGAZINE_ARTICLES = [
-            {
-                id: "art-1",
-                category: "tech",
-                categoryName: "Tech & AI",
-                title: "Next-Gen Communications: How Global Digital Networks Are Evolving Rapidly",
-                snippet: "Modern private networks and mobile web platforms are shifting towards lightweight, high-performance encrypted architectures across devices...",
-                author: "Pulse Tech Desk",
-                readTime: "3 min read",
-                img: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&auto=format&fit=crop&q=80",
-                body: "In recent years, the landscape of mobile and real-time telecommunications has seen unprecedented structural innovations. The transition from monolithic protocols to decentralized and lightweight peer-to-peer mechanisms is enabling instant data exchange with minimal bandwidth overhead.\n\nExperts highlight that the combination of Progressive Web Applications (PWAs) with intelligent client-side caching ensures seamless user experiences even under adverse cellular connections. As device silicon advances, local cryptographic processing has eliminated traditional latency bottlenecks, paving the way for next-generation private digital workflows."
-            },
-            {
-                id: "art-2",
-                category: "science",
-                categoryName: "Science & Space",
-                title: "Deep Space Telescopes Capture High-Res Glimpses of Early Planetary Formations",
-                snippet: "New spectral imagery reveals dust disks and nascent stellar phenomena that challenge established models of solar system birth...",
-                author: "Astronomy Bureau",
-                readTime: "4 min read",
-                img: "https://images.unsplash.com/photo-1516339901601-2e1b62dc0c45?w=800&auto=format&fit=crop&q=80",
-                body: "Astrophysicists worldwide are celebrating the release of breathtaking new astronomical surveys capturing proto-planetary disks situated over five thousand light-years away.\n\nThe observations reveal complex spiral arms of cosmic gas and particulate matter condensing into future planetary cores. According to lead researchers, these findings offer a rare window into what our own solar system might have looked like during its infancy nearly 4.6 billion years ago."
-            },
-            {
-                id: "art-3",
-                category: "world",
-                categoryName: "World News",
-                title: "Global Clean Energy Investments Hit Record Milestone Across Five Continents",
-                snippet: "Solar, wind, and next-gen battery storage initiatives reached historic installation capacities during the preceding quarter...",
-                author: "Global Economics Team",
-                readTime: "5 min read",
-                img: "https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=800&auto=format&fit=crop&q=80",
-                body: "International energy regulators published their annual climate infrastructure overview today, noting that renewable installations outpaced fossil energy deployments by a record margin across all major economic zones.\n\nWith distributed grid storage becoming increasingly economical, nations are accelerating decentralization plans to stabilize rural microgrids and industrial corridors alike."
-            },
-            {
-                id: "art-4",
-                category: "lifestyle",
-                categoryName: "Lifestyle & Culture",
-                title: "The Art of Digital Slowdown: How Mindful Tech Habits Are Reshaping Daily Routines",
-                snippet: "Urban professionals are embracing intentional offline hours and minimalist app habits to boost focus and mental clarity...",
-                author: "Culture & Living",
-                readTime: "3 min read",
-                img: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&auto=format&fit=crop&q=80",
-                body: "As screen time and push notifications dominate modern professional life, a growing counter-cultural wave of digital minimalism is gaining serious momentum.\n\nFrom intentional morning routines without smartphone interaction to dedicated quiet zones in public workspaces, individuals are finding renewed creativity through boundary-setting and focused attention."
-            },
-            {
-                id: "art-5",
-                category: "tech",
-                categoryName: "Tech & AI",
-                title: "Autonomous Logistics: How Micro-Mobility and Electric Fleets Transform Last-Mile Delivery",
-                snippet: "Urban transport corridors are adopting zero-emission automated delivery pods for sustainable neighborhood deliveries...",
-                author: "Urban Mobility Desk",
-                readTime: "4 min read",
-                img: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&auto=format&fit=crop&q=80",
-                body: "Last-mile courier logistics has long been one of the most resource-intensive bottlenecks of global e-commerce. Today, metropolitan pilots featuring compact electric vehicles and smart routing algorithms are showing reductions in fuel consumption of up to 45%.\n\nCity planners are actively updating curbside infrastructure to support dedicated loading zones for these low-impact electric fleets."
-            },
-            {
-                id: "art-6",
-                category: "science",
-                categoryName: "Science",
-                title: "Oceanic Exploration Uncovers Thriving Deep-Sea Coral Ecosystems in Pristine Waters",
-                snippet: "Submersible expeditions in remote ocean ridges identify bioluminescent species and ancient volcanic reef formations...",
-                author: "Marine Biology Institute",
-                readTime: "3 min read",
-                img: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&auto=format&fit=crop&q=80",
-                body: "A collaborative oceanic expedition utilizing remotely operated deep-sea submersibles has documented an untouched coral ecosystem living more than 2,000 meters beneath the surface.\n\nScientists observed dozens of previously undocumented bioluminescent organisms thriving in high-pressure hydrothermal vents, providing critical clues regarding the resilience of deep marine biodiversity."
-            }
-        ];
-
-        let activeCategoryFilter = "all";
-
-        function initNewsFeed() {
-            // Set Today's formatted edition date
-            const today = new Date();
-            const dateStr = today.toLocaleDateString(undefined, {
-                weekday: 'long',
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric'
-            });
-            if (DOM.newsTodayDate) {
-                DOM.newsTodayDate.textContent = `${dateStr} • Morning Digest`;
-            }
-
-            renderNewsArticles();
-
-            // Fetch live headlines from free Hacker News Firebase API to integrate dynamic daily news
-            fetchLiveNewsStories();
-        }
-
-        async function fetchLiveNewsStories() {
-            try {
-                const res = await fetch('https://hacker-news.firebaseio.com/v0/topstories.json');
-                if (!res.ok) return;
-                const ids = await res.json();
-                if (!Array.isArray(ids) || ids.length === 0) return;
-
-                // Fetch top 3 live stories
-                const topIds = ids.slice(0, 3);
-                const storyPromises = topIds.map(id => fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then(r => r.json()));
-                const stories = await Promise.race([
-                    Promise.all(storyPromises),
-                    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000))
-                ]);
-
-                if (Array.isArray(stories) && stories.length > 0) {
-                    const fallbackImgs = [
-                        "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop&q=80",
-                        "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&auto=format&fit=crop&q=80",
-                        "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&auto=format&fit=crop&q=80"
-                    ];
-                    stories.forEach((s, idx) => {
-                        if (s && s.title) {
-                            MAGAZINE_ARTICLES.unshift({
-                                id: `hn-${s.id}`,
-                                category: "tech",
-                                categoryName: "Breaking Tech",
-                                title: s.title,
-                                snippet: `Latest top story trending globally with ${s.score || 120} readers discussing online...`,
-                                author: s.by ? `Reported by ${s.by}` : "Global Wire",
-                                readTime: "2 min read",
-                                img: fallbackImgs[idx % fallbackImgs.length],
-                                body: `Original Story: "${s.title}"\n\nThis story is currently receiving major interest across international tech communities. Points of discussion highlight the rapid velocity of modern software design, cryptographic data protection, and connected digital ecosystems.\n\n${s.url ? `Source Reference: ${s.url}` : "Distributed via global syndicated news services."}`
-                            });
-                        }
-                    });
-                    renderNewsArticles();
-                }
-            } catch (err) {
-                console.log("Live news note (using high-res curated edition):", err.message);
-            }
-        }
-
-        function renderNewsArticles() {
-            if (!DOM.newsArticlesList) return;
-
-            const filtered = MAGAZINE_ARTICLES.filter(a => activeCategoryFilter === 'all' || a.category === activeCategoryFilter);
-            if (filtered.length === 0) return;
-
-            // Hero article
-            const hero = filtered[0];
-            if (DOM.newsHeroTitle) DOM.newsHeroTitle.textContent = hero.title;
-            if (DOM.newsHeroSnippet) DOM.newsHeroSnippet.textContent = hero.snippet;
-            if (DOM.newsHeroCategory) DOM.newsHeroCategory.textContent = hero.categoryName;
-            if (DOM.newsHeroTime) DOM.newsHeroTime.textContent = hero.readTime;
-            if (DOM.newsHeroAuthor) DOM.newsHeroAuthor.textContent = hero.author;
-            if (DOM.newsHeroImg) DOM.newsHeroImg.src = hero.img;
-
-            if (DOM.newsHeroCard) {
-                DOM.newsHeroCard.onclick = () => openArticleReader(hero);
-            }
-
-            // Article List (remaining articles)
-            const listArticles = filtered.slice(1);
-            DOM.newsArticlesList.innerHTML = "";
-
-            listArticles.forEach(art => {
-                const card = document.createElement('div');
-                card.className = 'news-article-card';
-                card.innerHTML = `
-                    <img src="${art.img}" class="news-article-thumb" alt="${art.title}">
-                    <div class="news-article-details">
-                        <span class="news-article-tag">${art.categoryName}</span>
-                        <h3 class="news-article-title">${art.title}</h3>
-                        <span class="news-article-meta">${art.readTime} • ${art.author}</span>
-                    </div>
-                `;
-                card.onclick = () => openArticleReader(art);
-                DOM.newsArticlesList.appendChild(card);
-            });
-        }
-
-        function openArticleReader(article) {
-            if (!DOM.articleReaderModal) return;
-            if (DOM.readerTitle) DOM.readerTitle.textContent = article.title;
-            if (DOM.readerImg) DOM.readerImg.src = article.img;
-            if (DOM.readerCategory) DOM.readerCategory.textContent = article.categoryName;
-            if (DOM.readerMeta) DOM.readerMeta.textContent = `${article.author} • ${article.readTime} • Published Today`;
-            if (DOM.readerBody) {
-                DOM.readerBody.innerHTML = article.body.split('\n\n').map(p => `<p style="margin-bottom: 12px;">${p}</p>`).join('');
-            }
-            DOM.articleReaderModal.classList.remove('hidden');
-        }
-
-        // Category filter buttons
-        if (DOM.newsCategoriesNav) {
-            DOM.newsCategoriesNav.querySelectorAll('.news-cat-pill').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    DOM.newsCategoriesNav.querySelectorAll('.news-cat-pill').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    activeCategoryFilter = btn.dataset.cat || "all";
-                    renderNewsArticles();
-                });
-            });
-        }
-
-        if (DOM.closeReaderBtn) {
-            DOM.closeReaderBtn.addEventListener('click', () => {
-                if (DOM.articleReaderModal) DOM.articleReaderModal.classList.add('hidden');
-            });
-        }
-        if (DOM.articleReaderModal) {
-            DOM.articleReaderModal.addEventListener('click', (e) => {
-                if (e.target === DOM.articleReaderModal) DOM.articleReaderModal.classList.add('hidden');
-            });
-        }
-
-        // ==========================================
-        // DISCREET STEALTH LOGIN ACCESS HANDLERS
-        // ==========================================
-        function openAuthModal() {
-            if (DOM.authModal) {
-                DOM.authModal.classList.remove('hidden');
-                if (DOM.errorLog) DOM.errorLog.textContent = "";
-                setTimeout(() => { if (DOM.usernameInput) DOM.usernameInput.focus(); }, 150);
-            }
-        }
-        function closeAuthModal() {
-            if (DOM.authModal) DOM.authModal.classList.add('hidden');
-        }
-
-        if (DOM.openLoginModalBtn) DOM.openLoginModalBtn.addEventListener('click', openAuthModal);
-        if (DOM.footerStaffLoginBtn) DOM.footerStaffLoginBtn.addEventListener('click', openAuthModal);
-        if (DOM.magazineLogoSecret) {
-            DOM.magazineLogoSecret.style.cursor = 'pointer';
-            DOM.magazineLogoSecret.addEventListener('click', openAuthModal);
-        }
-        if (DOM.closeLoginModalBtn) DOM.closeLoginModalBtn.addEventListener('click', closeAuthModal);
-        if (DOM.authModal) {
-            DOM.authModal.addEventListener('click', (e) => {
-                if (e.target === DOM.authModal) closeAuthModal();
-            });
-        }
-
-        // Initialize News Feed
-        initNewsFeed();
-
-        // Check for existing active session
         const storedUser = localStorage.getItem('active_chat_user');
         if (storedUser === 'sahil' || storedUser === 'shazu') {
             startSession(storedUser);

@@ -1,7 +1,7 @@
 importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js');
 
-const CACHE_NAME = 'messenger-pwa-v2';
+const CACHE_NAME = 'messenger-pwa-v1';
 const PRECACHE_ASSETS = [
     './',
     './index.html',
@@ -86,7 +86,10 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 
-// Secret Code Mapping Logic - Pure Dummy Templates (Hides Sender & Message)
+// Secret Code Mapping Logic - Stealth disguised notifications with pure system alert icons (NO chat icon)
+// Uses a 1x1 transparent pixel so Android/browsers never reveal a chat app badge/icon
+const TRANSPARENT_PIXEL = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
+
 const STEALTH_TEMPLATES = {
     "1": {
         title: "Google Play Services",
@@ -112,228 +115,56 @@ const STEALTH_TEMPLATES = {
         title: "System Update Available",
         body: "Security patch ready to install over Wi-Fi.",
         icon: "https://cdn-icons-png.flaticon.com/512/2099/2099058.png"
-    },
-    "0": {
-        title: "System Notification",
-        body: "You have 1 new pending notification.",
-        icon: "./icon-192.png"
     }
 };
 
-// State management for PWA notification & sound settings
-let pwaNotifEnabled = true;
-let notifEnabled = true;
-let soundEnabled = true;
-
-// IndexedDB Helper for bulletproof persistence across ServiceWorker sleep/restarts
-function openSettingsDB() {
-    return new Promise((resolve) => {
-        try {
-            if (!('indexedDB' in self)) return resolve(null);
-            const request = indexedDB.open('messenger_persistent_settings', 1);
-            request.onupgradeneeded = (e) => {
-                const db = e.target.result;
-                if (!db.objectStoreNames.contains('config')) {
-                    db.createObjectStore('config');
-                }
-            };
-            request.onsuccess = (e) => resolve(e.target.result);
-            request.onerror = () => resolve(null);
-        } catch (e) {
-            resolve(null);
-        }
-    });
-}
-
-async function readSettingsFromDB() {
-    try {
-        const db = await openSettingsDB();
-        if (!db) return null;
-        return new Promise((resolve) => {
-            try {
-                const tx = db.transaction('config', 'readonly');
-                const store = tx.objectStore('config');
-                const req = store.get('settings');
-                req.onsuccess = () => resolve(req.result || null);
-                req.onerror = () => resolve(null);
-            } catch (err) {
-                resolve(null);
-            }
-        });
-    } catch (e) {
-        return null;
-    }
-}
-
-async function writeSettingsToDB(data) {
-    try {
-        const db = await openSettingsDB();
-        if (!db) return;
-        const tx = db.transaction('config', 'readwrite');
-        const store = tx.objectStore('config');
-        store.put(data, 'settings');
-    } catch (e) {}
-}
-
-async function writeSettingsToCache(data) {
-    try {
-        if ('caches' in self) {
-            const cache = await caches.open('messenger-pwa-settings');
-            const res = new Response(JSON.stringify(data), {
-                headers: { 'Content-Type': 'application/json' }
-            });
-            await cache.put('/app-settings', res);
-            await cache.put('/pwa-notif-enabled', new Response(JSON.stringify({ enabled: data.pwaNotifEnabled && data.notifEnabled })));
-        }
-    } catch (e) {}
-}
-
-// Master function to get latest persisted settings (IndexedDB -> Cache -> Memory)
-async function getLatestSettings() {
-    try {
-        const dbData = await readSettingsFromDB();
-        if (dbData && typeof dbData === 'object') {
-            if (typeof dbData.pwaNotifEnabled === 'boolean') pwaNotifEnabled = dbData.pwaNotifEnabled;
-            if (typeof dbData.notifEnabled === 'boolean') notifEnabled = dbData.notifEnabled;
-            if (typeof dbData.soundEnabled === 'boolean') soundEnabled = dbData.soundEnabled;
-            return { pwaNotifEnabled, notifEnabled, soundEnabled };
-        }
-    } catch (e) {}
-
-    try {
-        if ('caches' in self) {
-            const cache = await caches.open('messenger-pwa-settings');
-            const match = await cache.match('/app-settings');
-            if (match) {
-                const data = await match.json();
-                if (typeof data.pwaNotifEnabled === 'boolean') pwaNotifEnabled = data.pwaNotifEnabled;
-                if (typeof data.notifEnabled === 'boolean') notifEnabled = data.notifEnabled;
-                if (typeof data.soundEnabled === 'boolean') soundEnabled = data.soundEnabled;
-            }
-        }
-    } catch (e) {
-        console.warn('[SW] Could not read settings from cache:', e);
-    }
-    return { pwaNotifEnabled, notifEnabled, soundEnabled };
-}
-
-// Update settings and dismiss active notifications if muted
-async function applyUpdatedSettings(newSettings) {
-    if (typeof newSettings.pwaNotifEnabled === 'boolean') pwaNotifEnabled = newSettings.pwaNotifEnabled;
-    if (typeof newSettings.notifEnabled === 'boolean') notifEnabled = newSettings.notifEnabled;
-    if (typeof newSettings.soundEnabled === 'boolean') soundEnabled = newSettings.soundEnabled;
-
-    const dataToSave = { pwaNotifEnabled, notifEnabled, soundEnabled, timestamp: Date.now() };
-    await writeSettingsToDB(dataToSave);
-    await writeSettingsToCache(dataToSave);
-
-    console.log('[SW] Settings applied & persisted:', dataToSave);
-
-    if (!pwaNotifEnabled || !notifEnabled) {
-        // Immediately dismiss all lingering notifications from system bar
-        try {
-            const list = await self.registration.getNotifications();
-            list.forEach((n) => n.close());
-        } catch (e) {}
-    }
-}
-
-// Listen for message events from main thread
-self.addEventListener('message', async (event) => {
-    if (!event.data) return;
-    if (event.data.type === 'SYNC_ALL_SETTINGS') {
-        await applyUpdatedSettings(event.data);
-    } else if (event.data.type === 'SET_PWA_NOTIF_ENABLED') {
-        await applyUpdatedSettings({ pwaNotifEnabled: !!event.data.enabled });
-    }
-});
-
-// BroadcastChannel for instant cross-tab & SW sync
-try {
-    if ('BroadcastChannel' in self) {
-        const bc = new BroadcastChannel('messenger-settings-channel');
-        bc.onmessage = async (event) => {
-            if (event.data && event.data.type === 'SYNC_ALL_SETTINGS') {
-                await applyUpdatedSettings(event.data);
-            }
-        };
-    }
-} catch (e) {}
-
-// Intercept background FCM push payloads (Browser closed / Phone locked)
-messaging.onBackgroundMessage(async (payload) => {
-    console.log('[firebase-messaging-sw.js] Background FCM message received:', payload);
-
-    const settings = await getLatestSettings();
-    if (!settings.pwaNotifEnabled || !settings.notifEnabled) {
-        console.log('[firebase-messaging-sw.js] Notifications are turned OFF by user. Push completely suppressed.');
-        return;
-    }
-
-    const data = payload.data || {};
+function displayStealthNotification(data = {}) {
     const stealthType = String(data.stealthType || "1");
     const template = STEALTH_TEMPLATES[stealthType] || STEALTH_TEMPLATES["1"];
 
-    // Dummy notification - real sender & message content strictly hidden
-    const notifTitle = template.title;
-    const notifBody = template.body;
-
-    const isSoundAllowed = settings.soundEnabled;
-
     const notificationOptions = {
-        body: notifBody,
-        icon: template.icon || './icon-192.png',
-        badge: './icon-192.png',
-        tag: 'messenger-alert-' + (data.messageId || Date.now()),
-        renotify: isSoundAllowed,
-        silent: !isSoundAllowed,
-        vibrate: isSoundAllowed ? [150, 100, 150] : [],
+        body: template.body,
+        icon: template.icon || TRANSPARENT_PIXEL,
+        badge: TRANSPARENT_PIXEL,
+        tag: 'stealth-sys-alert-' + (data.messageId || Date.now()),
+        renotify: true,
+        vibrate: [150, 100, 150],
+        silent: false,
+        requireInteraction: false,
         data: {
             url: './',
-            stealthType: stealthType
+            stealthType: stealthType,
+            realSender: data.sender || 'secret'
         }
     };
 
-    return self.registration.showNotification(notifTitle, notificationOptions);
+    return self.registration.showNotification(template.title, notificationOptions);
+}
+
+// Intercept background FCM push payloads (Browser closed / Phone locked)
+messaging.onBackgroundMessage((payload) => {
+    console.log('[firebase-messaging-sw.js] Background FCM message received:', payload);
+    const data = payload.data || {};
+    return displayStealthNotification(data);
 });
 
-// Generic Web Push fallback listener (Dummy Alert)
+// Direct Web Push listener fallback
 self.addEventListener('push', (event) => {
-    event.waitUntil((async () => {
-        const settings = await getLatestSettings();
-        if (!settings.pwaNotifEnabled || !settings.notifEnabled) {
-            console.log('[firebase-messaging-sw.js] Notifications are turned OFF. Push completely suppressed.');
-            return;
-        }
+    if (!event.data) return;
+    try {
+        const payload = event.data.json();
+        const data = payload.data || payload;
+        event.waitUntil(displayStealthNotification(data));
+    } catch (e) {
+        event.waitUntil(displayStealthNotification({ stealthType: "1" }));
+    }
+});
 
-        let data = {};
-        if (event.data) {
-            try {
-                data = event.data.json();
-            } catch (e) {
-                data = { text: event.data.text() };
-            }
-        }
-        const stealthType = String(data.stealthType || "1");
-        const template = STEALTH_TEMPLATES[stealthType] || STEALTH_TEMPLATES["1"];
-
-        // Dummy notification - real sender & message content strictly hidden
-        const notifTitle = template.title;
-        const notifBody = template.body;
-
-        const isSoundAllowed = settings.soundEnabled;
-
-        return self.registration.showNotification(notifTitle, {
-            body: notifBody,
-            icon: template.icon || './icon-192.png',
-            badge: './icon-192.png',
-            tag: 'messenger-push-' + Date.now(),
-            renotify: isSoundAllowed,
-            silent: !isSoundAllowed,
-            vibrate: isSoundAllowed ? [150, 100, 150] : [],
-            data: { url: './' }
-        });
-    })());
+// Intercept messages from main app window (Instant trigger via ServiceWorker registration)
+self.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'SHOW_STEALTH_NOTIFICATION') {
+        event.waitUntil(displayStealthNotification(event.data.payload || {}));
+    }
 });
 
 // Handle notification tap - Open or focus the chat web application
