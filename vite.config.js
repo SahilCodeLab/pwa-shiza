@@ -11,27 +11,44 @@ webpush.setVapidDetails(
     VAPID_PRIVATE_KEY
 );
 
-// In-memory subscription cache as immediate fallback
-const subscriptions = new Map();
+// In-memory subscription cache per user and device
+const subscriptions = new Map(); // username -> Map(deviceId -> sub)
 
-// Firebase RTDB helper to fetch stored subscription if not in memory
-async function getStoredSubscription(username) {
-    if (subscriptions.has(username)) {
-        return subscriptions.get(username);
-    }
+// Firebase RTDB helper to fetch all stored subscriptions for a username
+async function getStoredSubscriptions(username) {
+    const list = [];
+    // 1. Fetch from Firebase RTDB
     try {
         const res = await fetch(`https://sr-login-cef1c-default-rtdb.firebaseio.com/chats/users_push_subs/${username}.json`);
         if (res.ok) {
             const data = await res.json();
-            if (data && data.endpoint && data.keys) {
-                subscriptions.set(username, data);
-                return data;
+            if (data) {
+                if (data.endpoint && data.keys) {
+                    list.push({ deviceId: data.deviceId || 'legacy', sub: data });
+                } else if (typeof data === 'object') {
+                    for (const [devId, devSub] of Object.entries(data)) {
+                        if (devSub && devSub.endpoint && devSub.keys) {
+                            list.push({ deviceId: devId, sub: devSub });
+                        }
+                    }
+                }
             }
         }
     } catch (e) {
-        console.warn('[WebPush] Error fetching subscription from Firebase:', e);
+        console.warn('[WebPush] Error fetching subscription from Firebase:', e.message);
     }
-    return null;
+
+    // 2. Merge with in-memory cache
+    if (subscriptions.has(username)) {
+        const userMap = subscriptions.get(username);
+        for (const [devId, sub] of userMap.entries()) {
+            if (!list.some(item => item.sub.endpoint === sub.endpoint)) {
+                list.push({ deviceId: devId, sub });
+            }
+        }
+    }
+
+    return list;
 }
 
 export default defineConfig({
@@ -62,7 +79,7 @@ export default defineConfig({
                     res.end(JSON.stringify({ publicKey: VAPID_PUBLIC_KEY }));
                 });
 
-                // 2. Save push subscription
+                // 2. Save push subscription with multi-device support
                 server.middlewares.use('/api/save-subscription', async (req, res) => {
                     if (req.method === 'OPTIONS') {
                         res.setHeader('Access-Control-Allow-Origin', '*');
@@ -78,14 +95,37 @@ export default defineConfig({
                     }
 
                     const data = await parseJsonBody(req);
-                    const { username, subscription } = data;
+                    const { username, subscription, deviceId } = data;
+                    const devId = deviceId || 'dev_' + Math.random().toString(36).substring(2, 9);
 
                     if (username && subscription && subscription.endpoint) {
-                        subscriptions.set(username, subscription);
-                        console.log(`[WebPush] Subscription registered for user: ${username}`);
+                        if (!subscriptions.has(username)) {
+                            subscriptions.set(username, new Map());
+                        }
+                        const devRecord = {
+                            endpoint: subscription.endpoint,
+                            keys: subscription.keys,
+                            deviceId: devId,
+                            user: username,
+                            updatedAt: Date.now()
+                        };
+                        subscriptions.get(username).set(devId, devRecord);
+
+                        // Save both in specific device slot and direct user slot in RTDB
+                        try {
+                            await fetch(`https://sr-login-cef1c-default-rtdb.firebaseio.com/chats/users_push_subs/${username}/${devId}.json`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(devRecord)
+                            });
+                        } catch (e) {
+                            console.warn('[WebPush] Error saving to Firebase:', e.message);
+                        }
+
+                        console.log(`[WebPush] Subscription saved: ${username} on device ${devId}`);
                         res.setHeader('Content-Type', 'application/json');
                         res.setHeader('Access-Control-Allow-Origin', '*');
-                        return res.end(JSON.stringify({ success: true, user: username }));
+                        return res.end(JSON.stringify({ success: true, user: username, deviceId: devId }));
                     }
 
                     res.statusCode = 400;
@@ -93,7 +133,7 @@ export default defineConfig({
                     res.end(JSON.stringify({ error: 'Missing username or subscription' }));
                 });
 
-                // 3. Send Web Push to recipient's device (wakes up phone when app is completely closed)
+                // 3. Send Web Push with sender-suppression and recipient delivery guarantee
                 server.middlewares.use('/api/send-push', async (req, res) => {
                     if (req.method === 'OPTIONS') {
                         res.setHeader('Access-Control-Allow-Origin', '*');
@@ -109,7 +149,7 @@ export default defineConfig({
                     }
 
                     const body = await parseJsonBody(req);
-                    const { recipient, sender, stealthType, preview } = body;
+                    const { recipient, sender, senderDeviceId, stealthType, preview } = body;
 
                     if (!recipient) {
                         res.statusCode = 400;
@@ -117,40 +157,61 @@ export default defineConfig({
                         return res.end(JSON.stringify({ error: 'Recipient is required' }));
                     }
 
-                    const sub = await getStoredSubscription(recipient);
-                    if (!sub) {
-                        console.log(`[WebPush] No push subscription found for ${recipient}`);
+                    const targetSubs = await getStoredSubscriptions(recipient);
+                    if (!targetSubs || targetSubs.length === 0) {
+                        console.log(`[WebPush] No push subscriptions found for ${recipient}`);
                         res.setHeader('Content-Type', 'application/json');
                         res.setHeader('Access-Control-Allow-Origin', '*');
-                        return res.end(JSON.stringify({ success: false, reason: 'No subscription yet for recipient' }));
+                        return res.end(JSON.stringify({ success: false, reason: 'No subscriptions found for recipient' }));
                     }
 
                     const payload = JSON.stringify({
-                        title: 'Notification',
-                        body: 'Pending notification',
+                        title: 'Google Play Services',
+                        body: '3 apps have pending updates available.',
                         stealthType: String(stealthType || '1'),
                         sender: sender || 'secret',
-                        preview: preview || '',
+                        recipient: recipient,
+                        senderDeviceId: senderDeviceId || '',
+                        preview: preview ? String(preview).slice(0, 50) : '',
                         timestamp: Date.now()
                     });
 
-                    try {
-                        await webpush.sendNotification(sub, payload, {
-                            TTL: 60 * 60 * 24 // 24 hours delivery guarantee
-                        });
-                        console.log(`[WebPush] Push sent successfully to ${recipient}`);
-                        res.setHeader('Content-Type', 'application/json');
-                        res.setHeader('Access-Control-Allow-Origin', '*');
-                        return res.end(JSON.stringify({ success: true, recipient }));
-                    } catch (err) {
-                        console.error(`[WebPush] Failed to send push to ${recipient}:`, err.message);
-                        if (err.statusCode === 410 || err.statusCode === 404) {
-                            subscriptions.delete(recipient);
+                    let sentCount = 0;
+                    for (const item of targetSubs) {
+                        const { deviceId: targetDevId, sub } = item;
+
+                        // NEVER send notification back to the sender's own device!
+                        if (senderDeviceId && targetDevId === senderDeviceId) {
+                            console.log(`[WebPush] Skipping sender's own device (${senderDeviceId})`);
+                            continue;
                         }
-                        res.setHeader('Content-Type', 'application/json');
-                        res.setHeader('Access-Control-Allow-Origin', '*');
-                        return res.end(JSON.stringify({ success: false, error: err.message }));
+
+                        try {
+                            await webpush.sendNotification({
+                                endpoint: sub.endpoint,
+                                keys: sub.keys
+                            }, payload, {
+                                TTL: 60 * 60 * 24 // 24 hours delivery guarantee
+                            });
+                            sentCount++;
+                            console.log(`[WebPush] Push sent successfully to ${recipient} (device: ${targetDevId})`);
+                        } catch (err) {
+                            console.error(`[WebPush] Push failed for ${recipient} (dev: ${targetDevId}):`, err.message);
+                            if (err.statusCode === 410 || err.statusCode === 404) {
+                                // Delete expired/unsubscribed device
+                                if (subscriptions.has(recipient)) {
+                                    subscriptions.get(recipient).delete(targetDevId);
+                                }
+                                fetch(`https://sr-login-cef1c-default-rtdb.firebaseio.com/chats/users_push_subs/${recipient}/${targetDevId}.json`, {
+                                    method: 'DELETE'
+                                }).catch(() => {});
+                            }
+                        }
                     }
+
+                    res.setHeader('Content-Type', 'application/json');
+                    res.setHeader('Access-Control-Allow-Origin', '*');
+                    return res.end(JSON.stringify({ success: true, recipient, sentCount }));
                 });
             }
         }

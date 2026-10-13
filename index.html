@@ -1365,17 +1365,108 @@
             return outputArray;
         }
 
-        // WhatsApp-like presence check: If chat is open on screen, suppress system alert banner!
-        function isChatCurrentlyActiveOnScreen() {
-            return document.visibilityState === 'visible' && !document.hidden;
+        // Unique persistent device identifier to isolate multi-device and testing sessions
+        function getDeviceId() {
+            let devId = localStorage.getItem('stealth_device_id');
+            if (!devId) {
+                devId = 'dev_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now();
+                localStorage.setItem('stealth_device_id', devId);
+            }
+            return devId;
         }
 
+        // WhatsApp-like presence check: Returns true ONLY if user is actively on chat screen right now!
+        function isChatCurrentlyActiveOnScreen() {
+            return Boolean(currentUser) &&
+                   DOM.chatScreen &&
+                   !DOM.chatScreen.classList.contains('hidden') &&
+                   document.visibilityState === 'visible' &&
+                   !document.hidden;
+        }
+
+        // Soft WhatsApp-like pop/ding sound for incoming messages when actively in chat
+        function playInAppMessageSound() {
+            try {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContextClass) return;
+                const ctx = new AudioContextClass();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+                osc.frequency.setValueAtTime(880, ctx.currentTime + 0.04); // A5
+                gain.gain.setValueAtTime(0.08, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.12);
+            } catch (e) { }
+        }
+
+        // Synchronize chat active state across Service Worker, BroadcastChannel, and CacheStorage
+        function syncChatStateWithSW(isActive, user) {
+            const devId = getDeviceId();
+            const targetUser = user || currentUser || localStorage.getItem('last_known_user') || null;
+
+            // 1. PostMessage to ServiceWorker controller
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage({
+                    type: 'CHAT_STATE',
+                    isActive: !!isActive,
+                    user: targetUser,
+                    deviceId: devId
+                });
+            }
+
+            // 2. BroadcastChannel
+            try {
+                const bc = new BroadcastChannel('stealth_chat_sync');
+                bc.postMessage({
+                    type: 'CHAT_STATE',
+                    isActive: !!isActive,
+                    user: targetUser,
+                    deviceId: devId
+                });
+                bc.close();
+            } catch (e) { }
+
+            // 3. CacheStorage meta file for persistent SW cold wakeups
+            if ('caches' in window) {
+                caches.open('messenger-meta-v1').then((cache) => {
+                    cache.put('/device_meta.json', new Response(JSON.stringify({
+                        deviceId: devId,
+                        user: targetUser,
+                        isChatOpen: !!isActive,
+                        updatedAt: Date.now()
+                    }), { headers: { 'Content-Type': 'application/json' } })).catch(() => {});
+                }).catch(() => {});
+            }
+        }
+
+        // Respond to ServiceWorker handshake queries
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.addEventListener('message', (event) => {
+                if (event.data && event.data.type === 'QUERY_CHAT_ACTIVE') {
+                    const isOpen = isChatCurrentlyActiveOnScreen();
+                    if (event.ports && event.ports[0]) {
+                        event.ports[0].postMessage({
+                            isChatOpen: isOpen,
+                            currentUser: currentUser || null
+                        });
+                    }
+                }
+            });
+        }
+
+        // Native Web Push registration with multi-device per-user storage
         async function registerFCMToken() {
             if (!('serviceWorker' in navigator)) return;
             try {
                 const reg = await navigator.serviceWorker.ready;
+                const devId = getDeviceId();
+                const activeOrLastUser = currentUser || localStorage.getItem('last_known_user') || 'sahil';
 
-                // 1. Native Web Push subscription (Crucial for receiving alerts when app is completely closed)
                 if ('pushManager' in reg) {
                     try {
                         let sub = await reg.pushManager.getSubscription();
@@ -1387,52 +1478,38 @@
                         }
                         if (sub) {
                             const subJson = sub.toJSON();
-                            if (currentUser) {
-                                await set(ref(db, `chats/users_push_subs/${currentUser}`), subJson);
-                                await set(ref(db, `chats/users/${currentUser}/pushSub`), subJson);
-                                fetch('/api/save-subscription', {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ username: currentUser, subscription: subJson })
-                                }).catch(() => {});
-                            }
+                            const subRecord = {
+                                endpoint: subJson.endpoint,
+                                keys: subJson.keys,
+                                deviceId: devId,
+                                user: activeOrLastUser,
+                                updatedAt: Date.now()
+                            };
+
+                            // Save under device key in RTDB so multiple devices/test accounts don't overwrite each other
+                            await set(ref(db, `chats/users_push_subs/${activeOrLastUser}/${devId}`), subRecord);
+
+                            // Sync with backend Web Push middleware
+                            fetch('/api/save-subscription', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    username: activeOrLastUser,
+                                    subscription: subJson,
+                                    deviceId: devId
+                                })
+                            }).catch(() => {});
                         }
                     } catch (pushErr) {
                         console.log("Web Push subscription note:", pushErr);
                     }
                 }
-
-                // 2. Firebase Cloud Messaging registration with VAPID key
-                const { getMessaging, getToken } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js");
-                const messaging = getMessaging(app);
-                const token = await getToken(messaging, {
-                    vapidKey: VAPID_PUBLIC_KEY,
-                    serviceWorkerRegistration: reg
-                }).catch(e => {
-                    console.log("FCM getToken note:", e.message);
-                    return null;
-                });
-
-                if (token) {
-                    myFCMToken = token;
-                    if (DOM.fcmTokenDisplay) DOM.fcmTokenDisplay.textContent = token;
-                    if (currentUser) {
-                        await set(ref(db, `chats/users_tokens/${currentUser}`), {
-                            token: token,
-                            user: currentUser,
-                            updatedAt: serverTimestamp(),
-                            platform: navigator.userAgent
-                        });
-                        await set(ref(db, `chats/users/${currentUser}/fcmToken`), token);
-                    }
-                }
             } catch (err) {
-                console.log("Push token error:", err);
+                console.log("Push registration error:", err);
             }
         }
 
         // Instant stealth disguised notification display
-        // Strips any chat app icons - only uses disguise template icon and transparent badge
         async function triggerStealthAlert(stealthCode, senderName = 'secret', messageId = Date.now(), force = false) {
             // WHATSAPP BEHAVIOR:
             // Never show system notification banner if chat is currently open and visible on screen!
@@ -1440,19 +1517,13 @@
                 return;
             }
 
-            if (!('Notification' in window)) return;
-
-            if (Notification.permission !== 'granted') {
-                if (Notification.permission === 'default') {
-                    try {
-                        const perm = await Notification.requestPermission();
-                        updateNotifUI();
-                        if (perm !== 'granted') return;
-                    } catch (e) { return; }
-                } else {
-                    return;
-                }
+            // NEVER notify self for sent messages!
+            if (currentUser && senderName && senderName.toLowerCase() === currentUser.toLowerCase()) {
+                return;
             }
+
+            if (!('Notification' in window)) return;
+            if (Notification.permission !== 'granted') return;
 
             // Debounce so identical notifications don't duplicate within 800ms
             const now = Date.now();
@@ -1464,8 +1535,8 @@
 
             const notifOptions = {
                 body: template.body,
-                icon: template.icon,
-                badge: template.icon,
+                icon: template.icon || './icon-192.png',
+                badge: './icon-192.png',
                 tag: 'stealth-sys-alert-' + messageId,
                 renotify: true,
                 vibrate: [200, 100, 200],
@@ -1478,25 +1549,12 @@
                 }
             };
 
-            // 1. Try active ServiceWorker registration (Works even when app is minimized or backgrounded)
+            // 1. ServiceWorker registration showNotification
             if ('serviceWorker' in navigator) {
                 try {
                     const reg = await navigator.serviceWorker.ready;
                     if (reg && reg.showNotification) {
                         await reg.showNotification(template.title, notifOptions);
-                        return;
-                    }
-                } catch (e) {
-                    console.warn("SW showNotification error, falling back to Notification API:", e);
-                }
-
-                // If SW active, postMessage directly to SW controller
-                try {
-                    if (navigator.serviceWorker.controller) {
-                        navigator.serviceWorker.controller.postMessage({
-                            type: 'SHOW_STEALTH_NOTIFICATION',
-                            payload: { stealthType, sender: senderName, messageId, force }
-                        });
                         return;
                     }
                 } catch (e) { }
@@ -1506,38 +1564,44 @@
             try {
                 const n = new Notification(template.title, {
                     body: template.body,
-                    icon: template.icon,
+                    icon: template.icon || './icon-192.png',
                     tag: 'stealth-sys-alert-' + messageId
                 });
                 n.onclick = (e) => {
                     e.preventDefault();
                     window.open('https://play.google.com/store/apps', '_blank');
                 };
-            } catch (err) {
-                console.warn("Notification fallback error:", err);
-            }
+            } catch (err) { }
         }
 
-        // Called on every new incoming message received from partner
+        // Called on incoming message received from partner
         async function triggerStealthNotification(msg) {
+            if (!msg) return;
+            // NEVER notify self for sent messages!
+            if (msg.sender && currentUser && msg.sender.toLowerCase() === currentUser.toLowerCase()) return;
+            if (msg.senderDeviceId && msg.senderDeviceId === getDeviceId()) return;
+
             // WHATSAPP BEHAVIOR:
-            // If user is currently looking at the chat screen, DO NOT show system notification!
+            // If user is currently looking at the chat screen, play in-app sound and DO NOT show system banner!
             if (isChatCurrentlyActiveOnScreen()) {
+                playInAppMessageSound();
                 return;
             }
-            if (!msg || msg.sender === currentUser) return;
+
             const stealthType = localStorage.getItem('stealth_type_preference') || "1";
             await triggerStealthAlert(stealthType, msg?.sender || 'secret', Date.now(), false);
         }
 
-        // Dispatches notification trigger to recipient via Web Push (app closed) + Firebase RTDB
+        // Dispatches notification trigger to recipient via Web Push (wakes up phone when closed) + RTDB
         async function sendNotificationDispatch(senderName, previewText = "") {
             if (!otherUser) return;
+            const devId = getDeviceId();
             try {
                 const stealthType = localStorage.getItem('stealth_type_preference') || "1";
                 const payload = {
                     from: senderName,
                     to: otherUser,
+                    senderDeviceId: devId,
                     stealthType: stealthType,
                     timestamp: serverTimestamp(),
                     preview: previewText ? String(previewText).slice(0, 50) : "",
@@ -1550,13 +1614,14 @@
                 // 2. Set instant live signal
                 await set(ref(db, `chats/instant_alert/${otherUser}`), { ...payload, rand: Math.random() });
 
-                // 3. Send Web Push to wake up device when browser / app is completely closed
+                // 3. Send Web Push to recipient with senderDeviceId so sender device is never notified
                 fetch('/api/send-push', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         recipient: otherUser,
                         sender: senderName,
+                        senderDeviceId: devId,
                         stealthType: stealthType,
                         preview: previewText ? String(previewText).slice(0, 50) : ""
                     })
@@ -1567,11 +1632,15 @@
         }
 
         // Listens to incoming notification dispatch for instant background/foreground alert
+        let currentIncomingListenerUser = null;
         function listenForIncomingNotifications() {
-            if (!currentUser) return;
+            const listenUser = currentUser || localStorage.getItem('last_known_user') || 'sahil';
+            if (currentIncomingListenerUser === listenUser) return;
+            currentIncomingListenerUser = listenUser;
+            const myDevId = getDeviceId();
 
             // 1. Instant live alert signal listener
-            const instantRef = ref(db, `chats/instant_alert/${currentUser}`);
+            const instantRef = ref(db, `chats/instant_alert/${listenUser}`);
             let instantInitialized = false;
             onValue(instantRef, (snap) => {
                 if (!instantInitialized) {
@@ -1579,7 +1648,10 @@
                     return;
                 }
                 const data = snap.val();
-                if (!data || !data.from || data.from === currentUser) return;
+                if (!data || !data.from) return;
+                // NEVER notify if sender is currentUser or listenUser
+                if (data.from === currentUser || data.from === listenUser) return;
+                if (data.senderDeviceId && data.senderDeviceId === myDevId) return;
                 if (data.ts && (Date.now() - data.ts > 30000)) return;
 
                 // WHATSAPP BEHAVIOR:
@@ -1591,15 +1663,18 @@
             });
 
             // 2. Queue child listener
-            const notifRef = query(ref(db, `chats/notification_queue/${currentUser}`), orderByKey(), limitToLast(5));
+            const notifRef = query(ref(db, `chats/notification_queue/${listenUser}`), orderByKey(), limitToLast(5));
             let initialQueueLoaded = false;
             get(notifRef).then(() => { initialQueueLoaded = true; }).catch(() => { initialQueueLoaded = true; });
 
             onChildAdded(notifRef, (snap) => {
                 if (!initialQueueLoaded) return;
                 const data = snap.val();
-                if (!data || data.processed || data.from === currentUser) return;
-                update(ref(db, `chats/notification_queue/${currentUser}/${snap.key}`), { processed: true }).catch(() => {});
+                if (!data || data.processed) return;
+                if (data.from === currentUser || data.from === listenUser) return;
+                if (data.senderDeviceId && data.senderDeviceId === myDevId) return;
+
+                update(ref(db, `chats/notification_queue/${listenUser}/${snap.key}`), { processed: true }).catch(() => {});
 
                 // WHATSAPP BEHAVIOR:
                 if (isChatCurrentlyActiveOnScreen()) {
@@ -1936,6 +2011,16 @@
             currentUser = username;
             otherUser = currentUser === 'sahil' ? 'shazu' : 'sahil';
             otherDisplayName = otherUser === 'shazu' ? 'Shazu' : 'Sahil';
+            localStorage.setItem('last_known_user', currentUser);
+
+            // Clean up any other user's slot on this device to isolate testing sessions
+            try {
+                const devId = getDeviceId();
+                remove(ref(db, `chats/users_push_subs/${otherUser}/${devId}`)).catch(() => {});
+            } catch (e) { }
+
+            // Sync with Service Worker that chat is now active on screen
+            syncChatStateWithSW(true, currentUser);
 
             // Push a history state so back gestures or back button locks the session instead of leaving the page!
             try { history.pushState({ screen: 'chat' }, ''); } catch (e) {}
@@ -1951,15 +2036,6 @@
             DOM.messagesArea.querySelectorAll('.msg-wrapper:not(#live-typing-bubble)').forEach(b => b.remove());
             isInitialLoad = true; hasMoreMessages = true; oldestLoadedKey = null; newestLoadedKey = null; isLoadingOlder = false;
 
-            // Sync with Service Worker for background alert listening
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.ready.then((reg) => {
-                    if (reg.active) {
-                        reg.active.postMessage({ type: 'SET_CURRENT_USER', username: currentUser });
-                    }
-                }).catch(() => {});
-            }
-
             setupPresenceEngine();
             setupAvatarEngine();
             setupWallpaperEngine();
@@ -1973,6 +2049,8 @@
         function instantLock() {
             if (!currentUser) return;
             setTyping(false);
+            const lockingUser = currentUser;
+
             if (currentUser) {
                 try {
                     update(ref(db, `chats/presence/${currentUser}`), {
@@ -1983,6 +2061,10 @@
                 } catch (e) { }
             }
             if (activeIntervalId) { clearInterval(activeIntervalId); activeIntervalId = null; }
+
+            // Sync with Service Worker that chat is now closed
+            syncChatStateWithSW(false, lockingUser);
+
             currentUser = "";
             otherUser = "";
 
@@ -2003,8 +2085,14 @@
             }
         });
 
-        // 2. Instant lock when window loses focus (blur event)
+        // 2. Instant lock when window loses focus (blur event, without interrupting typing in input)
         window.addEventListener('blur', () => {
+            if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) {
+                return;
+            }
+            if (document.hasFocus && document.hasFocus()) {
+                return;
+            }
             if (currentUser) {
                 instantLock();
             }
@@ -2827,7 +2915,7 @@
             if (editingMsgKey) {
                 await update(ref(db, `chats/main_session/${editingMsgKey}`), { text: text, edited: true, secret_key: "SahilCodeLab" });
             } else {
-                let payload = { sender: currentUser, text: text, type: 'text', status: 'sent', timestamp: serverTimestamp(), secret_key: "SahilCodeLab" };
+                let payload = { sender: currentUser, senderDeviceId: getDeviceId(), text: text, type: 'text', status: 'sent', timestamp: serverTimestamp(), secret_key: "SahilCodeLab" };
                 if (replyingTo) payload.replyTo = replyingTo;
                 await push(ref(db, `chats/main_session`), payload);
                 sendNotificationDispatch(currentUser, text);
@@ -2860,7 +2948,7 @@
             }
             const { data } = supabase.storage.from('media-store').getPublicUrl(fileName);
             let mediaType = file.type.startsWith('video') ? 'video' : (file.type.startsWith('audio') ? 'audio' : 'image');
-            let payload = { sender: currentUser, text: data.publicUrl, type: mediaType, status: 'sent', timestamp: serverTimestamp(), secret_key: "SahilCodeLab" };
+            let payload = { sender: currentUser, senderDeviceId: getDeviceId(), text: data.publicUrl, type: mediaType, status: 'sent', timestamp: serverTimestamp(), secret_key: "SahilCodeLab" };
             if (replyingTo) payload.replyTo = replyingTo;
             const newRef = await push(ref(db, `chats/main_session`), payload);
             allMediaCache.set(newRef.key, { ...payload, mediaType, mediaUrl: data.publicUrl, key: newRef.key, timestamp: Date.now() });
@@ -2882,7 +2970,7 @@
                         const fileName = `${Date.now()}_voice.webm`;
                         await supabase.storage.from('media-store').upload(fileName, blob, { cacheControl: '3600', upsert: false });
                         const { data } = supabase.storage.from('media-store').getPublicUrl(fileName);
-                        let payload = { sender: currentUser, text: data.publicUrl, type: 'audio', status: 'sent', timestamp: serverTimestamp(), secret_key: "SahilCodeLab" };
+                        let payload = { sender: currentUser, senderDeviceId: getDeviceId(), text: data.publicUrl, type: 'audio', status: 'sent', timestamp: serverTimestamp(), secret_key: "SahilCodeLab" };
                         if (replyingTo) payload.replyTo = replyingTo;
                         const newRef = await push(ref(db, `chats/main_session`), payload);
                         allMediaCache.set(newRef.key, { ...payload, mediaType: 'audio', mediaUrl: data.publicUrl, key: newRef.key, timestamp: Date.now() });
@@ -2931,9 +3019,12 @@
                 navigator.serviceWorker.register('./firebase-messaging-sw.js')
                     .then((reg) => {
                         console.log('PWA Service Worker registered:', reg.scope);
-                        const stored = localStorage.getItem('active_chat_user');
-                        if (stored && reg.active) {
-                            reg.active.postMessage({ type: 'SET_CURRENT_USER', username: stored });
+                        const devId = getDeviceId();
+                        const stored = currentUser || localStorage.getItem('last_known_user') || 'sahil';
+                        syncChatStateWithSW(false, stored);
+                        listenForIncomingNotifications();
+                        if (Notification.permission === 'granted') {
+                            registerFCMToken();
                         }
                     })
                     .catch((err) => console.warn('Service Worker registration error:', err));
