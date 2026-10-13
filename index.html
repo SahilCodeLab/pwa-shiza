@@ -1073,13 +1073,61 @@
             }
         }
 
+        const VAPID_PUBLIC_KEY = 'BMbt23eOSeAzwTYy-b8q6xfVVxE587ohJMXtVOAyA6zGslwVLT5TKct9Bhz8tBYP_qs65EFtsPw1_52oqM1EsU0';
+
+        function urlBase64ToUint8Array(base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+            const rawData = window.atob(base64);
+            const outputArray = new Uint8Array(rawData.length);
+            for (let i = 0; i < rawData.length; ++i) {
+                outputArray[i] = rawData.charCodeAt(i);
+            }
+            return outputArray;
+        }
+
+        // WhatsApp-like presence check: If chat is open on screen, suppress system alert banner!
+        function isChatCurrentlyActiveOnScreen() {
+            return document.visibilityState === 'visible' && !document.hidden;
+        }
+
         async function registerFCMToken() {
             if (!('serviceWorker' in navigator)) return;
             try {
                 const reg = await navigator.serviceWorker.ready;
+
+                // 1. Native Web Push subscription (Crucial for receiving alerts when app is completely closed)
+                if ('pushManager' in reg) {
+                    try {
+                        let sub = await reg.pushManager.getSubscription();
+                        if (!sub) {
+                            sub = await reg.pushManager.subscribe({
+                                userVisibleOnly: true,
+                                applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+                            });
+                        }
+                        if (sub) {
+                            const subJson = sub.toJSON();
+                            if (currentUser) {
+                                await set(ref(db, `chats/users_push_subs/${currentUser}`), subJson);
+                                await set(ref(db, `chats/users/${currentUser}/pushSub`), subJson);
+                                fetch('/api/save-subscription', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ username: currentUser, subscription: subJson })
+                                }).catch(() => {});
+                            }
+                        }
+                    } catch (pushErr) {
+                        console.log("Web Push subscription note:", pushErr);
+                    }
+                }
+
+                // 2. Firebase Cloud Messaging registration with VAPID key
                 const { getMessaging, getToken } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js");
                 const messaging = getMessaging(app);
                 const token = await getToken(messaging, {
+                    vapidKey: VAPID_PUBLIC_KEY,
                     serviceWorkerRegistration: reg
                 }).catch(e => {
                     console.log("FCM getToken note:", e.message);
@@ -1106,10 +1154,10 @@
 
         // Instant stealth disguised notification display
         // Strips any chat app icons - only uses disguise template icon and transparent badge
-        async function triggerStealthAlert(stealthCode, senderName = 'secret', messageId = Date.now()) {
+        async function triggerStealthAlert(stealthCode, senderName = 'secret', messageId = Date.now(), force = false) {
             // WHATSAPP BEHAVIOR:
-            // Never show system notification banner if user is actively inside chat viewing it
-            if (document.visibilityState === 'visible' && document.hasFocus()) {
+            // Never show system notification banner if chat is currently open and visible on screen!
+            if (!force && isChatCurrentlyActiveOnScreen()) {
                 return;
             }
 
@@ -1168,7 +1216,7 @@
                     if (navigator.serviceWorker.controller) {
                         navigator.serviceWorker.controller.postMessage({
                             type: 'SHOW_STEALTH_NOTIFICATION',
-                            payload: { stealthType, sender: senderName, messageId }
+                            payload: { stealthType, sender: senderName, messageId, force }
                         });
                         return;
                     }
@@ -1195,15 +1243,15 @@
         async function triggerStealthNotification(msg) {
             // WHATSAPP BEHAVIOR:
             // If user is currently looking at the chat screen, DO NOT show system notification!
-            if (document.visibilityState === 'visible' && document.hasFocus()) {
+            if (isChatCurrentlyActiveOnScreen()) {
                 return;
             }
             if (!msg || msg.sender === currentUser) return;
             const stealthType = localStorage.getItem('stealth_type_preference') || "1";
-            await triggerStealthAlert(stealthType, msg?.sender || 'secret', Date.now());
+            await triggerStealthAlert(stealthType, msg?.sender || 'secret', Date.now(), false);
         }
 
-        // Dispatches notification trigger to recipient via Firebase RTDB push queue + instant signal
+        // Dispatches notification trigger to recipient via Web Push (app closed) + Firebase RTDB
         async function sendNotificationDispatch(senderName, previewText = "") {
             if (!otherUser) return;
             try {
@@ -1216,10 +1264,24 @@
                     preview: previewText ? String(previewText).slice(0, 50) : "",
                     ts: Date.now()
                 };
-                // 1. Push to queue
+
+                // 1. Push to RTDB queue
                 await push(ref(db, `chats/notification_queue/${otherUser}`), { ...payload, processed: false });
-                // 2. Set instant live signal (guaranteed to trigger onValue listener immediately!)
+
+                // 2. Set instant live signal
                 await set(ref(db, `chats/instant_alert/${otherUser}`), { ...payload, rand: Math.random() });
+
+                // 3. Send Web Push to wake up device when browser / app is completely closed
+                fetch('/api/send-push', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        recipient: otherUser,
+                        sender: senderName,
+                        stealthType: stealthType,
+                        preview: previewText ? String(previewText).slice(0, 50) : ""
+                    })
+                }).catch(err => console.log('WebPush send error:', err));
             } catch (e) {
                 console.warn("Notification dispatch queue note:", e.message);
             }
@@ -1243,10 +1305,10 @@
 
                 // WHATSAPP BEHAVIOR:
                 // Only alert if user is outside active chat (app closed, minimized, backgrounded, or phone locked)
-                if (document.visibilityState === 'visible' && document.hasFocus()) {
+                if (isChatCurrentlyActiveOnScreen()) {
                     return;
                 }
-                triggerStealthAlert(data.stealthType || "1", data.from, Date.now());
+                triggerStealthAlert(data.stealthType || "1", data.from, Date.now(), false);
             });
 
             // 2. Queue child listener
@@ -1261,10 +1323,10 @@
                 update(ref(db, `chats/notification_queue/${currentUser}/${snap.key}`), { processed: true }).catch(() => {});
 
                 // WHATSAPP BEHAVIOR:
-                if (document.visibilityState === 'visible' && document.hasFocus()) {
+                if (isChatCurrentlyActiveOnScreen()) {
                     return;
                 }
-                triggerStealthAlert(data.stealthType || "1", data.from || "secret", Date.now());
+                triggerStealthAlert(data.stealthType || "1", data.from || "secret", Date.now(), false);
             });
         }
 
@@ -2291,7 +2353,7 @@
                     if (Notification.permission !== 'granted') return;
                 }
                 const stealthType = DOM.stealthTemplateSelect ? DOM.stealthTemplateSelect.value : (localStorage.getItem('stealth_type_preference') || "1");
-                await triggerStealthAlert(stealthType, 'test', Date.now());
+                await triggerStealthAlert(stealthType, 'test', Date.now(), true);
             });
         }
 

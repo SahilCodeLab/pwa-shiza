@@ -2,7 +2,7 @@ importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js'
 importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js');
 
-const CACHE_NAME = 'messenger-pwa-v2';
+const CACHE_NAME = 'messenger-pwa-v3';
 const PRECACHE_ASSETS = [
     './',
     './index.html',
@@ -117,7 +117,7 @@ async function isAppInForeground() {
     try {
         const windowClients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
         for (const client of windowClients) {
-            if (client.visibilityState === 'visible' && client.focused) {
+            if (client.visibilityState === 'visible') {
                 return true;
             }
         }
@@ -131,7 +131,7 @@ async function displayStealthNotification(data = {}) {
     // WHATSAPP BEHAVIOR:
     // If the app is currently in foreground with user actively in chat, DO NOT show system alert!
     const foreground = await isAppInForeground();
-    if (foreground) {
+    if (foreground && !data.force) {
         return;
     }
 
