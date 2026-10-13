@@ -356,8 +356,11 @@
         .msg.other .msg-footer { color: #9ca3af; }
         .msg.me .msg-footer { color: rgba(255, 255, 255, 0.78); }
         .edited-tag { font-size: 0.65rem; font-style: italic; margin-right: 2px; }
-        .ticks { font-size: 0.72rem; font-weight: 700; letter-spacing: -1.5px; margin-left: 3px; color: rgba(255, 255, 255, 0.65); }
-        .ticks.seen { color: #ffffff !important; font-weight: 800; }
+        .ticks { display: inline-flex; align-items: center; justify-content: center; margin-left: 3px; vertical-align: middle; line-height: 1; user-select: none; transition: color 0.18s ease; }
+        .ticks .tick-svg { display: inline-block; vertical-align: middle; }
+        .ticks:not(.seen), .ticks.sent { color: rgba(255, 255, 255, 0.72) !important; }
+        .ticks.seen { color: #38bdf8 !important; filter: drop-shadow(0 1px 2px rgba(56, 189, 248, 0.45)); }
+        .msg.me .ticks.seen { color: #38bdf8 !important; }
 
         .typing-bubble { display: inline-flex; align-items: center; gap: 5px; background: #f2f4f7; padding: 9px 15px; border-radius: 18px 18px 18px 6px; width: fit-content; margin-bottom: 6px; }
         .typing-dot { width: 6px; height: 6px; background: #9ca3af; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
@@ -2647,19 +2650,15 @@
                 }
             });
 
-            onChildChanged(query(mRef, orderByKey(), limitToLast(40)), (snap) => {
+            onChildChanged(mRef, (snap) => {
                 const key = snap.key;
                 if (key === 'secret_key') return;
                 const msg = snap.val();
-                if (!allMessagesCache.has(key)) return;
+                if (!msg || typeof msg !== 'object') return;
                 allMessagesCache.set(key, msg);
                 const textP = document.getElementById('text-content-' + key);
                 if (textP && msg.type === 'text') textP.textContent = msg.text;
-                const ticks = document.getElementById('ticks-' + key);
-                if (ticks) {
-                    ticks.textContent = msg.status === 'seen' ? '✓✓' : '✓';
-                    ticks.classList.toggle('seen', msg.status === 'seen');
-                }
+                updateTicksElement(key, msg.status);
                 updateReaction(key, msg.reaction);
             });
         }
@@ -2725,6 +2724,30 @@
             }
         }, { passive: true });
 
+        // WhatsApp-style tick icons: Single tick (sent) vs Double blue tick (seen)
+        function getTickSvg(isSeen) {
+            if (isSeen) {
+                // WhatsApp iconic Double Blue Tick (two crisp overlapping checkmarks)
+                return `<svg width="17" height="11" viewBox="0 0 19 11" fill="none" class="tick-svg tick-double"><path d="M11.5 1.5L5 9L1.5 5.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 1.5L9.5 9L7.5 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+            }
+            // WhatsApp Single Tick (single checkmark)
+            return `<svg width="14" height="11" viewBox="0 0 16 11" fill="none" class="tick-svg tick-single"><path d="M12.5 1.5L5 9L1.5 5.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+        }
+
+        function renderTicksMarkup(key, status) {
+            const isSeen = status === 'seen';
+            return `<span id="ticks-${key}" class="ticks ${isSeen ? 'seen' : 'sent'}" title="${isSeen ? 'Seen' : 'Sent'}">${getTickSvg(isSeen)}</span>`;
+        }
+
+        function updateTicksElement(key, status) {
+            const el = document.getElementById('ticks-' + key);
+            if (!el) return;
+            const isSeen = status === 'seen';
+            el.className = `ticks ${isSeen ? 'seen' : 'sent'}`;
+            el.title = isSeen ? 'Seen' : 'Sent';
+            el.innerHTML = getTickSvg(isSeen);
+        }
+
         function createMessageElement(key, msg) {
             if (key === 'secret_key' || !msg || typeof msg !== 'object' || renderedMessageKeys.has(key)) return null;
             renderedMessageKeys.add(key);
@@ -2736,7 +2759,9 @@
             }
 
             const isMe = msg.sender === currentUser;
-            if (!isMe && msg.status !== 'seen') update(ref(db, `chats/main_session/${key}`), { status: 'seen' });
+            if (currentUser && !isMe && msg.status !== 'seen') {
+                update(ref(db, `chats/main_session/${key}`), { status: 'seen' });
+            }
 
             const wrap = document.createElement('div'); wrap.id = 'wrapper-' + key; wrap.className = `msg-wrapper ${isMe ? 'me' : 'other'}`;
             const div = document.createElement('div'); div.id = 'msg-' + key; div.className = `msg ${isMe ? 'me' : 'other'}`;
@@ -2815,7 +2840,7 @@
             if (msg.edited) foot.innerHTML += `<span class="edited-tag">edited</span>`;
             const timeStr = msg.timestamp ? formatISTTime(msg.timestamp) : "";
             foot.innerHTML += `<span>${timeStr}</span>`;
-            if (isMe) foot.innerHTML += `<span id="ticks-${key}" class="ticks ${msg.status === 'seen' ? 'seen' : ''}">${msg.status === 'seen' ? '✓✓' : '✓'}</span>`;
+            if (isMe) foot.innerHTML += renderTicksMarkup(key, msg.status);
             div.appendChild(foot);
             wrap.appendChild(div);
 
