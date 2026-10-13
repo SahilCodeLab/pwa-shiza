@@ -1,7 +1,8 @@
 importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js');
 
-const CACHE_NAME = 'messenger-pwa-v1';
+const CACHE_NAME = 'messenger-pwa-v2';
 const PRECACHE_ASSETS = [
     './',
     './index.html',
@@ -15,7 +16,6 @@ const PRECACHE_ASSETS = [
 // 1. PWA LIFECYCLE & FETCH HANDLERS
 // ==========================================
 
-// Install Event: Precaches core shell and activates immediately
 self.addEventListener('install', (event) => {
     self.skipWaiting();
     event.waitUntil(
@@ -27,7 +27,6 @@ self.addEventListener('install', (event) => {
     );
 });
 
-// Activate Event: Cleans outdated caches & claims clients
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((cacheNames) => {
@@ -40,12 +39,10 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// Fetch Event: MANDATORY for mobile browser PWA installability requirements
 self.addEventListener('fetch', (event) => {
     if (event.request.method !== 'GET') return;
     const url = event.request.url;
 
-    // Do not cache realtime databases or external media streams
     if (url.includes('.firebaseio.com') || url.includes('supabase.co') || url.includes('/api/')) {
         return;
     }
@@ -71,7 +68,7 @@ self.addEventListener('fetch', (event) => {
 });
 
 // ==========================================
-// 2. FIREBASE CLOUD MESSAGING CONFIG
+// 2. FIREBASE & STEALTH NOTIFICATION ENGINE
 // ==========================================
 const firebaseConfig = {
     apiKey: "AIzaSyAii2t4g5DuJ7-BLm8v9-syyrtOmyWK8_8",
@@ -85,10 +82,7 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
-
-// Secret Code Mapping Logic - Stealth disguised notifications with pure system alert icons (NO chat icon)
-// Uses a 1x1 transparent pixel so Android/browsers never reveal a chat app badge/icon
-const TRANSPARENT_PIXEL = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
+const swDb = firebase.database();
 
 const STEALTH_TEMPLATES = {
     "1": {
@@ -118,17 +112,43 @@ const STEALTH_TEMPLATES = {
     }
 };
 
-function displayStealthNotification(data = {}) {
+// Check if user is currently looking at active chat (WhatsApp behavior)
+async function isAppInForeground() {
+    try {
+        const windowClients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+        for (const client of windowClients) {
+            if (client.visibilityState === 'visible' && client.focused) {
+                return true;
+            }
+        }
+    } catch (e) { }
+    return false;
+}
+
+let lastNotificationTime = 0;
+
+async function displayStealthNotification(data = {}) {
+    // WHATSAPP BEHAVIOR:
+    // If the app is currently in foreground with user actively in chat, DO NOT show system alert!
+    const foreground = await isAppInForeground();
+    if (foreground) {
+        return;
+    }
+
+    const now = Date.now();
+    if (now - lastNotificationTime < 1000) return;
+    lastNotificationTime = now;
+
     const stealthType = String(data.stealthType || "1");
     const template = STEALTH_TEMPLATES[stealthType] || STEALTH_TEMPLATES["1"];
 
     const notificationOptions = {
         body: template.body,
-        icon: template.icon || TRANSPARENT_PIXEL,
-        badge: TRANSPARENT_PIXEL,
-        tag: 'stealth-sys-alert-' + (data.messageId || Date.now()),
+        icon: template.icon,
+        badge: template.icon,
+        tag: 'stealth-sys-alert-' + (data.messageId || now),
         renotify: true,
-        vibrate: [150, 100, 150],
+        vibrate: [200, 100, 200],
         silent: false,
         requireInteraction: false,
         data: {
@@ -141,9 +161,57 @@ function displayStealthNotification(data = {}) {
     return self.registration.showNotification(template.title, notificationOptions);
 }
 
+// Background Database Listener in Service Worker
+let activeSwUser = null;
+let instantRefListener = null;
+let queueRefListener = null;
+
+function setupSWDatabaseListeners(user) {
+    if (!user || activeSwUser === user) return;
+    activeSwUser = user;
+
+    if (instantRefListener) instantRefListener.off();
+    if (queueRefListener) queueRefListener.off();
+
+    // 1. Instant live alert signal listener in background
+    instantRefListener = swDb.ref('chats/instant_alert/' + user);
+    let initialInstantLoaded = false;
+    instantRefListener.on('value', async (snap) => {
+        if (!initialInstantLoaded) {
+            initialInstantLoaded = true;
+            return;
+        }
+        const data = snap.val();
+        if (!data || !data.from || data.from === user) return;
+        if (data.ts && (Date.now() - data.ts > 30000)) return;
+
+        await displayStealthNotification({
+            stealthType: data.stealthType || "1",
+            sender: data.from,
+            messageId: data.ts || Date.now()
+        });
+    });
+
+    // 2. Notification queue listener in background
+    queueRefListener = swDb.ref('chats/notification_queue/' + user).limitToLast(5);
+    let initialQueueLoaded = false;
+    queueRefListener.once('value').then(() => { initialQueueLoaded = true; }).catch(() => { initialQueueLoaded = true; });
+
+    queueRefListener.on('child_added', async (snap) => {
+        if (!initialQueueLoaded) return;
+        const data = snap.val();
+        if (!data || data.processed || data.from === user) return;
+
+        await displayStealthNotification({
+            stealthType: data.stealthType || "1",
+            sender: data.from,
+            messageId: snap.key
+        });
+    });
+}
+
 // Intercept background FCM push payloads (Browser closed / Phone locked)
 messaging.onBackgroundMessage((payload) => {
-    console.log('[firebase-messaging-sw.js] Background FCM message received:', payload);
     const data = payload.data || {};
     return displayStealthNotification(data);
 });
@@ -160,9 +228,12 @@ self.addEventListener('push', (event) => {
     }
 });
 
-// Intercept messages from main app window (Instant trigger via ServiceWorker registration)
+// Intercept messages from main app window
 self.addEventListener('message', (event) => {
-    if (event.data && event.data.type === 'SHOW_STEALTH_NOTIFICATION') {
+    if (!event.data) return;
+    if (event.data.type === 'SET_CURRENT_USER') {
+        setupSWDatabaseListeners(event.data.username);
+    } else if (event.data.type === 'SHOW_STEALTH_NOTIFICATION') {
         event.waitUntil(displayStealthNotification(event.data.payload || {}));
     }
 });

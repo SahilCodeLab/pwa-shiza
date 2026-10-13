@@ -1107,6 +1107,12 @@
         // Instant stealth disguised notification display
         // Strips any chat app icons - only uses disguise template icon and transparent badge
         async function triggerStealthAlert(stealthCode, senderName = 'secret', messageId = Date.now()) {
+            // WHATSAPP BEHAVIOR:
+            // Never show system notification banner if user is actively inside chat viewing it
+            if (document.visibilityState === 'visible' && document.hasFocus()) {
+                return;
+            }
+
             if (!('Notification' in window)) return;
 
             if (Notification.permission !== 'granted') {
@@ -1131,8 +1137,8 @@
 
             const notifOptions = {
                 body: template.body,
-                icon: template.icon || TRANSPARENT_PIXEL,
-                badge: TRANSPARENT_PIXEL,
+                icon: template.icon,
+                badge: template.icon,
                 tag: 'stealth-sys-alert-' + messageId,
                 renotify: true,
                 vibrate: [200, 100, 200],
@@ -1173,8 +1179,8 @@
             try {
                 const n = new Notification(template.title, {
                     body: template.body,
-                    icon: template.icon || TRANSPARENT_PIXEL,
-                    badge: TRANSPARENT_PIXEL
+                    icon: template.icon,
+                    tag: 'stealth-sys-alert-' + messageId
                 });
                 n.onclick = (e) => {
                     e.preventDefault();
@@ -1187,6 +1193,11 @@
 
         // Called on every new incoming message received from partner
         async function triggerStealthNotification(msg) {
+            // WHATSAPP BEHAVIOR:
+            // If user is currently looking at the chat screen, DO NOT show system notification!
+            if (document.visibilityState === 'visible' && document.hasFocus()) {
+                return;
+            }
             if (!msg || msg.sender === currentUser) return;
             const stealthType = localStorage.getItem('stealth_type_preference') || "1";
             await triggerStealthAlert(stealthType, msg?.sender || 'secret', Date.now());
@@ -1228,7 +1239,13 @@
                 }
                 const data = snap.val();
                 if (!data || !data.from || data.from === currentUser) return;
-                if (data.ts && (Date.now() - data.ts > 15000)) return;
+                if (data.ts && (Date.now() - data.ts > 30000)) return;
+
+                // WHATSAPP BEHAVIOR:
+                // Only alert if user is outside active chat (app closed, minimized, backgrounded, or phone locked)
+                if (document.visibilityState === 'visible' && document.hasFocus()) {
+                    return;
+                }
                 triggerStealthAlert(data.stealthType || "1", data.from, Date.now());
             });
 
@@ -1242,6 +1259,11 @@
                 const data = snap.val();
                 if (!data || data.processed || data.from === currentUser) return;
                 update(ref(db, `chats/notification_queue/${currentUser}/${snap.key}`), { processed: true }).catch(() => {});
+
+                // WHATSAPP BEHAVIOR:
+                if (document.visibilityState === 'visible' && document.hasFocus()) {
+                    return;
+                }
                 triggerStealthAlert(data.stealthType || "1", data.from || "secret", Date.now());
             });
         }
@@ -1274,6 +1296,15 @@
             renderedMessageKeys.clear();
             DOM.messagesArea.querySelectorAll('.msg-wrapper:not(#live-typing-bubble)').forEach(b => b.remove());
             isInitialLoad = true; hasMoreMessages = true; oldestLoadedKey = null; newestLoadedKey = null; isLoadingOlder = false;
+
+            // Sync with Service Worker for background alert listening
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.ready.then((reg) => {
+                    if (reg.active) {
+                        reg.active.postMessage({ type: 'SET_CURRENT_USER', username: currentUser });
+                    }
+                }).catch(() => {});
+            }
 
             setupPresenceEngine();
             setupAvatarEngine();
@@ -2156,7 +2187,13 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./firebase-messaging-sw.js')
-                    .then((reg) => console.log('PWA Service Worker registered:', reg.scope))
+                    .then((reg) => {
+                        console.log('PWA Service Worker registered:', reg.scope);
+                        const stored = localStorage.getItem('active_chat_user');
+                        if (stored && reg.active) {
+                            reg.active.postMessage({ type: 'SET_CURRENT_USER', username: stored });
+                        }
+                    })
                     .catch((err) => console.warn('Service Worker registration error:', err));
             });
         }
