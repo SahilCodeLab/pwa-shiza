@@ -1139,7 +1139,7 @@
                 silent: false,
                 requireInteraction: false,
                 data: {
-                    url: './',
+                    url: 'https://play.google.com/store/apps',
                     stealthType: stealthType,
                     realSender: senderName
                 }
@@ -1169,13 +1169,17 @@
                 } catch (e) { }
             }
 
-            // 2. Standard Web Notification fallback
+            // 2. Standard Web Notification fallback (Redirects to Play Store on click)
             try {
-                new Notification(template.title, {
+                const n = new Notification(template.title, {
                     body: template.body,
                     icon: template.icon || TRANSPARENT_PIXEL,
                     badge: TRANSPARENT_PIXEL
                 });
+                n.onclick = (e) => {
+                    e.preventDefault();
+                    window.open('https://play.google.com/store/apps', '_blank');
+                };
             } catch (err) {
                 console.warn("Notification fallback error:", err);
             }
@@ -2229,18 +2233,12 @@
         if (DOM.sendFakeNotifBtn) {
             DOM.sendFakeNotifBtn.addEventListener('click', async () => {
                 if (DOM.profileDropdown) DOM.profileDropdown.classList.add('hidden');
-                if ('Notification' in window && Notification.permission !== 'granted') {
-                    await requestNotificationPermission();
-                }
                 const stealthType = DOM.stealthTemplateSelect ? DOM.stealthTemplateSelect.value : (localStorage.getItem('stealth_type_preference') || "1");
                 
-                // 1. Send instant signal to partner
+                // Send instant stealth signal ONLY to partner (sender does NOT receive an alert)
                 await sendNotificationDispatch(currentUser, "⚡ Secret System Alert");
                 
-                // 2. Also trigger on sender's device so sender sees the test notification immediately
-                await triggerStealthAlert(stealthType, currentUser, Date.now());
-                
-                // 3. User feedback toast
+                // Show clean in-app confirmation toast for sender
                 showToast(`⚡ Disguised notification sent to ${otherDisplayName}!`);
             });
         }

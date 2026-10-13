@@ -132,7 +132,7 @@ function displayStealthNotification(data = {}) {
         silent: false,
         requireInteraction: false,
         data: {
-            url: './',
+            url: 'https://play.google.com/store/apps',
             stealthType: stealthType,
             realSender: data.sender || 'secret'
         }
@@ -167,19 +167,11 @@ self.addEventListener('message', (event) => {
     }
 });
 
-// Handle notification tap - Open or focus the chat web application
+// Handle notification tap - NEVER open the secret chat app! Redirect directly to Google Play Store
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
+    const playStoreUrl = 'https://play.google.com/store/apps';
     event.waitUntil(
-        clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
-            for (let client of windowClients) {
-                if (client.url.includes(self.registration.scope) && 'focus' in client) {
-                    return client.focus();
-                }
-            }
-            if (clients.openWindow) {
-                return clients.openWindow('./');
-            }
-        })
+        clients.openWindow ? clients.openWindow(playStoreUrl) : Promise.resolve()
     );
 });
